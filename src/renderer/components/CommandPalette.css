@@ -1,0 +1,76 @@
+[cmdk-overlay] {
+    background-color: rgba(0, 0, 0, 0.2);
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: all !important;
+}
+
+[cmdk-root] {
+    position: fixed;
+    width: 600px;
+    top: 10vh;
+    left: calc(50% - 300px);
+    border-radius: 5px;
+    padding: 10px;
+    outline: none;
+}
+
+[cmdk-list] {
+    max-height: 200px;
+    overflow-y: scroll;
+    padding-right: 6px;
+}
+
+[cmdk-list]::-webkit-scrollbar {
+    width: 6px;
+}
+[cmdk-list]::-webkit-scrollbar-track {
+    background: transparent;
+}
+[cmdk-list]::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    width: 5px;
+    border: transparent;
+}
+
+[cmdk-input] {
+    width: 580px;
+    padding: 6px 10px;
+    outline: none;
+    border: none;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: "Droid Sans Mono", "monospace", monospace;
+}
+
+[cmdk-input]::placeholder {
+    color: var(--color);
+    opacity: 0.5;
+}
+
+[cmdk-item], [cmdk-empty] {
+    padding: 4px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-top: 3px;
+    font-family: "Droid Sans Mono", "monospace", monospace;
+    transition: all 0.5s ease;
+}
+
+[cmdk-item]:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+[cmdk-item][data-selected='true'] {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.emoticon {
+    font-family: 'Courier New', Courier, monospace;
+}

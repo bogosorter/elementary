@@ -1,0 +1,58 @@
+#header {
+    height: 40px;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-app-region: drag;
+}
+
+#path {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#unsaved {
+    height: 5px;
+    width: 5px;
+    border-radius: 2.5px;
+    margin-left: 5px;
+}
+
+.path-segment {
+    opacity: 0.8;
+    font-size: 14px;
+}
+.path-separator {
+    opacity: 0.3;
+    margin: 0 5px;
+    font-size: 14px;
+}
+
+#header-buttons {
+    width: 120px;
+    -webkit-app-region: none;
+    display: flex;
+    justify-content: end;
+}
+#header-buttons-placeholder {
+    width: 120px;
+}
+
+.header-button {
+    height: 40px;
+    width: 40px;
+    margin: 0;
+    padding: 0px;
+    border: 0;
+    outline: none;
+    background-color: transparent;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.header-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
