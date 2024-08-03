@@ -208,43 +208,19 @@ const store = create<Store>((set, get) => ({
         if (period) autoSave(period, get().save, () => !get().saved);
     },
     openInfo: async () => {
-        if (!get().saved) {
-            // 0 if cancelled
-            // 1 if the current file shouldn't be saved
-            // 2 if the current file should be saved
-            const save = await window.electron.ipcRenderer.invoke('showSaveDialog');
-
-            if (save == 0) return;
-            if (save == 2) get().save();
-        }
+        if (!await get().confirmClose()) return;
 
         get().editor!.setValue(info);
         set({ path: '', saved: true, commandPaletteOpen: false });
     },
     openMarkdownReference: async () => {
-        if (!get().saved) {
-            // 0 if cancelled
-            // 1 if the current file shouldn't be saved
-            // 2 if the current file should be saved
-            const save = await window.electron.ipcRenderer.invoke('showSaveDialog');
-
-            if (save == 0) return;
-            if (save == 2) get().save();
-        }
+        if (!await get().confirmClose()) return;
 
         get().editor!.setValue(markdown);
         set({ path: '', saved: true, commandPaletteOpen: false });
     },
     openShortcutReference: async () => {
-        if (!get().saved) {
-            // 0 if cancelled
-            // 1 if the current file shouldn't be saved
-            // 2 if the current file should be saved
-            const save = await window.electron.ipcRenderer.invoke('showSaveDialog');
-
-            if (save == 0) return;
-            if (save == 2) get().save();
-        }
+        if (!await get().confirmClose()) return;
 
         get().editor!.setValue(shortcuts);
         set({ path: '', saved: true, commandPaletteOpen: false });
@@ -265,7 +241,7 @@ const store = create<Store>((set, get) => ({
     },
 
     open: async () => {
-        if (!get().confirmClose()) return;
+        if (!await get().confirmClose()) return;
 
         const file = await window.electron.ipcRenderer.invoke('open');
         if (!file) return;
@@ -281,7 +257,7 @@ const store = create<Store>((set, get) => ({
             return;
         }
 
-        if (!get().confirmClose()) return;
+        if (!await get().confirmClose()) return;
 
         const content = await window.electron.ipcRenderer.invoke('loadFile', path);
         if (!content) return;
@@ -291,7 +267,7 @@ const store = create<Store>((set, get) => ({
     },
 
     newFile: async () => {
-        if (!get().confirmClose()) return;
+        if (!await get().confirmClose()) return;
 
         get().editor!.setValue('Hello world!');
         set({ path: '', saved: true, commandPaletteOpen: false });
@@ -312,7 +288,6 @@ const store = create<Store>((set, get) => ({
     },
 
     onChange: () => {
-        console.log('changed');
         set({ saved: false });
 
         const quoteClassName = get().settings.theme.name === 'dark'? ['mtk23', 'mtk24'] : ['mtk24', 'mtk25'];
@@ -332,7 +307,7 @@ const store = create<Store>((set, get) => ({
         */
     },
     onClose: async () => {
-        if (!get().confirmClose()) return;
+        if (!await get().confirmClose()) return;
         window.electron.ipcRenderer.send('window', 'close');
     },
 
