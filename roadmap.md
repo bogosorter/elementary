@@ -12,8 +12,9 @@ The following features are ordered according to their importance and ease of imp
 
 ### Very Short term
 
-- Formatting shortcuts (ctrl+b, ctrl+i, ctrl+k, etc.)
 - Strikethrough and highlight support
+- Add quick actions for inline code, blockquote, todo-list, unordered and ordered lists, headers and code blocks
+- UI for all of the above + bold, italic and links
 - Settings that allow to display line numbers, character and word count.
 - Option to reset settings
 

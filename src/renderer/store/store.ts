@@ -43,6 +43,11 @@ type Store = {
     newFile: () => void;
     confirmClose: () => Promise<boolean>;
 
+    bold: () => void;
+    italic: () => void;
+    link: () => void;
+    surroundText: (start: string, end: string) => void;
+
     onChange: () => void;
     onClose: () => void;
 
@@ -60,13 +65,15 @@ const store = create<Store>((set, get) => ({
     shortcuts: {
         'ctrl+shift+p': () => get().toggleCommandPalette(),
         'ctrl+p': () => get().toggleCommandPalette(),
-        'ctrl+k': () => get().toggleCommandPalette(),
         'esc': () => get().toggleCommandPalette(),
         'ctrl+s': () => get().save(),
         'ctrl+shift+s': () => get().saveAs(),
         'ctrl+o': () => get().open(),
         'ctrl+shift+o': () => get().openRecent(),
-        'ctrl+n': () => get().newFile()
+        'ctrl+n': () => get().newFile(),
+        'ctrl+b': () => get().bold(),
+        'ctrl+i': () => get().italic(),
+        'ctrl+k': () => get().link()
     },
     commandPaletteOpen: false,
     commandPalettePage: 'general',
@@ -81,19 +88,22 @@ const store = create<Store>((set, get) => ({
                 // Disables Monaco's command palette
                 keybinding: Monaco.KeyCode.F1,
                 command: null
-            },
-            {
+            }, {
                 // Disables all of Monaco's keybindings starting with Ctrl+K
                 keybinding: Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.KeyK,
                 command: null
-            },
+            }, {
+                // Disable trigger suggestion on Ctrl+I
+                keybinding: Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.KeyI,
+                command: null
+            }
         ]);
 
         monaco.languages.register({ id: 'custom-markdown' });
         monaco.languages.setLanguageConfiguration('custom-markdown', configuration);
         monaco.languages.setMonarchTokensProvider('custom-markdown', tokenProvider);
 
-        // Disable command palette from the context menuinterfaceComplexity
+        // Disable command palette from the context menu
         const removableIds = ['editor.action.changeAll', 'editor.action.quickCommand'];
         // @ts-ignore
         const contextmenu = editor.getContribution('editor.contrib.contextmenu');
@@ -285,6 +295,59 @@ const store = create<Store>((set, get) => ({
         }
 
         return true;
+    },
+
+    bold: () => {
+        get().surroundText('**', '**');
+    },
+    italic: () => {
+        get().surroundText('*', '*');
+    },
+    link: () => {
+        get().surroundText('[', '](url)');
+    },
+    surroundText: (start: string, end: string) => {
+        const selection = get().editor!.getSelection();
+        if (!selection) return;
+        // If the selection spans multiple lines, the user commited an error
+        if (selection.startLineNumber !== selection.endLineNumber) return;
+
+        // If the selection is empty but near a word, select the word
+        if (selection.startColumn === selection.endColumn) {
+            const word = get().editor!.getModel()!.getWordAtPosition(selection.getStartPosition());
+            if (word) {
+                selection.setStartPosition(selection.startLineNumber, word.startColumn);
+                selection.setEndPosition(selection.endLineNumber, word.endColumn);
+            }
+        }
+
+        const source = get().editor!.getModel()!.getValueInRange(selection);
+        const result = start + source + end;
+
+        get().editor!.executeEdits('', [{
+            range: selection,
+            text: result,
+            forceMoveMarkers: true
+        }]);
+
+        // If the selection was empty, the cursor should be placed between the start and end
+        if (selection.startColumn === selection.endColumn) {
+            const newSelection = new Monaco.Selection(
+                selection.startLineNumber,
+                selection.startColumn + start.length,
+                selection.endLineNumber,
+                selection.startColumn + start.length
+            );
+            get().editor!.setSelection(newSelection);
+        } else {
+            const newSelection = new Monaco.Selection(
+                selection.startLineNumber,
+                selection.startColumn,
+                selection.endLineNumber,
+                selection.endColumn + start.length + end.length
+            );
+            get().editor!.setSelection(newSelection);
+        }
     },
 
     onChange: () => {
