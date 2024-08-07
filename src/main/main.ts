@@ -6,6 +6,8 @@ import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
+import mdToPdf from 'md-to-pdf';
+import { PdfConfig } from 'md-to-pdf/dist/lib/config';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -175,4 +177,19 @@ ipcMain.handle('getVersionInfo', async () => {
     await settings.set('version', app.getVersion());
 
     return { firstTime, update };
+});
+
+ipcMain.handle('export', async () => {
+    const mdPath = await settings.get('path') as string;
+
+    const pdfPath = await dialog.showSaveDialog(window!, {
+        filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    });
+    if (pdfPath.canceled) return 0;
+
+    const pdf = await mdToPdf({ path: mdPath }).catch(console.error);
+    if (!pdf) return 1;
+
+    fs.writeFileSync(pdfPath.filePath!, pdf.content);
+    return pdfPath.filePath!;
 });

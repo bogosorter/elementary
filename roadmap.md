@@ -11,3 +11,4 @@
 - Export to pdf
 - Typewriter mode?
 - Reader mode
+- Option to reset settings

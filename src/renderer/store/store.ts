@@ -7,6 +7,7 @@ import { configuration, tokenProvider } from '../utils/tokenProvider';
 import addQuoteClasses from '../utils/quotes';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
 import { info, markdown, shortcuts } from '../texts/texts';
+import { PdfConfig } from 'md-to-pdf/dist/lib/config';
 import 'react-toastify/dist/ReactToastify.css';
 
 type CommandPalettePage = 'general' | 'recentlyOpened' | 'zoom' | 'fontSize' | 'editorWidth' | 'interfaceComplexity' | 'autoSave';
@@ -41,6 +42,7 @@ type Store = {
     open: () => void;
     openRecent: (path?: string) => void;
     newFile: () => void;
+    export: () => void;
     confirmClose: () => Promise<boolean>;
 
     onChange: () => void;
@@ -66,7 +68,8 @@ const store = create<Store>((set, get) => ({
         'ctrl+shift+s': () => get().saveAs(),
         'ctrl+o': () => get().open(),
         'ctrl+shift+o': () => get().openRecent(),
-        'ctrl+n': () => get().newFile()
+        'ctrl+n': () => get().newFile(),
+        'ctrl+e': () => get().export(),
     },
     commandPaletteOpen: false,
     commandPalettePage: 'general',
@@ -271,6 +274,34 @@ const store = create<Store>((set, get) => ({
 
         get().editor!.setValue('Hello world!');
         set({ path: '', saved: true, commandPaletteOpen: false });
+    },
+
+    export: async () => {
+        if (!get().saved || get().path === '') {
+            toast('Please save your file before exporting it.', {
+                autoClose: false,
+                theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
+                position: 'bottom-right'
+            });
+            return;
+        }
+
+        const content = get().editor!.getValue();
+        const result = await window.electron.ipcRenderer.invoke('export', content);
+
+        // User cancelled the export
+        if (result == 0) return;
+        // An error occurred
+        if (result == 1) toast('An error occurred.', {
+            autoClose: false,
+            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
+            position: 'bottom-right'
+        });
+        else toast(`File exported to ${result}`, {
+            autoClose: false,
+            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
+            position: 'bottom-right'
+        });
     },
 
     confirmClose: async () => {
