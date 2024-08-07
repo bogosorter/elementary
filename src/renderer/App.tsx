@@ -101,7 +101,7 @@ function createEditorOptions(theme: Theme, fontSize: number): monaco.editor.ISta
         guides: {
             indentation: false
         },
-        lineDecorationsWidth: 50,
+        lineDecorationsWidth: 0,
         stickyScroll: {
             enabled: false
         }

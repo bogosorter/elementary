@@ -216,7 +216,8 @@
     "linux": {
       "target": [
         "deb",
-        "snap"
+        "snap",
+        "appImage"
       ],
       "category": "Development"
     },
