@@ -2,9 +2,7 @@
 
 ## Bugs
 
-- Quotes are not rendered on pasting, undoing, etc.
 - Elementary crashes when saving files for the first time? Needs investigation.
-- Shortcuts don't work after command palette is unfocused
 
 ## Features
 

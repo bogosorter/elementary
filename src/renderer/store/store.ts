@@ -164,7 +164,7 @@ const store = create<Store>((set, get) => ({
     setTheme: async (theme) => {
         set({ settings: { ...get().settings, theme }, commandPaletteOpen: false });
         window.electron.ipcRenderer.send('setSettings', get().settings);
-        document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
+        document.getElementById('quote-border-container')!.style.setProperty('--accent', theme.accent);
     },
     toggleCommandPalette: () => {
         set({ commandPaletteOpen: !get().commandPaletteOpen, commandPalettePage: 'general' });

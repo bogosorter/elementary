@@ -20,6 +20,7 @@ export default function CommandPalette() {
 
     useEffect(() => {
         setValue('');
+        if (!commandPaletteOpen) store.getState().editor?.focus();
     }, [commandPaletteOpen, commandPalettePage]);
 
     return (
