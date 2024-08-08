@@ -14,7 +14,7 @@ body {
 
 #container {
     height: calc(100vh - 40px);
-    width: min(calc(100vw - 120px), var(--editor-width));
+    width: min(calc(100vw - 160px), var(--editor-width));
 }
 
 /* A trick to display the scrollbar to the right instead of next to the text */
@@ -87,4 +87,13 @@ moved to the right  */
 
     --toastify-text-color-light: #757575;
     --toastify-text-color-dark: #fff;
+}
+
+.strikethrough {
+    text-decoration: line-through;
+}
+
+.highlight {
+    background-color: var(--highlight-color);
+    border-radius: 3px;
 }

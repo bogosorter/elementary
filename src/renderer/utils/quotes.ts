@@ -1,5 +1,5 @@
 // Check for quotes and tag them with data attributes
-export default function tagQuotes(ids: string[]) {
+export default function tagQuotes() {
     const lineContainer = document.getElementsByClassName('view-lines')[0];
     if (!lineContainer) return;
 
@@ -24,7 +24,7 @@ export default function tagQuotes(ids: string[]) {
         line.dataset.quoteStart = 'false';
         line.dataset.quoteEnd = 'false';
 
-        if (!(checkForClass(line, ids[0]) || checkForClass(line, ids[1]))) {
+        if (!checkForClass(line, 'quote')) {
             if (quoteStarted && previousLine) {
                 previousLine.dataset.quoteEnd = 'true';
             }

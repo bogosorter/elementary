@@ -4,10 +4,10 @@ import { toast } from 'react-toastify';
 import { Theme, lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
-import addQuoteClasses from '../utils/quotes';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
 import { info, markdown, shortcuts } from '../texts/texts';
 import 'react-toastify/dist/ReactToastify.css';
+import tagQuotes from '../utils/quotes';
 
 type CommandPalettePage = 'general' | 'recentlyOpened' | 'zoom' | 'fontSize' | 'editorWidth' | 'interfaceComplexity' | 'autoSave';
 
@@ -49,6 +49,7 @@ type Store = {
     surroundText: (start: string, end: string) => void;
 
     onChange: () => void;
+    updateDecorations: () => void;
     onClose: () => void;
 
     fullscreen: boolean;
@@ -122,13 +123,11 @@ const store = create<Store>((set, get) => ({
         window.electron.webFrame.setZoomFactor(settings.zoom);
 
         editor.onDidContentSizeChange(() => {
-            const quoteClassName = get().settings.theme.name === 'dark'? ['mtk23', 'mtk24'] : ['mtk24', 'mtk25'];
-            requestAnimationFrame(() => addQuoteClasses(quoteClassName));
+            requestAnimationFrame(() => tagQuotes());
         });
 
         editor.onDidScrollChange(() => {
-            const quoteClassName = get().settings.theme.name === 'dark'? ['mtk23', 'mtk24'] : ['mtk24', 'mtk25'];
-            requestAnimationFrame(() => addQuoteClasses(quoteClassName));
+            requestAnimationFrame(() => tagQuotes());
         });
 
         const { firstTime, update } = await window.electron.ipcRenderer.invoke('getVersionInfo');
@@ -156,7 +155,7 @@ const store = create<Store>((set, get) => ({
             toast('A new version of Elementary is available. Click here to download it.', {
                 onClick: () => window.open('https://bogosorter.github.io/elementary#download'),
                 autoClose: false,
-                theme: settings.theme.name === 'dark'? 'dark' : 'light',
+                theme: settings.theme.name === 'dark' ? 'dark' : 'light',
                 position: 'bottom-right'
             });
         });
@@ -353,8 +352,14 @@ const store = create<Store>((set, get) => ({
     onChange: () => {
         set({ saved: false });
 
-        const quoteClassName = get().settings.theme.name === 'dark'? ['mtk23', 'mtk24'] : ['mtk24', 'mtk25'];
-        requestAnimationFrame(() => addQuoteClasses(quoteClassName));
+        // Ideally, we would call updateDecorations() here for addQuoteData to
+        // work, but on the first run the editor isn't ready yet. So, on the
+        // first time, we'll call it using requestAnimationFrame, since the
+        // editor will be ready by then.
+        if (!get().monaco || !get().editor) requestAnimationFrame(() => get().updateDecorations());
+        else get().updateDecorations();
+
+        requestAnimationFrame(() => tagQuotes());
 
         /*
         Left here for future reference
@@ -369,6 +374,41 @@ const store = create<Store>((set, get) => ({
         }])
         */
     },
+    updateDecorations: () => {
+        const decorations: Monaco.editor.IModelDeltaDecoration[] = [];
+        const tokens = get().monaco!.editor.tokenize(get().editor!.getValue(), 'custom-markdown');
+
+        for (let line = 0; line < tokens.length; line++) {
+            for (let j = 0; j < tokens[line].length; j++) {
+                const token = tokens[line][j];
+                const lineLength = get().editor!.getModel()!.getLineContent(line + 1).length;
+
+                if (token.type === 'strikethrough.md' || token.type == 'highlight.md') {
+                    const startColumn = token.offset + 1;
+                    const endColumn = j == tokens[line].length - 1 ? lineLength + 1 : tokens[line][j + 1].offset + 1;
+
+                    decorations.push({
+                        range: new Monaco.Range(line + 1, startColumn, line + 1, endColumn),
+                        options: {
+                            inlineClassName: token.type.substring(0, token.type.length - 3)
+                        }
+                    });
+
+                } else if (token.type === 'quote.md') {
+                    decorations.push({
+                        range: new Monaco.Range(line + 1, 1, line + 1, lineLength + 1),
+                        options: {
+                            inlineClassName: 'quote'
+                        }
+                    });
+                }
+            }
+        }
+
+        // This method is deprecated but the new one
+        // (createDecorationsCollection) doesn't seem to work...
+        oldDecorations = get().editor!.deltaDecorations(oldDecorations, decorations);
+    },
     onClose: async () => {
         if (!await get().confirmClose()) return;
         window.electron.ipcRenderer.send('window', 'close');
@@ -379,6 +419,8 @@ const store = create<Store>((set, get) => ({
         set({ fullscreen: !get().fullscreen });
     }
 }));
+
+let oldDecorations: string[] = [];
 
 window.electron.ipcRenderer.on('toggleFullscreen', () => {
     store.getState().toggleFullscreen();

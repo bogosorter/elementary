@@ -7,7 +7,7 @@ import CommandPalette from './components/CommandPalette';
 import store from './store/store';
 import handleShortcut from './utils/shortcuts';
 import ControlButtons from './components/ControlButtons';
-import addQuoteClasses from './utils/quotes';
+import tagQuotes from './utils/quotes';
 
 import { Theme } from '../themes';
 
@@ -24,8 +24,7 @@ function App() {
     const showButtons = store(state => state.settings.interfaceComplexity) == 'normal';
 
     useEffect(() => {
-        const quoteClassName = theme.name === 'dark'? ['mtk23', 'mtk24'] : ['mtk24', 'mtk25'];
-        requestAnimationFrame(() => addQuoteClasses(quoteClassName));
+        requestAnimationFrame(() => tagQuotes());
     }, [theme]);
 
     return (
@@ -65,7 +64,8 @@ function createAppVariables(theme: Theme, editorWidth: number): CSSProperties {
         '--accent': theme.accent,
         '--editor-width': `${editorWidth}px`,
         '--toastify-color-light': theme.surfaceVariant,
-        '--toastify-text-color-light': theme.primary
+        '--toastify-text-color-light': theme.primary,
+        '--highlight-color': theme.accent + '60'
     } as CSSProperties;
 }
 
