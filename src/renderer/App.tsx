@@ -58,9 +58,6 @@ function createAppVariables(theme: Theme, editorWidth: number): CSSProperties {
     return {
         backgroundColor: theme.surface,
         color: theme.primary,
-        '--mtk23': theme.accent,
-        '--mtk24': theme.name == 'dark'? theme.primary : theme.accent,
-        '--mtk25': theme.primary,
         '--accent': theme.accent,
         '--editor-width': `${editorWidth}px`,
         '--toastify-color-light': theme.surfaceVariant,

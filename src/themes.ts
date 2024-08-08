@@ -138,10 +138,7 @@ function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneT
                 fontStyle: 'bold'
             }, {
                 token: 'quote',
-                foreground: '#000001'
-            }, {
-                token: 'quote-text',
-                foreground: '#000002'
+                foreground: colors.accent
             }, {
                 token: 'list',
                 foreground: colors.accent,

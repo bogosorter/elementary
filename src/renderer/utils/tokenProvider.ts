@@ -84,7 +84,7 @@ export const tokenProvider: languages.IMonarchLanguage = {
             [/^(\s{0,3})(######)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'heading6', 'heading6', 'heading6']],
 
 			// quote
-			[/^(\s*)(>+)(\s+)(.*)/, ['white', 'quote', 'white', 'quote-text']],
+			[/^\s*>+/, 'quote'],
 
 			// list (starting with * or number)
 			[/^\s*([\*\-+:]|\d+\.)\s/, 'list'],

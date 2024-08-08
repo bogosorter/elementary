@@ -58,18 +58,6 @@ body {
     border-bottom-right-radius: 5px;
 }
 
-.mtk23 {
-    color: var(--mtk23) !important;
-}
-
-.mtk24 {
-    color: var(--mtk24) !important;
-}
-
-.mtk25 {
-    color: var(--mtk25) !important;
-}
-
 /* Monaco editor seems to clip content, which means that quote decorations
 (which are set the the left of the text) are hidden unless all of the content is
 moved to the right  */
