@@ -15,35 +15,45 @@ export default function tagQuotes() {
         return aTop - bTop;
     })
 
+    // Clean up previous borders
+    const container = document.getElementById('quote-border-container')!;
+    while (container.firstChild) container.removeChild(container.firstChild);
+
     let quoteStarted = false;
-    let previousLine: HTMLElement | null = null;
+    let previousBorder: HTMLElement | null = null;
+
     for (const line of lines) {
-
-        // Clean up previous tags
-        line.dataset.quote = 'false';
-        line.dataset.quoteStart = 'false';
-        line.dataset.quoteEnd = 'false';
-
         if (!checkForClass(line, 'quote')) {
-            if (quoteStarted && previousLine) {
-                previousLine.dataset.quoteEnd = 'true';
-            }
+            if (quoteStarted) previousBorder!.classList.add('quote-border-end');
             quoteStarted = false;
             continue;
         }
 
-        line.dataset.quote = 'true';
+        previousBorder = createQuoteBorder(line);
+
         if (!quoteStarted) {
             quoteStarted = true;
-            line.dataset.quoteStart = 'true';
+            previousBorder.classList.add('quote-border-start');
         }
-
-        previousLine = line;
     }
 
     if (quoteStarted) {
-        previousLine!.dataset.quoteEnd = 'true';
+        previousBorder!.classList.add('quote-border-end');
     }
+}
+
+function createQuoteBorder(attach: HTMLElement) {
+    const border = document.createElement('div');
+    border.classList.add('quote-border');
+    border.style.position = 'fixed';
+    border.style.top = attach.getBoundingClientRect().top + 'px';
+    border.style.left = attach.getBoundingClientRect().left - 10 + 'px';
+    border.style.height = attach.getBoundingClientRect().height + 'px';
+    border.style.width = attach.getBoundingClientRect().width + 10 + 'px';
+
+    const container = document.getElementById('quote-border-container')!;
+    container.appendChild(border);
+    return border;
 }
 
 // Recursively checks an element and its children for a class

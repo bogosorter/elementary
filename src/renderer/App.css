@@ -41,32 +41,6 @@ body {
     border-radius: 5px !important;
 }
 
-[data-quote='true'] {
-    background-color: var(--quote-background);
-    border-left: 5px solid var(--accent);
-    margin-left: -10px;
-    padding-left: 5px;
-    background-color: rgba(0, 0, 0, 0.05);
-    width: calc(100% - 10px) !important;
-}
-[data-quote-start='true'] {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-}
-[data-quote-end='true'] {
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-/* Monaco editor seems to clip content, which means that quote decorations
-(which are set the the left of the text) are hidden unless all of the content is
-moved to the right  */
-.lines-content > * {
-    left: 10px;
-}
-.inputarea.monaco-mouse-cursor-text {
-    left: 60px !important;
-}
 
 /* Toastify styles */
 :root {
@@ -84,4 +58,19 @@ moved to the right  */
 .highlight {
     background-color: var(--highlight-color);
     border-radius: 3px;
+}
+
+.quote-border {
+    width: 5px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-left: 5px solid var(--accent);
+    pointer-events: none;
+}
+.quote-border-start {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.quote-border-end {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
