@@ -67,7 +67,6 @@ ipcMain.handle('save', async (_, path: string, content: string) => {
     await updateRecentlyOpened(path);
 
     fs.writeFileSync(path, content);
-
     return path;
 });
 

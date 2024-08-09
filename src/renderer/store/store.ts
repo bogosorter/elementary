@@ -308,7 +308,7 @@ const store = create<Store>((set, get) => ({
         get().surroundText('[', '](url)');
     },
     surroundText: (start: string, end: string) => {
-        const selection = get().editor!.getSelection();
+        let selection = get().editor!.getSelection();
         if (!selection) return;
         // If the selection spans multiple lines, the user commited an error
         if (selection.startLineNumber !== selection.endLineNumber) return;
@@ -317,8 +317,12 @@ const store = create<Store>((set, get) => ({
         if (selection.startColumn === selection.endColumn) {
             const word = get().editor!.getModel()!.getWordAtPosition(selection.getStartPosition());
             if (word) {
-                selection.setStartPosition(selection.startLineNumber, word.startColumn);
-                selection.setEndPosition(selection.endLineNumber, word.endColumn);
+                selection = new Monaco.Selection(
+                    selection.startLineNumber,
+                    word.startColumn,
+                    selection.endLineNumber,
+                    word.endColumn
+                );
             }
         }
 
