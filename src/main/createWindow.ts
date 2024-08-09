@@ -38,6 +38,8 @@ export default async function createWindow() {
         show: false,
         width: 1024,
         height: 728,
+        minHeight: 600,
+        minWidth: 700,
         icon: getAssetPath('icon.png'),
         webPreferences: {
             preload: app.isPackaged

@@ -54,7 +54,13 @@ type Store = {
     inlineCode: () => void;
     highlight: () => void;
     link: () => void;
+    heading: () => void;
+    quote: () => void;
+    orderedList: () => void;
+    unorderedList: () => void;
+    todoList: () => void;
     surroundText: (start: string, end: string) => void;
+    prependText: (start: string) => void;
 
     onChange: () => void;
     updateDecorations: () => void;
@@ -344,6 +350,57 @@ const store = create<Store>((set, get) => ({
     link: () => {
         get().surroundText('[', '](url)');
     },
+    heading: () => {
+        const selection = get().editor!.getSelection();
+        if (!selection) return;
+
+        for (let line = selection.startLineNumber; line <= selection.endLineNumber; line++) {
+            // Check if line already is a heading
+            const beginning = new Monaco.Range(line, 1, line, 2);
+            const isHeading = get().editor!.getModel()!.getValueInRange(beginning) === '#';
+
+            get().editor!.executeEdits('', [{
+                range: new Monaco.Range(line, 0, line, 0),
+                text: isHeading? '#' : '# ',
+                forceMoveMarkers: true
+            }]);
+        }
+
+        get().editor!.focus();
+    },
+    quote: () => {
+        get().prependText('> ');
+    },
+    orderedList: () => {
+        const selection = get().editor!.getSelection();
+        if (!selection) return;
+
+        let itemNumber = 0;
+        if (selection.startLineNumber !== 1) {
+            // Try to read an item number from the previous line
+            const previousLine = get().editor!.getModel()!.getLineContent(selection.startLineNumber - 1);
+            try {
+                itemNumber = Number(previousLine.split('.')[0]);
+            } catch (e) {}
+        }
+
+        for (let line = selection.startLineNumber; line <= selection.endLineNumber; line++) {
+            itemNumber++;
+            get().editor!.executeEdits('', [{
+                range: new Monaco.Range(line, 0, line, 0),
+                text: `${itemNumber}. `,
+                forceMoveMarkers: true
+            }]);
+        }
+
+        get().editor!.focus();
+    },
+    unorderedList: () => {
+        get().prependText('- ')
+    },
+    todoList: () => {
+        get().prependText('- [ ] ')
+    },
     surroundText: (start: string, end: string) => {
         let selection = get().editor!.getSelection();
         if (!selection) return;
@@ -389,6 +446,20 @@ const store = create<Store>((set, get) => ({
                 selection.endColumn + start.length + end.length
             );
             get().editor!.setSelection(newSelection);
+        }
+
+        get().editor!.focus();
+    },
+    prependText: (prefix: string) => {
+        const selection = get().editor!.getSelection();
+        if (!selection) return;
+
+        for (let line = selection.startLineNumber; line <= selection.endLineNumber; line++) {
+            get().editor!.executeEdits('', [{
+                range: new Monaco.Range(line, 0, line, 0),
+                text: prefix,
+                forceMoveMarkers: true
+            }]);
         }
 
         get().editor!.focus();

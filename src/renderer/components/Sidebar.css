@@ -1,17 +1,23 @@
-#sidebar {
+.sidebar {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    left: 10px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
+    left: 10px;
 }
 
 .sidebar-component {
     display: flex;
     flex-direction: column;
     border-radius: 10px;
+}
+
+@media screen and (max-height: 650px) {
+    .sidebar-component.hide-small {
+        display: none;
+    }
 }
 
 .sidebar-button {

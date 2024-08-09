@@ -1,4 +1,4 @@
-import { Folder2Open, Floppy, PlusLg, Gear, TypeBold, TypeItalic, TypeStrikethrough, CodeSlash, Highlighter, Link45deg } from 'react-bootstrap-icons';
+import { Folder2Open, Floppy, PlusLg, Gear, TypeBold, TypeItalic, TypeStrikethrough, CodeSlash, Highlighter, Link45deg, Hash, Quote, ListUl, ListOl, ListCheck } from 'react-bootstrap-icons';
 import store from '../store/store';
 import './Sidebar.css';
 
@@ -26,7 +26,12 @@ export default function Sidebar() {
         { icon: <TypeStrikethrough size={20} />, action: () => store.getState().strikeThrough() },
         { icon: <CodeSlash size={18} />, action: () => store.getState().inlineCode() },
         { icon: <Highlighter size={16} />, action: () => store.getState().highlight() },
-        { icon: <Link45deg size={20} />, action: () => store.getState().link() }
+        { icon: <Link45deg size={20} />, action: () => store.getState().link() },
+        { icon: <Hash size={20} />, action: () => store.getState().heading() },
+        { icon: <Quote size={20} />, action: () => store.getState().quote() },
+        { icon: <ListUl size={20} />, action: () => store.getState().unorderedList() },
+        { icon: <ListOl size={18} />, action: () => store.getState().orderedList() },
+        { icon: <ListCheck size={16} />, action: () => store.getState().todoList() }
     ].map(({icon, action}) =>
         <button
             className='sidebar-button'
@@ -38,11 +43,11 @@ export default function Sidebar() {
     );
 
     return (
-        <div id='sidebar'>
+        <div className='sidebar'>
             <div className='sidebar-component' style={{ backgroundColor: theme.surfaceVariant }}>
                 {fileButtons}
             </div>
-            <div className='sidebar-component' style={{ backgroundColor: theme.surfaceVariant }}>
+            <div className='sidebar-component hide-small' style={{ backgroundColor: theme.surfaceVariant }}>
                 {markdownButtons}
             </div>
         </div>
