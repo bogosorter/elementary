@@ -84,22 +84,22 @@ const actions = {
             label: 'Theme: Comma',
             action: () => store.getState().setTheme(commaTheme)
         }, {
-            label: 'Font Size',
+            label: 'Settings: Font Size',
             action: () => store.getState().setFontSize()
         }, {
-            label: 'Zoom',
+            label: 'Settings: Zoom',
             action: () => store.getState().setZoom()
         }, {
-            label: 'Editor Width',
+            label: 'Settings: Editor Width',
             action: () => store.getState().setEditorWidth()
         }, {
-            label: 'Interface Complexity',
+            label: 'Settings: Interface Complexity',
             action: () => store.getState().setInterfaceComplexity()
         }, {
-            label: 'Auto Save',
+            label: 'Settings: Auto Save',
             action: () => store.getState().setAutoSave()
         }, {
-            label: 'Line numbers',
+            label: 'Settings: Line numbers',
             action: () => store.getState().setLineNumbers()
         }, {
             label: 'About Elementary',
