@@ -35,6 +35,7 @@ type Store = {
     setInterfaceComplexity: (complexity?: 'normal' | 'minimal') => void;
     setAutoSave: (period?: number) => void;
     setLineNumbers: (show?: boolean) => void;
+    resetSettings: () => void;
     openInfo: () => void;
     openMarkdownReference: () => void;
     openShortcutReference: () => void;
@@ -232,6 +233,14 @@ const store = create<Store>((set, get) => ({
 
         set({ settings: { ...get().settings, showLineNumbers: show }, commandPaletteOpen: false, commandPalettePage: 'general' });
         window.electron.ipcRenderer.send('setSettings', get().settings);
+    },
+    resetSettings: () => {
+        set({ settings: defaultSettings, commandPaletteOpen: false });
+        window.electron.webFrame.setZoomFactor(defaultSettings.zoom);
+        document.getElementById('quote-border-container')!.style.setProperty('--accent', defaultSettings.theme.accent);
+        cancelAutoSave();
+        if (defaultSettings.autoSave) autoSave(defaultSettings.autoSave, get().save, () => !get().saved);
+        window.electron.ipcRenderer.send('resetSettings');
     },
     openInfo: async () => {
         if (!await get().confirmClose()) return;

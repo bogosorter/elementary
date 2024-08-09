@@ -2,7 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent, webFrame } from 'electron';
 
-export type Channels = 'save' | 'saveAs' | 'open' | 'window' | 'getSettings' | 'setSettings' | 'loadFile' | 'getRecent' | 'getLastFile' | 'toggleFullscreen' | 'newWindow' | 'showSaveDialog' | 'getVersionInfo' | 'checkForUpdates' | 'close';
+export type Channels = 'save' | 'saveAs' | 'open' | 'window' | 'getSettings' | 'setSettings' | 'resetSettings' | 'loadFile' | 'getRecent' | 'getLastFile' | 'toggleFullscreen' | 'newWindow' | 'showSaveDialog' | 'getVersionInfo' | 'checkForUpdates' | 'close';
 
 const electronHandler = {
   ipcRenderer: {

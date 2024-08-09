@@ -102,6 +102,9 @@ const actions = {
             label: 'Settings: Line numbers',
             action: () => store.getState().setLineNumbers()
         }, {
+            label: 'Settings: Reset',
+            action: () => store.getState().resetSettings()
+        }, {
             label: 'About Elementary',
             action: () => store.getState().openInfo()
         }, {
