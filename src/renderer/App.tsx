@@ -5,9 +5,9 @@ import { ToastContainer } from 'react-toastify';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CommandPalette from './components/CommandPalette';
+import Sidebar from './components/Sidebar';
 import store from './store/store';
 import handleShortcut from './utils/shortcuts';
-import ControlButtons from './components/ControlButtons';
 import tagQuotes from './utils/quotes';
 
 import { Theme } from '../themes';
@@ -22,7 +22,7 @@ function App() {
     const fontSize = store((state) => state.settings.fontSize);
     const editorWidth = store((state) => state.settings.editorWidth);
     const shortcuts = store((state) => state.shortcuts);
-    const showButtons = store(state => state.settings.interfaceComplexity) == 'normal';
+    const showSidebar = store(state => state.settings.interfaceComplexity) == 'normal';
     const showLineNumbers = store(state => state.settings.showLineNumbers);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ function App() {
                 />
             </div>
             <Footer />
-            {showButtons && <ControlButtons />}
+            {showSidebar && <Sidebar />}
             <ToastContainer />
         </div>
     );

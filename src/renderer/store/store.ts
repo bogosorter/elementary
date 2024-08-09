@@ -50,6 +50,9 @@ type Store = {
 
     bold: () => void;
     italic: () => void;
+    strikeThrough: () => void;
+    inlineCode: () => void;
+    highlight: () => void;
     link: () => void;
     surroundText: (start: string, end: string) => void;
 
@@ -135,6 +138,12 @@ const store = create<Store>((set, get) => ({
             requestAnimationFrame(() => tagQuotes());
         });
 
+        const settings = await window.electron.ipcRenderer.invoke('getSettings') as Settings;
+        // We need to enforce saved = true because changing the editor's value
+        // triggered an onChange event that'll set saved to false
+        set({ settings, monaco, editor, saved: true });
+        get().applySettings();
+
         const { firstTime, update } = await window.electron.ipcRenderer.invoke('getVersionInfo');
         if (firstTime) {
             editor.setValue(info);
@@ -148,12 +157,6 @@ const store = create<Store>((set, get) => ({
             editor.setValue(content);
             set({ path });
         }
-
-        const settings = await window.electron.ipcRenderer.invoke('getSettings') as Settings;
-        // We need to enforce saved = true because changing the editor's value
-        // triggered an onChange event that'll set saved to false
-        set({ settings, monaco, editor, saved: true });
-        get().applySettings();
 
         window.electron.ipcRenderer.invoke('checkForUpdates').then((update) => {
             if (!update) return;
@@ -329,6 +332,15 @@ const store = create<Store>((set, get) => ({
     italic: () => {
         get().surroundText('*', '*');
     },
+    highlight: () => {
+        get().surroundText('==', '==');
+    },
+    strikeThrough: () => {
+        get().surroundText('~~', '~~');
+    },
+    inlineCode: () => {
+        get().surroundText('`', '`');
+    },
     link: () => {
         get().surroundText('[', '](url)');
     },
@@ -378,24 +390,15 @@ const store = create<Store>((set, get) => ({
             );
             get().editor!.setSelection(newSelection);
         }
+
+        get().editor!.focus();
     },
 
     onChange: () => {
         set({ saved: false });
 
-        // Ideally, we would call updateDecorations() here for addQuoteData to
-        // work, but on the first run the editor isn't ready yet. So, on the
-        // first time, we'll call it using requestAnimationFrame, since the
-        // editor will be ready by then.
-        if (!get().monaco || !get().editor) requestAnimationFrame(() => {
-            get().updateDecorations()
-            get().updateStats();
-        });
-        else {
-            get().updateDecorations()
-            get().updateStats();
-        }
-
+        get().updateDecorations()
+        get().updateStats();
         requestAnimationFrame(() => tagQuotes());
 
         /*
@@ -412,6 +415,8 @@ const store = create<Store>((set, get) => ({
         */
     },
     updateDecorations: () => {
+        if (!get().monaco || !get().editor) return;
+
         const decorations: Monaco.editor.IModelDeltaDecoration[] = [];
         const tokens = get().monaco!.editor.tokenize(get().editor!.getValue(), 'custom-markdown');
 
@@ -447,6 +452,8 @@ const store = create<Store>((set, get) => ({
         oldDecorations = get().editor!.deltaDecorations(oldDecorations, decorations);
     },
     updateStats: () => {
+        if (!get().editor) return;
+
         const text = get().editor!.getValue();
         const characterCount = text.length;
         const wordCount = text.split(/\s+/).filter((word) => word.length > 0).length;
