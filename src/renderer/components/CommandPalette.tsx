@@ -99,6 +99,9 @@ const actions = {
             label: 'Auto Save',
             action: () => store.getState().setAutoSave()
         }, {
+            label: 'Line numbers',
+            action: () => store.getState().setLineNumbers()
+        }, {
             label: 'About Elementary',
             action: () => store.getState().openInfo()
         }, {
@@ -125,8 +128,7 @@ const actions = {
         {
             label: 'Normal',
             action: () => store.getState().setInterfaceComplexity('normal')
-        },
-        {
+        }, {
             label: 'Minimal',
             action: () => store.getState().setInterfaceComplexity('minimal')
         }
@@ -134,5 +136,14 @@ const actions = {
     autoSave: [0, 1000, 2000, 3000, 4000, 5000, 10000].map(period => ({
         label: period? `Auto Save: ${period / 1000}s` : 'Auto Save: off',
         action: () => store.getState().setAutoSave(period)
-    }))
+    })),
+    lineNumbers: [
+        {
+            label: 'Show Line Numbers',
+            action: () => store.getState().setLineNumbers(true)
+        }, {
+            label: 'Hide Line Numbers',
+            action: () => store.getState().setLineNumbers(false)
+        }
+    ]
 };

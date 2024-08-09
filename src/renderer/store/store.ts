@@ -9,7 +9,7 @@ import { info, markdown, shortcuts } from '../texts/texts';
 import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
 
-type CommandPalettePage = 'general' | 'recentlyOpened' | 'zoom' | 'fontSize' | 'editorWidth' | 'interfaceComplexity' | 'autoSave';
+type CommandPalettePage = 'general' | 'recentlyOpened' | 'zoom' | 'fontSize' | 'editorWidth' | 'interfaceComplexity' | 'autoSave' | 'lineNumbers';
 
 type Store = {
     settings: Settings;
@@ -34,6 +34,7 @@ type Store = {
     setEditorWidth: (editorWidth?: number) => void;
     setInterfaceComplexity: (complexity?: 'normal' | 'minimal') => void;
     setAutoSave: (period?: number) => void;
+    setLineNumbers: (show?: boolean) => void;
     openInfo: () => void;
     openMarkdownReference: () => void;
     openShortcutReference: () => void;
@@ -222,6 +223,15 @@ const store = create<Store>((set, get) => ({
 
         cancelAutoSave();
         if (period) autoSave(period, get().save, () => !get().saved);
+    },
+    setLineNumbers: (show) => {
+        if (show === undefined) {
+            set({ commandPaletteOpen: true, commandPalettePage: 'lineNumbers' });
+            return;
+        }
+
+        set({ settings: { ...get().settings, showLineNumbers: show }, commandPaletteOpen: false, commandPalettePage: 'general' });
+        window.electron.ipcRenderer.send('setSettings', get().settings);
     },
     openInfo: async () => {
         if (!await get().confirmClose()) return;

@@ -104,7 +104,9 @@ function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneT
             'editorSuggestWidget.background': colors.surfaceVariant,
             'editorSuggestWidget.foreground': colors.primary,
             'editorSuggestWidget.selectBackground': colors.accent,
-            'editorSuggestWidget.highlightForeground': colors.accent
+            'editorSuggestWidget.highlightForeground': colors.accent,
+            'editorLineNumber.foreground': colors.primaryMuted,
+            'editorLineNumber.activeForeground': colors.primaryMuted,
         },
         encodedTokensColors: [],
         inherit: true,

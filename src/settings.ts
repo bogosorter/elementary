@@ -7,6 +7,7 @@ export type Settings = {
     editorWidth: number;
     interfaceComplexity: 'normal' | 'minimal';
     autoSave: number;
+    showLineNumbers: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -15,7 +16,8 @@ const defaultSettings: Settings = {
     zoom: 1,
     editorWidth: 1000,
     interfaceComplexity: 'normal',
-    autoSave: 0
+    autoSave: 0,
+    showLineNumbers: false
 };
 
 export default defaultSettings;

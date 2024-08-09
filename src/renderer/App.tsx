@@ -23,6 +23,7 @@ function App() {
     const editorWidth = store((state) => state.settings.editorWidth);
     const shortcuts = store((state) => state.shortcuts);
     const showButtons = store(state => state.settings.interfaceComplexity) == 'normal';
+    const showLineNumbers = store(state => state.settings.showLineNumbers);
 
     useEffect(() => {
         requestAnimationFrame(() => tagQuotes());
@@ -39,10 +40,10 @@ function App() {
             <Header />
             <div id='container'>
                 <Editor
-                    defaultLanguage="custom-markdown"
+                    defaultLanguage='custom-markdown'
                     defaultValue='Hello world!'
-                    width="100%"
-                    options={createEditorOptions(theme, fontSize)}
+                    width='100%'
+                    options={createEditorOptions(theme, fontSize, showLineNumbers)}
                     onMount={(editor, monaco) => {
                         store.getState().init(monaco, editor);
                     }}
@@ -68,18 +69,18 @@ function createAppVariables(theme: Theme, editorWidth: number): CSSProperties {
     } as CSSProperties;
 }
 
-function createEditorOptions(theme: Theme, fontSize: number): monaco.editor.IStandaloneEditorConstructionOptions {
+function createEditorOptions(theme: Theme, fontSize: number, showLineNumbers: boolean): monaco.editor.IStandaloneEditorConstructionOptions {
     return {
-        lineNumbers: "off",
-        cursorBlinking: "phase",
-        cursorSmoothCaretAnimation: "on",
+        lineNumbers: showLineNumbers? 'on' : 'off',
+        cursorBlinking: 'phase',
+        cursorSmoothCaretAnimation: 'on',
         minimap: {
             enabled: false,
         },
         smoothScrolling: true,
-        wordBasedSuggestions: "off",
-        wordWrap: "on",
-        renderLineHighlight: "none",
+        wordBasedSuggestions: 'off',
+        wordWrap: 'on',
+        renderLineHighlight: 'none',
         theme: theme.name,
         fontSize,
         padding: {
@@ -87,9 +88,9 @@ function createEditorOptions(theme: Theme, fontSize: number): monaco.editor.ISta
             bottom: 30
         },
         selectionHighlight: false,
-        matchBrackets: "never",
+        matchBrackets: 'never',
         folding: false,
-        occurrencesHighlight: "off",
+        occurrencesHighlight: 'off',
         bracketPairColorization: {
             enabled: false
         },
@@ -100,7 +101,7 @@ function createEditorOptions(theme: Theme, fontSize: number): monaco.editor.ISta
         guides: {
             indentation: false
         },
-        lineDecorationsWidth: 0,
+        lineDecorationsWidth: showLineNumbers? 30 : 0,
         stickyScroll: {
             enabled: false
         }

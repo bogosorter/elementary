@@ -87,9 +87,12 @@ ipcMain.handle('saveAs', async (_, content: string) => {
 });
 
 ipcMain.handle('getSettings', async () => {
-    const result = await settings.get('settings');
-    if (result) return result;
-    return defaultSettings;
+    const saved = await settings.get('settings');
+    if (!saved) return defaultSettings;
+
+    // Ensure compatibility after updates
+    const result = { ...defaultSettings, ...saved as Settings };
+    return result;
 });
 
 ipcMain.on('setSettings', async (_, value: Settings) => {
