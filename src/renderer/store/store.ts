@@ -36,6 +36,7 @@ type Store = {
     setAutoSave: (period?: number) => void;
     setLineNumbers: (show?: boolean) => void;
     resetSettings: () => void;
+    applySettings: () => void;
     openInfo: () => void;
     openMarkdownReference: () => void;
     openShortcutReference: () => void;
@@ -126,10 +127,6 @@ const store = create<Store>((set, get) => ({
             });
         };
 
-        const settings = await window.electron.ipcRenderer.invoke('getSettings') as Settings;
-        window.electron.webFrame.setZoomFactor(settings.zoom);
-        document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
-
         editor.onDidContentSizeChange(() => {
             requestAnimationFrame(() => tagQuotes());
         });
@@ -152,11 +149,11 @@ const store = create<Store>((set, get) => ({
             set({ path });
         }
 
+        const settings = await window.electron.ipcRenderer.invoke('getSettings') as Settings;
         // We need to enforce saved = true because changing the editor's value
         // triggered an onChange event that'll set saved to false
         set({ settings, monaco, editor, saved: true });
-
-        if (settings.autoSave) autoSave(settings.autoSave, get().save, () => !get().saved);
+        get().applySettings();
 
         window.electron.ipcRenderer.invoke('checkForUpdates').then((update) => {
             if (!update) return;
@@ -236,11 +233,15 @@ const store = create<Store>((set, get) => ({
     },
     resetSettings: () => {
         set({ settings: defaultSettings, commandPaletteOpen: false });
-        window.electron.webFrame.setZoomFactor(defaultSettings.zoom);
-        document.getElementById('quote-border-container')!.style.setProperty('--accent', defaultSettings.theme.accent);
-        cancelAutoSave();
-        if (defaultSettings.autoSave) autoSave(defaultSettings.autoSave, get().save, () => !get().saved);
         window.electron.ipcRenderer.send('resetSettings');
+        get().applySettings();
+    },
+    applySettings: () => {
+        const settings = get().settings;
+        window.electron.webFrame.setZoomFactor(settings.zoom);
+        document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
+        cancelAutoSave();
+        if (settings.autoSave) autoSave(defaultSettings.autoSave, get().save, () => !get().saved);
     },
     openInfo: async () => {
         if (!await get().confirmClose()) return;
