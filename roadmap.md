@@ -12,7 +12,7 @@ The following features are ordered according to their importance and ease of imp
 
 - Add quick actions for inline code, blockquote, todo-list, unordered and ordered lists, headers and code blocks
 - UI for all of the above + bold, italic and links
-- Settings that allow to display line numbers, character and word count.
+- Settings that allows to display line numbers.
 - Option to reset settings
 
 ### Short term

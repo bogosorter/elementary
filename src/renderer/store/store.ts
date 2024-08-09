@@ -16,6 +16,8 @@ type Store = {
 
     path: string;
     saved: boolean;
+    wordCount: number;
+    characterCount: number;
     recentlyOpened: string[];
 
     monaco?: typeof Monaco;
@@ -50,6 +52,7 @@ type Store = {
 
     onChange: () => void;
     updateDecorations: () => void;
+    updateStats: () => void;
     onClose: () => void;
 
     fullscreen: boolean;
@@ -61,6 +64,8 @@ const store = create<Store>((set, get) => ({
 
     path: '',
     saved: true,
+    wordCount: 0,
+    characterCount: 0,
     recentlyOpened: [],
 
     shortcuts: {
@@ -142,7 +147,7 @@ const store = create<Store>((set, get) => ({
         } else {
             const { path, content } = await window.electron.ipcRenderer.invoke('getLastFile');
             editor.setValue(content);
-            set({ path })
+            set({ path });
         }
 
         // We need to enforce saved = true because changing the editor's value
@@ -362,8 +367,14 @@ const store = create<Store>((set, get) => ({
         // work, but on the first run the editor isn't ready yet. So, on the
         // first time, we'll call it using requestAnimationFrame, since the
         // editor will be ready by then.
-        if (!get().monaco || !get().editor) requestAnimationFrame(() => get().updateDecorations());
-        else get().updateDecorations();
+        if (!get().monaco || !get().editor) requestAnimationFrame(() => {
+            get().updateDecorations()
+            get().updateStats();
+        });
+        else {
+            get().updateDecorations()
+            get().updateStats();
+        }
 
         requestAnimationFrame(() => tagQuotes());
 
@@ -414,6 +425,12 @@ const store = create<Store>((set, get) => ({
         // This method is deprecated but the new one
         // (createDecorationsCollection) doesn't seem to work...
         oldDecorations = get().editor!.deltaDecorations(oldDecorations, decorations);
+    },
+    updateStats: () => {
+        const text = get().editor!.getValue();
+        const characterCount = text.length;
+        const wordCount = text.split(/\s+/).filter((word) => word.length > 0).length;
+        set({ characterCount, wordCount });
     },
     onClose: async () => {
         if (!await get().confirmClose()) return;

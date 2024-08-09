@@ -1,0 +1,7 @@
+#footer {
+    height: 30px;
+    opacity: 0.8;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}

@@ -3,6 +3,7 @@ import * as monaco from 'monaco-editor';
 import { Editor, loader } from '@monaco-editor/react';
 import { ToastContainer } from 'react-toastify';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import CommandPalette from './components/CommandPalette';
 import store from './store/store';
 import handleShortcut from './utils/shortcuts';
@@ -48,6 +49,7 @@ function App() {
                     onChange={() => store.getState().onChange()}
                 />
             </div>
+            <Footer />
             {showButtons && <ControlButtons />}
             <ToastContainer />
         </div>
