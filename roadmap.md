@@ -8,13 +8,6 @@
 
 The following features are ordered according to their importance and ease of implementation
 
-### Very Short term
-
-- Add quick actions for inline code, blockquote, todo-list, unordered and ordered lists, headers and code blocks
-- UI for all of the above + bold, italic and links
-- Settings that allows to display line numbers.
-- Option to reset settings
-
 ### Short term
 
 - View mode

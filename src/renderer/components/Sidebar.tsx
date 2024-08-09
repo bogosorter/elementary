@@ -23,7 +23,7 @@ export default function Sidebar() {
     const markdownButtons = [
         { icon: <TypeBold size={20} />, action: () => store.getState().bold() },
         { icon: <TypeItalic size={20} />, action: () => store.getState().italic() },
-        { icon: <TypeStrikethrough size={20} />, action: () => store.getState().strikeThrough() },
+        { icon: <TypeStrikethrough size={20} />, action: () => store.getState().strikethrough() },
         { icon: <CodeSlash size={18} />, action: () => store.getState().inlineCode() },
         { icon: <Highlighter size={16} />, action: () => store.getState().highlight() },
         { icon: <Link45deg size={20} />, action: () => store.getState().link() },

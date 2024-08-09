@@ -50,7 +50,7 @@ type Store = {
 
     bold: () => void;
     italic: () => void;
-    strikeThrough: () => void;
+    strikethrough: () => void;
     inlineCode: () => void;
     highlight: () => void;
     link: () => void;
@@ -334,21 +334,27 @@ const store = create<Store>((set, get) => ({
 
     bold: () => {
         get().surroundText('**', '**');
+        set({ commandPaletteOpen: false });
     },
     italic: () => {
         get().surroundText('*', '*');
+        set({ commandPaletteOpen: false });
     },
     highlight: () => {
         get().surroundText('==', '==');
+        set({ commandPaletteOpen: false });
     },
-    strikeThrough: () => {
+    strikethrough: () => {
         get().surroundText('~~', '~~');
+        set({ commandPaletteOpen: false });
     },
     inlineCode: () => {
         get().surroundText('`', '`');
+        set({ commandPaletteOpen: false });
     },
     link: () => {
         get().surroundText('[', '](url)');
+        set({ commandPaletteOpen: false });
     },
     heading: () => {
         const selection = get().editor!.getSelection();
@@ -367,9 +373,11 @@ const store = create<Store>((set, get) => ({
         }
 
         get().editor!.focus();
+        set({ commandPaletteOpen: false });
     },
     quote: () => {
         get().prependText('> ');
+        set({ commandPaletteOpen: false });
     },
     orderedList: () => {
         const selection = get().editor!.getSelection();
@@ -394,12 +402,15 @@ const store = create<Store>((set, get) => ({
         }
 
         get().editor!.focus();
+        set({ commandPaletteOpen: false });
     },
     unorderedList: () => {
         get().prependText('- ')
+        set({ commandPaletteOpen: false });
     },
     todoList: () => {
-        get().prependText('- [ ] ')
+        get().prependText('- [ ] ');
+        set({ commandPaletteOpen: false });
     },
     surroundText: (start: string, end: string) => {
         let selection = get().editor!.getSelection();

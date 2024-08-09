@@ -102,6 +102,39 @@ const actions = {
             label: 'Settings: Line numbers',
             action: () => store.getState().setLineNumbers()
         }, {
+            label: 'Markdown: Bold',
+            action: () => store.getState().bold()
+        }, {
+            label: 'Markdown: Italic',
+            action: () => store.getState().italic()
+        }, {
+            label: 'Markdown: Strikethrough',
+            action: () => store.getState().strikethrough()
+        }, {
+            label: 'Markdown: Inline Code',
+            action: () => store.getState().inlineCode()
+        }, {
+            label: 'Markdown: Highlight',
+            action: () => store.getState().highlight()
+        }, {
+            label: 'Markdown: Link',
+            action: () => store.getState().link()
+        }, {
+            label: 'Markdown: Heading',
+            action: () => store.getState().heading()
+        }, {
+            label: 'Markdown: Quote',
+            action: () => store.getState().quote()
+        }, {
+            label: 'Markdown: Unordered List',
+            action: () => store.getState().unorderedList()
+        }, {
+            label: 'Markdown: Ordered List',
+            action: () => store.getState().orderedList()
+        }, {
+            label: 'Markdown: Todo List',
+            action: () => store.getState().todoList()
+        }, {
             label: 'Settings: Reset',
             action: () => store.getState().resetSettings()
         }, {
