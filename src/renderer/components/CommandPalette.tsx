@@ -8,8 +8,8 @@ export default function CommandPalette() {
 
     const theme = store(state => state.settings.theme);
     const recentlyOpened = store(state => state.recentlyOpened);
-    const commandPaletteOpen = store(state => state.commandPaletteOpen);
-    const commandPalettePage = store(state => state.commandPalettePage);
+    const commandPaletteOpen = store(state => state.commandPalette.open);
+    const commandPalettePage = store(state => state.commandPalette.page);
 
     const [value, setValue] = useState('');
 
@@ -75,32 +75,23 @@ const actions = {
             label: 'File: New',
             action: () => store.getState().newFile()
         }, {
-            label: 'Theme: Light',
-            action: () => store.getState().setTheme(lightTheme)
-        }, {
-            label: 'Theme: Dark',
-            action: () => store.getState().setTheme(darkTheme)
-        }, {
-            label: 'Theme: Comma',
-            action: () => store.getState().setTheme(commaTheme)
-        }, {
             label: 'Settings: Font Size',
-            action: () => store.getState().setFontSize()
+            action: () => store.getState().changeSetting('fontSize')
         }, {
             label: 'Settings: Zoom',
-            action: () => store.getState().setZoom()
+            action: () => store.getState().changeSetting('zoom')
         }, {
             label: 'Settings: Editor Width',
-            action: () => store.getState().setEditorWidth()
+            action: () => store.getState().changeSetting('editorWidth')
         }, {
             label: 'Settings: Interface Complexity',
-            action: () => store.getState().setInterfaceComplexity()
+            action: () => store.getState().changeSetting('interfaceComplexity')
         }, {
             label: 'Settings: Auto Save',
-            action: () => store.getState().setAutoSave()
+            action: () => store.getState().changeSetting('autoSave')
         }, {
             label: 'Settings: Line numbers',
-            action: () => store.getState().setLineNumbers()
+            action: () => store.getState().changeSetting('showLineNumbers')
         }, {
             label: 'Markdown: Bold',
             action: () => store.getState().bold()
@@ -148,38 +139,50 @@ const actions = {
             action: () => store.getState().openShortcutReference()
         }
     ],
+    theme: [
+        {
+            label: 'Theme: Light',
+            action: () => store.getState().changeSetting('theme', lightTheme)
+        }, {
+            label: 'Theme: Dark',
+            action: () => store.getState().changeSetting('theme', darkTheme)
+        }, {
+            label: 'Theme: Comma',
+            action: () => store.getState().changeSetting('theme', commaTheme)
+        }
+    ],
     zoom: [75, 90, 100, 110, 125, 140, 150, 175, 200].map(z => ({
         label: `Zoom: ${z}%`,
-        action: () => store.getState().setZoom(z / 100)
+        action: () => store.getState().changeSetting('zoom', z / 100)
     })),
     fontSize: [12, 14, 16, 18, 20, 22, 24, 26, 28].map(fontSize => ({
         label: `Font Size: ${fontSize}px`,
-        action: () => store.getState().setFontSize(fontSize)
+        action: () => store.getState().changeSetting('fontSize', fontSize)
     })),
     editorWidth: [600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600].map(editorWidth => ({
         label: `Editor Width: ${editorWidth}px`,
-        action: () => store.getState().setEditorWidth(editorWidth)
+        action: () => store.getState().changeSetting('editorWidth', editorWidth)
     })),
     interfaceComplexity: [
         {
             label: 'Normal',
-            action: () => store.getState().setInterfaceComplexity('normal')
+            action: () => store.getState().changeSetting('interfaceComplexity', 'normal')
         }, {
             label: 'Minimal',
-            action: () => store.getState().setInterfaceComplexity('minimal')
+            action: () => store.getState().changeSetting('interfaceComplexity', 'minimal')
         }
     ],
     autoSave: [0, 1000, 2000, 3000, 4000, 5000, 10000].map(period => ({
         label: period? `Auto Save: ${period / 1000}s` : 'Auto Save: off',
-        action: () => store.getState().setAutoSave(period)
+        action: () => store.getState().changeSetting('autoSave', period)
     })),
-    lineNumbers: [
+    showLineNumbers: [
         {
             label: 'Show Line Numbers',
-            action: () => store.getState().setLineNumbers(true)
+            action: () => store.getState().changeSetting('showLineNumbers', true)
         }, {
             label: 'Hide Line Numbers',
-            action: () => store.getState().setLineNumbers(false)
+            action: () => store.getState().changeSetting('showLineNumbers', false)
         }
     ]
 };

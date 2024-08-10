@@ -99,10 +99,6 @@ ipcMain.on('setSettings', async (_, value: Settings) => {
     await settings.set('settings', value);
 });
 
-ipcMain.on('resetSettings', async () => {
-    await settings.set('settings', defaultSettings);
-});
-
 ipcMain.handle('getLastFile', async () => {
     const path = await settings.get('path') as string;
     if (!path || !fs.existsSync(path)) return { path: '', content: 'Hello world!' };

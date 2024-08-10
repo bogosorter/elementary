@@ -9,81 +9,90 @@ import { info, markdown, shortcuts } from '../texts/texts';
 import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
 
-type CommandPalettePage = 'general' | 'recentlyOpened' | 'zoom' | 'fontSize' | 'editorWidth' | 'interfaceComplexity' | 'autoSave' | 'lineNumbers';
+type CommandPalettePage = 'general' | 'recentlyOpened' | keyof Settings;
 
 type Store = {
+    // General app state and settings
     settings: Settings;
+    recentlyOpened: string[];
+    shortcuts: { [key: string]: () => void };
+    commandPalette: {
+        open: boolean;
+        page: CommandPalettePage;
+    }
+    fullscreen: boolean;
 
+    // Editor state
     path: string;
     saved: boolean;
     wordCount: number;
     characterCount: number;
-    recentlyOpened: string[];
 
+    // Monaco editor references
     monaco?: typeof Monaco;
     editor?: Monaco.editor.IStandaloneCodeEditor;
-    shortcuts: { [key: string]: () => void };
-    commandPaletteOpen: boolean;
-    commandPalettePage: CommandPalettePage;
 
-    init: (monaco: typeof Monaco, editor: Monaco.editor.IStandaloneCodeEditor) => void;
-    setTheme: (theme: Theme) => void;
+    // App state methods
+    init: (monaco: typeof Monaco, editor: Monaco.editor.IStandaloneCodeEditor) => Promise<void>;
+    openCommandPalette: (page?: CommandPalettePage) => void;
+    closeCommandPalette: () => void;
     toggleCommandPalette: () => void;
-    setZoom: (zoom?: number) => void;
-    setFontSize: (fontSize?: number) => void;
-    setEditorWidth: (editorWidth?: number) => void;
-    setInterfaceComplexity: (complexity?: 'normal' | 'minimal') => void;
-    setAutoSave: (period?: number) => void;
-    setLineNumbers: (show?: boolean) => void;
+    toggleFullscreen: () => void;
+    // Checks if the current file is saved and prompts the user to save it
+    canCloseFile: () => Promise<boolean>;
+
+    // Settings methods
+    changeSetting: (setting: keyof Settings, value?: any) => void;
     resetSettings: () => void;
     applySettings: () => void;
-    openInfo: () => void;
-    openMarkdownReference: () => void;
-    openShortcutReference: () => void;
 
-    save: () => void;
-    saveAs: () => void;
-    open: () => void;
-    openRecent: (path?: string) => void;
-    newFile: () => void;
-    confirmClose: () => Promise<boolean>;
+    // File operations
+    save: () => Promise<void>;
+    saveAs: () => Promise<void>;
+    open: () => Promise<void>;
+    openRecent: (path?: string) => Promise<void>;
+    newFile: () => Promise<void>;
 
+    // Inline markdown elements
     bold: () => void;
     italic: () => void;
     strikethrough: () => void;
     inlineCode: () => void;
     highlight: () => void;
     link: () => void;
+
+    // Block-level markdown elements
     heading: () => void;
     quote: () => void;
     orderedList: () => void;
     unorderedList: () => void;
     todoList: () => void;
+
+    // Auxiliar markdown methods
     surroundText: (start: string, end: string) => void;
     prependText: (start: string) => void;
 
+    // Documentation
+    openInfo: () => void;
+    openMarkdownReference: () => void;
+    openShortcutReference: () => void;
+
+
+    // Misc methods
     onChange: () => void;
+    onWindowClose: () => void;
+    // Ensures that some custom markdown elements are rendered correctly
     updateDecorations: () => void;
     updateStats: () => void;
-    onClose: () => void;
-
-    fullscreen: boolean;
-    toggleFullscreen: () => void;
 };
 
 const store = create<Store>((set, get) => ({
     settings: defaultSettings,
-
-    path: '',
-    saved: true,
-    wordCount: 0,
-    characterCount: 0,
     recentlyOpened: [],
-
     shortcuts: {
         'ctrl+shift+p': () => get().toggleCommandPalette(),
         'ctrl+p': () => get().toggleCommandPalette(),
-        'esc': () => get().toggleCommandPalette(),
+        'esc': () => get().closeCommandPalette(),
         'ctrl+s': () => get().save(),
         'ctrl+shift+s': () => get().saveAs(),
         'ctrl+o': () => get().open(),
@@ -93,8 +102,19 @@ const store = create<Store>((set, get) => ({
         'ctrl+i': () => get().italic(),
         'ctrl+k': () => get().link()
     },
-    commandPaletteOpen: false,
-    commandPalettePage: 'general',
+    commandPalette: {
+        open: false,
+        page: 'general',
+    },
+    fullscreen: false,
+
+    path: '',
+    saved: true,
+    wordCount: 0,
+    characterCount: 0,
+
+    monaco: undefined,
+    editor: undefined,
 
     init: async (monaco, editor) => {
         monaco.editor.defineTheme('light', createStyles(lightTheme));
@@ -174,151 +194,19 @@ const store = create<Store>((set, get) => ({
             });
         });
     },
-    setTheme: async (theme) => {
-        set({ settings: { ...get().settings, theme }, commandPaletteOpen: false });
-        window.electron.ipcRenderer.send('setSettings', get().settings);
-        document.getElementById('quote-border-container')!.style.setProperty('--accent', theme.accent);
+    openCommandPalette: (page) => {
+        set({ commandPalette: { open: true, page: page || 'general' } });
+    },
+    closeCommandPalette: () => {
+        set({ commandPalette: { open: false, page: 'general' } });
     },
     toggleCommandPalette: () => {
-        set({ commandPaletteOpen: !get().commandPaletteOpen, commandPalettePage: 'general' });
+        set({ commandPalette: { open: !get().commandPalette.open, page: 'general' } });
     },
-    setZoom: (zoom) => {
-        if (!zoom) {
-            set({ commandPaletteOpen: true, commandPalettePage: 'zoom' });
-            return;
-        }
-
-        window.electron.webFrame.setZoomFactor(zoom);
-        set({ settings: { ...get().settings, zoom }, commandPaletteOpen: false, commandPalettePage: 'general' });
-        window.electron.ipcRenderer.send('setSettings', get().settings);
+    toggleFullscreen: () => {
+        set({ fullscreen: !get().fullscreen });
     },
-    setFontSize: (fontSize) => {
-        if (!fontSize) {
-            set({ commandPaletteOpen: true, commandPalettePage: 'fontSize' });
-            return;
-        }
-
-        set({ settings: { ...get().settings, fontSize }, commandPaletteOpen: false, commandPalettePage: 'general' });
-        window.electron.ipcRenderer.send('setSettings', get().settings);
-    },
-    setEditorWidth: (editorWidth) => {
-        if (!editorWidth) {
-            set({ commandPaletteOpen: true, commandPalettePage: 'editorWidth' });
-            return;
-        }
-
-        set({ settings: { ...get().settings, editorWidth }, commandPaletteOpen: false });
-        window.electron.ipcRenderer.send('setSettings', get().settings);
-    },
-    setInterfaceComplexity: (interfaceComplexity) => {
-        if (!interfaceComplexity) {
-            set({ commandPaletteOpen: true, commandPalettePage: 'interfaceComplexity' });
-            return;
-        }
-
-        set({ settings: { ...get().settings, interfaceComplexity }, commandPaletteOpen: false });
-        window.electron.ipcRenderer.send('setSettings', get().settings);
-    },
-    setAutoSave: (period) => {
-        if (period === undefined) {
-            set({ commandPaletteOpen: true, commandPalettePage: 'autoSave' });
-            return;
-        }
-
-        set({ settings: { ...get().settings, autoSave: period }, commandPaletteOpen: false, commandPalettePage: 'general' });
-        window.electron.ipcRenderer.send('setSettings', get().settings);
-
-        cancelAutoSave();
-        if (period) autoSave(period, get().save, () => !get().saved);
-    },
-    setLineNumbers: (show) => {
-        if (show === undefined) {
-            set({ commandPaletteOpen: true, commandPalettePage: 'lineNumbers' });
-            return;
-        }
-
-        set({ settings: { ...get().settings, showLineNumbers: show }, commandPaletteOpen: false, commandPalettePage: 'general' });
-        window.electron.ipcRenderer.send('setSettings', get().settings);
-    },
-    resetSettings: () => {
-        set({ settings: defaultSettings, commandPaletteOpen: false });
-        window.electron.ipcRenderer.send('resetSettings');
-        get().applySettings();
-    },
-    applySettings: () => {
-        const settings = get().settings;
-        window.electron.webFrame.setZoomFactor(settings.zoom);
-        document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
-        cancelAutoSave();
-        if (settings.autoSave) autoSave(defaultSettings.autoSave, get().save, () => !get().saved);
-    },
-    openInfo: async () => {
-        if (!await get().confirmClose()) return;
-
-        get().editor!.setValue(info);
-        set({ path: '', saved: true, commandPaletteOpen: false });
-    },
-    openMarkdownReference: async () => {
-        if (!await get().confirmClose()) return;
-
-        get().editor!.setValue(markdown);
-        set({ path: '', saved: true, commandPaletteOpen: false });
-    },
-    openShortcutReference: async () => {
-        if (!await get().confirmClose()) return;
-
-        get().editor!.setValue(shortcuts);
-        set({ path: '', saved: true, commandPaletteOpen: false });
-    },
-
-    save: async () => {
-        if (get().saved) return;
-
-        const path = await window.electron.ipcRenderer.invoke('save', get().path, get().editor!.getValue());
-        if (!path) return;
-        set({ path, saved: true, commandPaletteOpen: false });
-    },
-
-    saveAs: async () => {
-        const path = await window.electron.ipcRenderer.invoke('saveAs', get().editor!.getValue());
-        if (!path) return;
-        set({ path, saved: true, commandPaletteOpen: false });
-    },
-
-    open: async () => {
-        if (!await get().confirmClose()) return;
-
-        const file = await window.electron.ipcRenderer.invoke('open');
-        if (!file) return;
-
-        get().editor!.setValue(file.content);
-        set({ path: file.path, saved: true, commandPaletteOpen: false });
-    },
-
-    openRecent: async (path) => {
-        if (!path) {
-            const recentlyOpened = await window.electron.ipcRenderer.invoke('getRecent');
-            set({ commandPaletteOpen: true, commandPalettePage: 'recentlyOpened', recentlyOpened });
-            return;
-        }
-
-        if (!await get().confirmClose()) return;
-
-        const content = await window.electron.ipcRenderer.invoke('loadFile', path);
-        if (!content) return;
-
-        get().editor!.setValue(content);
-        set({ path: path, saved: true, commandPaletteOpen: false, commandPalettePage: 'general' });
-    },
-
-    newFile: async () => {
-        if (!await get().confirmClose()) return;
-
-        get().editor!.setValue('Hello world!');
-        set({ path: '', saved: true, commandPaletteOpen: false });
-    },
-
-    confirmClose: async () => {
+    canCloseFile: async () => {
         if (!get().saved) {
             // 0 if cancelled
             // 1 if the current file shouldn't be saved
@@ -332,30 +220,97 @@ const store = create<Store>((set, get) => ({
         return true;
     },
 
+    changeSetting: (setting, value) => {
+        if (!value) get().openCommandPalette(setting);
+        else {
+            get().closeCommandPalette();
+            set({ settings: { ...get().settings, [setting]: value } });
+            window.electron.ipcRenderer.send('setSettings', get().settings);
+            get().applySettings();
+        }
+    },
+    resetSettings: () => {
+        set({ settings: defaultSettings });
+        window.electron.ipcRenderer.send('setSettings', defaultSettings);
+        get().applySettings();
+    },
+    applySettings: () => {
+        const settings = get().settings;
+        window.electron.webFrame.setZoomFactor(settings.zoom);
+        document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
+        cancelAutoSave();
+        if (settings.autoSave) autoSave(settings.autoSave, get().save, () => !get().saved);
+    },
+
+    save: async () => {
+        if (get().saved) return;
+
+        const path = await window.electron.ipcRenderer.invoke('save', get().path, get().editor!.getValue());
+        if (!path) return;
+        set({ path, saved: true });
+    },
+    saveAs: async () => {
+        const path = await window.electron.ipcRenderer.invoke('saveAs', get().editor!.getValue());
+        if (!path) return;
+        set({ path, saved: true });
+    },
+    open: async () => {
+        if (!await get().canCloseFile()) return;
+
+        const file = await window.electron.ipcRenderer.invoke('open');
+        if (!file) return;
+
+        get().editor!.setValue(file.content);
+        set({ path: file.path, saved: true });
+    },
+    openRecent: async (path) => {
+        if (!path) {
+            const recentlyOpened = await window.electron.ipcRenderer.invoke('getRecent');
+            set({ recentlyOpened });
+            get().openCommandPalette('recentlyOpened');
+            return;
+        }
+
+        if (!await get().canCloseFile()) return;
+
+        const content = await window.electron.ipcRenderer.invoke('loadFile', path);
+        if (!content) return;
+
+        get().editor!.setValue(content);
+        set({ path: path, saved: true });
+    },
+    newFile: async () => {
+        if (!await get().canCloseFile()) return;
+
+        get().editor!.setValue('Hello world!');
+        set({ path: '', saved: true });
+    },
+
     bold: () => {
         get().surroundText('**', '**');
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
     italic: () => {
         get().surroundText('*', '*');
-        set({ commandPaletteOpen: false });
-    },
-    highlight: () => {
-        get().surroundText('==', '==');
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
     strikethrough: () => {
         get().surroundText('~~', '~~');
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
     inlineCode: () => {
         get().surroundText('`', '`');
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
+    },
+    highlight: () => {
+        get().surroundText('==', '==');
+        get().closeCommandPalette();
     },
     link: () => {
         get().surroundText('[', '](url)');
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
+
     heading: () => {
         const selection = get().editor!.getSelection();
         if (!selection) return;
@@ -367,17 +322,18 @@ const store = create<Store>((set, get) => ({
 
             get().editor!.executeEdits('', [{
                 range: new Monaco.Range(line, 0, line, 0),
-                text: isHeading? '#' : '# ',
+                // If the line is not a heading yet, add a space after the hash
+                text: isHeading ? '#' : '# ',
                 forceMoveMarkers: true
             }]);
         }
 
         get().editor!.focus();
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
     quote: () => {
         get().prependText('> ');
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
     orderedList: () => {
         const selection = get().editor!.getSelection();
@@ -389,7 +345,7 @@ const store = create<Store>((set, get) => ({
             const previousLine = get().editor!.getModel()!.getLineContent(selection.startLineNumber - 1);
             try {
                 itemNumber = Number(previousLine.split('.')[0]);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         for (let line = selection.startLineNumber; line <= selection.endLineNumber; line++) {
@@ -402,17 +358,18 @@ const store = create<Store>((set, get) => ({
         }
 
         get().editor!.focus();
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
     unorderedList: () => {
         get().prependText('- ')
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
     todoList: () => {
         get().prependText('- [ ] ');
-        set({ commandPaletteOpen: false });
+        get().closeCommandPalette();
     },
-    surroundText: (start: string, end: string) => {
+
+    surroundText: (start, end) => {
         let selection = get().editor!.getSelection();
         if (!selection) return;
         // If the selection spans multiple lines, the user commited an error
@@ -461,14 +418,14 @@ const store = create<Store>((set, get) => ({
 
         get().editor!.focus();
     },
-    prependText: (prefix: string) => {
+    prependText: (start) => {
         const selection = get().editor!.getSelection();
         if (!selection) return;
 
         for (let line = selection.startLineNumber; line <= selection.endLineNumber; line++) {
             get().editor!.executeEdits('', [{
                 range: new Monaco.Range(line, 0, line, 0),
-                text: prefix,
+                text: start,
                 forceMoveMarkers: true
             }]);
         }
@@ -476,25 +433,35 @@ const store = create<Store>((set, get) => ({
         get().editor!.focus();
     },
 
+    openInfo: () => {
+        if (!get().canCloseFile()) return;
+
+        get().editor!.setValue(info);
+        set({ path: '', saved: true });
+    },
+    openMarkdownReference: () => {
+        if (!get().canCloseFile()) return;
+
+        get().editor!.setValue(markdown);
+        set({ path: '', saved: true });
+    },
+    openShortcutReference: () => {
+        if (!get().canCloseFile()) return;
+
+        get().editor!.setValue(shortcuts);
+        set({ path: '', saved: true });
+    },
+
     onChange: () => {
         set({ saved: false });
 
         get().updateDecorations()
-        get().updateStats();
+        get().updateStats()
         requestAnimationFrame(() => tagQuotes());
-
-        /*
-        Left here for future reference
-
-        get().monaco?.editor.setModelMarkers(get().editor!.getModel()!, 'markdown', [{
-            startLineNumber: 1,
-            startColumn: 1,
-            endLineNumber: 1,
-            endColumn: 1,
-            message: 'Unsaved changes',
-            severity: 2
-        }])
-        */
+    },
+    onWindowClose: () => {
+        if (!get().canCloseFile()) return;
+        window.electron.ipcRenderer.send('window', 'close');
     },
     updateDecorations: () => {
         if (!get().monaco || !get().editor) return;
@@ -541,15 +508,6 @@ const store = create<Store>((set, get) => ({
         const wordCount = text.split(/\s+/).filter((word) => word.length > 0).length;
         set({ characterCount, wordCount });
     },
-    onClose: async () => {
-        if (!await get().confirmClose()) return;
-        window.electron.ipcRenderer.send('window', 'close');
-    },
-
-    fullscreen: false,
-    toggleFullscreen: () => {
-        set({ fullscreen: !get().fullscreen });
-    }
 }));
 
 let oldDecorations: string[] = [];
@@ -559,7 +517,7 @@ window.electron.ipcRenderer.on('toggleFullscreen', () => {
 });
 
 window.electron.ipcRenderer.on('close', () => {
-    store.getState().onClose();
+    store.getState().onWindowClose();
 });
 
 export default store;
