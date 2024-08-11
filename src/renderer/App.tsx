@@ -4,6 +4,7 @@ import { Editor, loader } from '@monaco-editor/react';
 import { ToastContainer } from 'react-toastify';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Preview from './components/Preview';
 import CommandPalette from './components/CommandPalette';
 import Sidebar from './components/Sidebar';
 import store from './store/store';
@@ -24,6 +25,7 @@ function App() {
     const shortcuts = store((state) => state.shortcuts);
     const showSidebar = store(state => state.settings.interfaceComplexity) == 'normal';
     const showLineNumbers = store(state => state.settings.showLineNumbers);
+    const preview = store(state => state.preview);
 
     useEffect(() => {
         requestAnimationFrame(() => tagQuotes());
@@ -38,18 +40,21 @@ function App() {
         >
             <CommandPalette />
             <Header />
-            <div id='container'>
-                <Editor
-                    defaultLanguage='custom-markdown'
-                    defaultValue='Hello world!'
-                    width='100%'
-                    options={createEditorOptions(theme, fontSize, showLineNumbers)}
-                    onMount={(editor, monaco) => {
-                        store.getState().init(monaco, editor);
-                    }}
-                    onChange={() => store.getState().onChange()}
-                />
-            </div>
+            {!preview &&
+                <div id='container'>
+                    <Editor
+                        defaultLanguage='custom-markdown'
+                        defaultValue='Hello world!'
+                        width='100%'
+                        options={createEditorOptions(theme, fontSize, showLineNumbers)}
+                        onMount={(editor, monaco) => {
+                            store.getState().initializeEditor(monaco, editor);
+                        }}
+                        onChange={() => store.getState().onChange()}
+                    />
+                </div>
+            }
+            {preview && <Preview />}
             <Footer />
             {showSidebar && <Sidebar />}
             <ToastContainer />

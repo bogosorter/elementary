@@ -75,6 +75,9 @@ const actions = {
             label: 'File: New',
             action: () => store.getState().newFile()
         }, {
+            label: 'Settings: Theme',
+            action: () => store.getState().changeSetting('theme')
+        }, {
             label: 'Settings: Font Size',
             action: () => store.getState().changeSetting('fontSize')
         }, {

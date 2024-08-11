@@ -1,5 +1,9 @@
 // Check for quotes and tag them with data attributes
 export default function tagQuotes() {
+    // Clean up previous borders
+    const borderContainer = document.getElementById('quote-border-container')!;
+    while (borderContainer.firstChild) borderContainer.removeChild(borderContainer.firstChild);
+
     const lineContainer = document.getElementsByClassName('view-lines')[0];
     if (!lineContainer) return;
 
@@ -14,10 +18,6 @@ export default function tagQuotes() {
         const bTop = parseInt(b.style.top);
         return aTop - bTop;
     })
-
-    // Clean up previous borders
-    const container = document.getElementById('quote-border-container')!;
-    while (container.firstChild) container.removeChild(container.firstChild);
 
     let quoteStarted = false;
     let previousBorder: HTMLElement | null = null;

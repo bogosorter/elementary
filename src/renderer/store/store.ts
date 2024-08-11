@@ -24,20 +24,24 @@ type Store = {
 
     // Editor state
     path: string;
+    content: string;
     saved: boolean;
     wordCount: number;
     characterCount: number;
+    preview: boolean;
 
     // Monaco editor references
     monaco?: typeof Monaco;
     editor?: Monaco.editor.IStandaloneCodeEditor;
+    initializeEditor: (monaco: typeof Monaco, editor: Monaco.editor.IStandaloneCodeEditor) => void;
 
     // App state methods
-    init: (monaco: typeof Monaco, editor: Monaco.editor.IStandaloneCodeEditor) => Promise<void>;
+    init: () => Promise<void>;
     openCommandPalette: (page?: CommandPalettePage) => void;
     closeCommandPalette: () => void;
     toggleCommandPalette: () => void;
     toggleFullscreen: () => void;
+    togglePreview: () => void;
     // Checks if the current file is saved and prompts the user to save it
     canCloseFile: () => Promise<boolean>;
 
@@ -93,6 +97,7 @@ const store = create<Store>((set, get) => ({
         'ctrl+shift+p': () => get().toggleCommandPalette(),
         'ctrl+p': () => get().toggleCommandPalette(),
         'esc': () => get().closeCommandPalette(),
+        'ctrl+e': () => get().togglePreview(),
         'ctrl+s': () => get().save(),
         'ctrl+shift+s': () => get().saveAs(),
         'ctrl+o': () => get().open(),
@@ -104,23 +109,27 @@ const store = create<Store>((set, get) => ({
     },
     commandPalette: {
         open: false,
-        page: 'general',
+        page: 'general' as const,
     },
     fullscreen: false,
 
     path: '',
+    content: '',
     saved: true,
     wordCount: 0,
     characterCount: 0,
+    preview: false,
 
     monaco: undefined,
     editor: undefined,
+    initializeEditor: (monaco, editor) => {
+        set({ monaco, editor });
 
-    init: async (monaco, editor) => {
         monaco.editor.defineTheme('light', createStyles(lightTheme));
         monaco.editor.defineTheme('dark', createStyles(darkTheme, true));
         monaco.editor.defineTheme('comma', createStyles(commaTheme));
 
+        // Disable monaco keybindings
         monaco.editor.addKeybindingRules([
             {
                 // Disables Monaco's command palette
@@ -164,24 +173,27 @@ const store = create<Store>((set, get) => ({
             requestAnimationFrame(() => tagQuotes());
         });
 
+        editor.setValue(get().content);
+        monaco.editor.setTheme(get().settings.theme.name);
+        get().onChange();
+
+        // We need to enforce save = true here because the previous line sets
+        // save = false and we don't want that to happen when the editor is
+        // initialized
+        set({ saved: true });
+    },
+
+    init: async () => {
         const settings = await window.electron.ipcRenderer.invoke('getSettings') as Settings;
-        // We need to enforce saved = true because changing the editor's value
-        // triggered an onChange event that'll set saved to false
-        set({ settings, monaco, editor, saved: true });
+        set({ settings });
         get().applySettings();
 
         const { firstTime, update } = await window.electron.ipcRenderer.invoke('getVersionInfo');
-        if (firstTime) {
-            editor.setValue(info);
-        } else if (update) {
-            // This piece of code should never be reached because there is no
-            // previous version to update from... Once there is one, `info` will
-            // be replaced by an update notice.
-            editor.setValue(info);
-        } else {
+        if (firstTime) set({ content: info });
+        else if (update) set({ content: info }); // This will be changed to a changelog
+        else {
             const { path, content } = await window.electron.ipcRenderer.invoke('getLastFile');
-            editor.setValue(content);
-            set({ path });
+            set({ path, content });
         }
 
         window.electron.ipcRenderer.invoke('checkForUpdates').then((update) => {
@@ -205,6 +217,10 @@ const store = create<Store>((set, get) => ({
     },
     toggleFullscreen: () => {
         set({ fullscreen: !get().fullscreen });
+    },
+    togglePreview: () => {
+        set({ preview: !get().preview });
+        requestAnimationFrame(tagQuotes);
     },
     canCloseFile: async () => {
         if (!get().saved) {
@@ -247,12 +263,16 @@ const store = create<Store>((set, get) => ({
 
         const path = await window.electron.ipcRenderer.invoke('save', get().path, get().editor!.getValue());
         if (!path) return;
+
         set({ path, saved: true });
+        get().closeCommandPalette();
     },
     saveAs: async () => {
         const path = await window.electron.ipcRenderer.invoke('saveAs', get().editor!.getValue());
         if (!path) return;
+
         set({ path, saved: true });
+        get().closeCommandPalette();
     },
     open: async () => {
         if (!await get().canCloseFile()) return;
@@ -260,8 +280,9 @@ const store = create<Store>((set, get) => ({
         const file = await window.electron.ipcRenderer.invoke('open');
         if (!file) return;
 
-        get().editor!.setValue(file.content);
-        set({ path: file.path, saved: true });
+        get().editor?.setValue(file.content);
+        set({ path: file.path, content: file.content, saved: true });
+        get().closeCommandPalette();
     },
     openRecent: async (path) => {
         if (!path) {
@@ -276,14 +297,16 @@ const store = create<Store>((set, get) => ({
         const content = await window.electron.ipcRenderer.invoke('loadFile', path);
         if (!content) return;
 
-        get().editor!.setValue(content);
-        set({ path: path, saved: true });
+        get().editor?.setValue(content);
+        set({ path: path, content: content, saved: true });
+        get().closeCommandPalette();
     },
     newFile: async () => {
         if (!await get().canCloseFile()) return;
 
-        get().editor!.setValue('Hello world!');
-        set({ path: '', saved: true });
+        get().editor?.setValue('Hello world!');
+        set({ path: '', content: 'Hello world!', saved: true });
+        get().closeCommandPalette();
     },
 
     bold: () => {
@@ -436,24 +459,27 @@ const store = create<Store>((set, get) => ({
     openInfo: () => {
         if (!get().canCloseFile()) return;
 
-        get().editor!.setValue(info);
-        set({ path: '', saved: true });
+        get().editor?.setValue(info);
+        set({ path: '', content: info, saved: true });
+        get().closeCommandPalette();
     },
     openMarkdownReference: () => {
         if (!get().canCloseFile()) return;
 
-        get().editor!.setValue(markdown);
-        set({ path: '', saved: true });
+        get().editor?.setValue(markdown);
+        set({ path: '', content: markdown, saved: true });
+        get().closeCommandPalette();
     },
     openShortcutReference: () => {
         if (!get().canCloseFile()) return;
 
-        get().editor!.setValue(shortcuts);
-        set({ path: '', saved: true });
+        get().editor?.setValue(shortcuts);
+        set({ path: '', content: shortcuts, saved: true });
+        get().closeCommandPalette();
     },
 
     onChange: () => {
-        set({ saved: false });
+        set({ saved: false, content: get().editor!.getValue() });
 
         get().updateDecorations()
         get().updateStats()
@@ -509,6 +535,8 @@ const store = create<Store>((set, get) => ({
         set({ characterCount, wordCount });
     },
 }));
+
+store.getState().init();
 
 let oldDecorations: string[] = [];
 

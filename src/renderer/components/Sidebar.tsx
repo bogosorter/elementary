@@ -10,11 +10,12 @@ export default function Sidebar() {
         { icon: <Folder2Open size={20} />, action: () => store.getState().open() },
         { icon: <Floppy size={20} />, action: () => store.getState().save() },
         { icon: <Gear size={20} />, action: () => store.getState().toggleCommandPalette() }
-    ].map(({icon, action}) =>
+    ].map(({icon, action}, index) =>
         <button
             className='sidebar-button'
             onClick={action}
             style={{ color: theme.primary }}
+            key={index}
         >
             {icon}
         </button>
@@ -32,11 +33,12 @@ export default function Sidebar() {
         { icon: <ListUl size={20} />, action: () => store.getState().unorderedList() },
         { icon: <ListOl size={18} />, action: () => store.getState().orderedList() },
         { icon: <ListCheck size={16} />, action: () => store.getState().todoList() }
-    ].map(({icon, action}) =>
+    ].map(({icon, action}, index) =>
         <button
             className='sidebar-button'
             onClick={action}
             style={{ color: theme.primary }}
+            key={index}
         >
             {icon}
         </button>
