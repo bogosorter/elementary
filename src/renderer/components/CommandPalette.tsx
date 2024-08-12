@@ -20,7 +20,12 @@ export default function CommandPalette() {
 
     useEffect(() => {
         setValue('');
-        if (!commandPaletteOpen) store.getState().editor?.focus();
+        if (!commandPaletteOpen) {
+            if (store.getState().preview) {
+                const preview = document.getElementById('preview')!;
+                preview.focus();
+            } else store.getState().editor?.focus();
+        }
     }, [commandPaletteOpen, commandPalettePage]);
 
     return (
@@ -95,6 +100,9 @@ const actions = {
         }, {
             label: 'Settings: Line numbers',
             action: () => store.getState().changeSetting('showLineNumbers')
+        }, {
+            label: 'Settings: Sidebar',
+            action: () => store.getState().changeSetting('sidebar')
         }, {
             label: 'Markdown: Bold',
             action: () => store.getState().bold()
@@ -186,6 +194,21 @@ const actions = {
         }, {
             label: 'Hide Line Numbers',
             action: () => store.getState().changeSetting('showLineNumbers', false)
+        }
+    ],
+    sidebar: [
+        {
+            label: 'Hidden',
+            action: () => store.getState().changeSetting('sidebar', 'hidden')
+        }, {
+            label: 'File Actions',
+            action: () => store.getState().changeSetting('sidebar', 'fileActions')
+        }, {
+            label: 'Markdown Actions',
+            action: () => store.getState().changeSetting('sidebar', 'markdownActions')
+        }, {
+            label: 'All',
+            action: () => store.getState().changeSetting('sidebar', 'all')
         }
     ]
 };

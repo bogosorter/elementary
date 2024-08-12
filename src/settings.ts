@@ -8,6 +8,7 @@ export type Settings = {
     interfaceComplexity: 'normal' | 'minimal';
     autoSave: number;
     showLineNumbers: boolean;
+    sidebar: 'hidden' | 'fileActions' | 'markdownActions' | 'all';
 }
 
 const defaultSettings: Settings = {
@@ -17,7 +18,8 @@ const defaultSettings: Settings = {
     editorWidth: 1000,
     interfaceComplexity: 'normal',
     autoSave: 0,
-    showLineNumbers: false
+    showLineNumbers: false,
+    sidebar: 'all'
 };
 
 export default defaultSettings;

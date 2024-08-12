@@ -265,14 +265,14 @@ const store = create<Store>((set, get) => ({
     save: async () => {
         if (get().saved) return;
 
-        const path = await window.electron.ipcRenderer.invoke('save', get().path, get().editor!.getValue());
+        const path = await window.electron.ipcRenderer.invoke('save', get().path, get().content);
         if (!path) return;
 
         set({ path, saved: true });
         get().closeCommandPalette();
     },
     saveAs: async () => {
-        const path = await window.electron.ipcRenderer.invoke('saveAs', get().editor!.getValue());
+        const path = await window.electron.ipcRenderer.invoke('saveAs', get().content);
         if (!path) return;
 
         set({ path, saved: true });
@@ -308,9 +308,10 @@ const store = create<Store>((set, get) => ({
     newFile: async () => {
         if (!await get().canCloseFile()) return;
 
+        set({ path: '', content: 'Hello world!', saved: true });
         if (get().preview) get().togglePreview();
         else get().editor!.setValue('Hello world!');
-        set({ path: '', content: 'Hello world!', saved: true });
+
         get().closeCommandPalette();
     },
 
@@ -340,6 +341,8 @@ const store = create<Store>((set, get) => ({
     },
 
     heading: () => {
+        if (!get().editor) return;
+
         const selection = get().editor!.getSelection();
         if (!selection) return;
 
@@ -364,6 +367,8 @@ const store = create<Store>((set, get) => ({
         get().closeCommandPalette();
     },
     orderedList: () => {
+        if (!get().editor) return;
+
         const selection = get().editor!.getSelection();
         if (!selection) return;
 
@@ -398,6 +403,8 @@ const store = create<Store>((set, get) => ({
     },
 
     surroundText: (start, end) => {
+        if (!get().editor) return;
+
         let selection = get().editor!.getSelection();
         if (!selection) return;
         // If the selection spans multiple lines, the user commited an error
@@ -447,6 +454,8 @@ const store = create<Store>((set, get) => ({
         get().editor!.focus();
     },
     prependText: (start) => {
+        if (!get().editor) return;
+
         const selection = get().editor!.getSelection();
         if (!selection) return;
 
@@ -484,6 +493,8 @@ const store = create<Store>((set, get) => ({
     },
 
     onChange: () => {
+        if (!get().editor) return;
+
         set({ saved: false, content: get().editor!.getValue() });
 
         get().updateDecorations()

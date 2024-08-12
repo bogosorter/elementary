@@ -3,7 +3,15 @@ import store from '../store/store';
 import './Sidebar.css';
 
 export default function Sidebar() {
+    const settings = store((state) => state.settings);
     const theme = store((state) => state.settings.theme);
+    const sidebar = store((state) => state.settings.sidebar);
+    const preview = store((state) => state.preview);
+
+    console.log('sidebar', settings);
+
+    const showFileActions = sidebar === 'fileActions' || sidebar === 'all';
+    const showMarkdownActions = (sidebar === 'markdownActions' || sidebar === 'all') && !preview;
 
     const fileButtons = [
         { icon: <PlusLg size={20} />, action: () => store.getState().newFile() },
@@ -46,12 +54,16 @@ export default function Sidebar() {
 
     return (
         <div className='sidebar'>
-            <div className='sidebar-component' style={{ backgroundColor: theme.surfaceVariant }}>
-                {fileButtons}
-            </div>
-            <div className='sidebar-component hide-small' style={{ backgroundColor: theme.surfaceVariant }}>
-                {markdownButtons}
-            </div>
+            {showFileActions &&
+                <div className='sidebar-component' style={{ backgroundColor: theme.surfaceVariant }}>
+                    {fileButtons}
+                </div>
+            }
+            {showMarkdownActions &&
+                <div className='sidebar-component hide-small' style={{ backgroundColor: theme.surfaceVariant }}>
+                    {markdownButtons}
+                </div>
+            }
         </div>
     );
 }
