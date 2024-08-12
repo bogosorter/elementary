@@ -4,12 +4,14 @@
     padding-left: max(80px, calc((100% - var(--editor-width)) / 2));
     padding-right: max(80px, calc((100% - var(--editor-width)) / 2));
     height: calc(100vh - 150px);
+    width: calc(100vw - max(160px, calc(100% - var(--editor-width))));
 
     text-align: justify;
     color: var(--primary);
     font-size: calc(var(--font-size));
 
     overflow-y: scroll;
+    outline: none;
 }
 #preview ::selection {
     background-color: var(--selection);
@@ -62,7 +64,7 @@
     font-weight: bold;
 }
 
-#preview code {
+#preview code:not(#preview pre code) {
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     padding: 0 5px;

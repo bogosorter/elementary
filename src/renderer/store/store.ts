@@ -176,6 +176,7 @@ const store = create<Store>((set, get) => ({
         editor.setValue(get().content);
         monaco.editor.setTheme(get().settings.theme.name);
         get().onChange();
+        editor.focus();
 
         // We need to enforce save = true here because the previous line sets
         // save = false and we don't want that to happen when the editor is
@@ -219,8 +220,11 @@ const store = create<Store>((set, get) => ({
         set({ fullscreen: !get().fullscreen });
     },
     togglePreview: () => {
+        if (!get().preview) {
+            // Remove quotes
+            requestAnimationFrame(() => tagQuotes());
+        }
         set({ preview: !get().preview });
-        requestAnimationFrame(tagQuotes);
     },
     canCloseFile: async () => {
         if (!get().saved) {
@@ -304,7 +308,8 @@ const store = create<Store>((set, get) => ({
     newFile: async () => {
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue('Hello world!');
+        if (get().preview) get().togglePreview();
+        else get().editor!.setValue('Hello world!');
         set({ path: '', content: 'Hello world!', saved: true });
         get().closeCommandPalette();
     },
