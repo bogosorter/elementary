@@ -49,23 +49,6 @@ ipcMain.handle('open', async () => {
 });
 
 ipcMain.handle('save', async (_, path: string, content: string) => {
-    if (path) {
-        fs.writeFileSync(path, content);
-        return path;
-    }
-
-    // If the file was never saved before, show save dialog
-    const result = await dialog.showSaveDialog(window!, {
-        filters: [{ name: 'Markdown', extensions: ['md'] }],
-    });
-    if (result.canceled) return;
-
-    path = result.filePath!;
-
-    // Update stored information
-    await settings.set('path', path);
-    await updateRecentlyOpened(path);
-
     fs.writeFileSync(path, content);
     return path;
 });

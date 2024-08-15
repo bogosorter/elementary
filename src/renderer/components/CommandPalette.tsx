@@ -116,9 +116,6 @@ const actions = {
             label: 'Markdown: Inline Code',
             action: () => store.getState().inlineCode()
         }, {
-            label: 'Markdown: Highlight',
-            action: () => store.getState().highlight()
-        }, {
             label: 'Markdown: Link',
             action: () => store.getState().link()
         }, {

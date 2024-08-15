@@ -39,7 +39,7 @@ export default function Header() {
                 ><Square size={13} /></button>
                 <button
                     className='header-button'
-                    onClick={() => store.getState().onClose()}
+                    onClick={() => store.getState().onWindowClose()}
                     style={{ color: theme.primary }}
                 ><XLg  size={16}/></button>
             </div>}

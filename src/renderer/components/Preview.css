@@ -62,6 +62,25 @@
     color: var(--accent);
     text-decoration: none;
     font-weight: bold;
+    outline: none;
+}
+
+#preview pre:has(code) {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* A rather hacky way to remove background color in syntax highlighted elements */
+#preview pre div:has(code) {
+    background-color: transparent !important;
+}
+#preview pre div code {
+    background-color: transparent !important;
+}
+
+#preview pre code {
+    text-wrap: wrap;
 }
 
 #preview code:not(#preview pre code) {
@@ -82,4 +101,13 @@
     blockquote */
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
+}
+
+#preview hr {
+    border: none;
+    border-top: 2px solid var(--accent);
+}
+
+#preview * {
+    overflow-wrap: anywhere;
 }

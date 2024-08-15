@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import * as Monaco from 'monaco-editor';
 import { toast } from 'react-toastify';
-import { Theme, lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
+import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
@@ -77,14 +77,14 @@ type Store = {
     prependText: (start: string) => void;
 
     // Documentation
-    openInfo: () => void;
-    openMarkdownReference: () => void;
-    openShortcutReference: () => void;
+    openInfo: () => Promise<void>;
+    openMarkdownReference: () => Promise<void>;
+    openShortcutReference: () => Promise<void>;
 
 
     // Misc methods
     onChange: () => void;
-    onWindowClose: () => void;
+    onWindowClose: () => Promise<void>;
     // Ensures that some custom markdown elements are rendered correctly
     updateDecorations: () => void;
     updateStats: () => void;
@@ -190,12 +190,20 @@ const store = create<Store>((set, get) => ({
         get().applySettings();
 
         const { firstTime, update } = await window.electron.ipcRenderer.invoke('getVersionInfo');
-        if (firstTime) set({ content: info });
-        else if (update) set({ content: info }); // This will be changed to a changelog
+        let path = '';
+        let content = '';
+        if (firstTime) content = info;
+        else if (update) content = info; // This will be changed to a changelog
         else {
-            const { path, content } = await window.electron.ipcRenderer.invoke('getLastFile');
-            set({ path, content });
+            const file = await window.electron.ipcRenderer.invoke('getLastFile');
+            path = file.path;
+            content = file.content;
         }
+
+        set({ path, content });
+        if (get().editor) get().editor!.setValue(content);
+
+
 
         window.electron.ipcRenderer.invoke('checkForUpdates').then((update) => {
             if (!update) return;
@@ -241,7 +249,7 @@ const store = create<Store>((set, get) => ({
     },
 
     changeSetting: (setting, value) => {
-        if (!value) get().openCommandPalette(setting);
+        if (value === undefined) get().openCommandPalette(setting);
         else {
             get().closeCommandPalette();
             set({ settings: { ...get().settings, [setting]: value } });
@@ -253,6 +261,7 @@ const store = create<Store>((set, get) => ({
         set({ settings: defaultSettings });
         window.electron.ipcRenderer.send('setSettings', defaultSettings);
         get().applySettings();
+        get().closeCommandPalette();
     },
     applySettings: () => {
         const settings = get().settings;
@@ -263,22 +272,29 @@ const store = create<Store>((set, get) => ({
     },
 
     save: async () => {
+        get().closeCommandPalette();
         if (get().saved) return;
 
-        const path = await window.electron.ipcRenderer.invoke('save', get().path, get().content);
-        if (!path) return;
+        if (!get().path) {
+            get().saveAs();
+            return;
+        }
 
-        set({ path, saved: true });
-        get().closeCommandPalette();
+        await window.electron.ipcRenderer.invoke('save', get().path, get().content);
+        set({ saved: true });
+
     },
     saveAs: async () => {
+        get().closeCommandPalette();
+
         const path = await window.electron.ipcRenderer.invoke('saveAs', get().content);
         if (!path) return;
 
         set({ path, saved: true });
-        get().closeCommandPalette();
     },
     open: async () => {
+        get().closeCommandPalette();
+
         if (!await get().canCloseFile()) return;
 
         const file = await window.electron.ipcRenderer.invoke('open');
@@ -286,7 +302,6 @@ const store = create<Store>((set, get) => ({
 
         get().editor?.setValue(file.content);
         set({ path: file.path, content: file.content, saved: true });
-        get().closeCommandPalette();
     },
     openRecent: async (path) => {
         if (!path) {
@@ -470,22 +485,22 @@ const store = create<Store>((set, get) => ({
         get().editor!.focus();
     },
 
-    openInfo: () => {
-        if (!get().canCloseFile()) return;
+    openInfo: async () => {
+        if (!await get().canCloseFile()) return;
 
         get().editor?.setValue(info);
         set({ path: '', content: info, saved: true });
         get().closeCommandPalette();
     },
-    openMarkdownReference: () => {
-        if (!get().canCloseFile()) return;
+    openMarkdownReference: async () => {
+        if (!await get().canCloseFile()) return;
 
         get().editor?.setValue(markdown);
         set({ path: '', content: markdown, saved: true });
         get().closeCommandPalette();
     },
-    openShortcutReference: () => {
-        if (!get().canCloseFile()) return;
+    openShortcutReference: async () => {
+        if (!await get().canCloseFile()) return;
 
         get().editor?.setValue(shortcuts);
         set({ path: '', content: shortcuts, saved: true });
@@ -501,8 +516,8 @@ const store = create<Store>((set, get) => ({
         get().updateStats()
         requestAnimationFrame(() => tagQuotes());
     },
-    onWindowClose: () => {
-        if (!get().canCloseFile()) return;
+    onWindowClose: async () => {
+        if (!await get().canCloseFile()) return;
         window.electron.ipcRenderer.send('window', 'close');
     },
     updateDecorations: () => {

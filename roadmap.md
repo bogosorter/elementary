@@ -3,7 +3,7 @@
 ## Bugs
 
 - Elementary crashes when saving files for the first time? Needs investigation.
-- Check if fullscreen is set on start
+- Resize file path in small screens
 
 ## Features
 
