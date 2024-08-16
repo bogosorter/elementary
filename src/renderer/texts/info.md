@@ -1,4 +1,3 @@
-
 # Elementary
 
 Elementary is a simple markdown editor built by [bogosorter](https://bogosorter.github.io).
@@ -19,7 +18,7 @@ I loved Typora's editing experience, but it has since become a paid app... On th
 
 Then, I learnt that VS Code's core editor, Monaco, was open-source. That's when the idea of adapting Monaco to fit my needs came to be. The core of Elementary is based on Monaco and should provide a reliable and bug-free experience. I did, however, change all of the editor's styles for aesthetic's sake, and built the logic that makes this a standalone app. Elementary uses electron and react, put together by the electron-react-boilerplate.
 
-Currently, I have yet to implement a spell-checker, which I hope to tackle soon, and markdown inside quotes' rendering. I will try to deal with the latter as soon as I'm in the mood to be frustrated :)
+Currently, I have yet to implement a spell-checker and a pdf exporter. I hope to tackle both of those soon.
 
 I hope you enjoy Elementary!
 
@@ -43,5 +42,6 @@ I'd love to get some feedback from you. A thumbs up, a critique, a feature reque
 
 - I can be reached at `luiswbarbosa@gmail.com`
 - [This](https://github.com/bogosorter/elementary) is Elementary's repository
+- You can open GitHub issues [here](https://github.com/bogosorter/elementary/issues)
 
 Happy writing! 

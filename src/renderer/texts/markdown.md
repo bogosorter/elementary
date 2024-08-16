@@ -4,6 +4,8 @@ Elementary supports all standard markdown elements. Here's a quick refresher:
 
 - **Bold** text is surrounded with two `*` or two `_`
 - *Italic* text is surrounded with one `*` or one `_`
+- ~~Strikethrough~~ text is surrounded with two `~`
+- ==Highlighted== text is surrounded with two `=`
 - List items start with a single `-`
 - Quotes start with a `>`
 - Inline code is surrounded with a backtick

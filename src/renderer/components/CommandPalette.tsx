@@ -80,6 +80,9 @@ const actions = {
             label: 'File: New',
             action: () => store.getState().newFile()
         }, {
+            label: 'File: Preview',
+            action: () => store.getState().togglePreview()
+        }, {
             label: 'Settings: Theme',
             action: () => store.getState().changeSetting('theme')
         }, {
@@ -137,13 +140,16 @@ const actions = {
             label: 'Settings: Reset',
             action: () => store.getState().resetSettings()
         }, {
-            label: 'About Elementary',
+            label: 'Elementary: About',
             action: () => store.getState().openInfo()
         }, {
-            label: 'Markdown Reference',
+            label: 'Elementary: Update Notice',
+            action: () => store.getState().openUpdateNotice()
+        }, {
+            label: 'Elementary: Markdown Reference',
             action: () => store.getState().openMarkdownReference()
         }, {
-            label: 'Shortcut Reference',
+            label: 'Elementary: Shortcut Reference',
             action: () => store.getState().openShortcutReference()
         }
     ],

@@ -2,7 +2,6 @@
 
 ## Bugs
 
-- Elementary crashes when saving files for the first time? Needs investigation.
 - Resize file path in small screens
 
 ## Features
@@ -11,7 +10,6 @@ The following features are ordered according to their importance and ease of imp
 
 ### Short term
 
-- View mode
 - Export to pdf
 
 ### Long term

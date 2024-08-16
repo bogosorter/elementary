@@ -5,7 +5,7 @@ import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
-import { info, markdown, shortcuts } from '../texts/texts';
+import { info, markdown, shortcuts, changelog } from '../texts/texts';
 import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
 
@@ -78,6 +78,7 @@ type Store = {
 
     // Documentation
     openInfo: () => Promise<void>;
+    openUpdateNotice: () => Promise<void>;
     openMarkdownReference: () => Promise<void>;
     openShortcutReference: () => Promise<void>;
 
@@ -193,7 +194,7 @@ const store = create<Store>((set, get) => ({
         let path = '';
         let content = '';
         if (firstTime) content = info;
-        else if (update) content = info; // This will be changed to a changelog
+        else if (update) content = changelog;
         else {
             const file = await window.electron.ipcRenderer.invoke('getLastFile');
             path = file.path;
@@ -233,6 +234,7 @@ const store = create<Store>((set, get) => ({
             requestAnimationFrame(() => tagQuotes());
         }
         set({ preview: !get().preview });
+        get().closeCommandPalette();
     },
     canCloseFile: async () => {
         if (!get().saved) {
@@ -486,25 +488,32 @@ const store = create<Store>((set, get) => ({
     },
 
     openInfo: async () => {
+        get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
         get().editor?.setValue(info);
         set({ path: '', content: info, saved: true });
+    },
+    openUpdateNotice: async () => {
+        if (!await get().canCloseFile()) return;
+
+        get().editor?.setValue(changelog);
+        set({ path: '', content: changelog, saved: true });
         get().closeCommandPalette();
     },
     openMarkdownReference: async () => {
+        get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
         get().editor?.setValue(markdown);
         set({ path: '', content: markdown, saved: true });
-        get().closeCommandPalette();
     },
     openShortcutReference: async () => {
+        get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
         get().editor?.setValue(shortcuts);
         set({ path: '', content: shortcuts, saved: true });
-        get().closeCommandPalette();
     },
 
     onChange: () => {
