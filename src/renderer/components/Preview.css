@@ -10,6 +10,7 @@
     font-size: calc(var(--font-size));
 
     overflow-y: scroll;
+    scroll-behavior: smooth;
     outline: none;
 }
 #preview ::selection {
@@ -107,6 +108,11 @@
     border-top: 2px solid var(--accent);
 }
 
+#preview img {
+    max-width: 100%;
+}
+
 #preview * {
     overflow-wrap: anywhere;
+    scroll-margin-top: 100px;
 }

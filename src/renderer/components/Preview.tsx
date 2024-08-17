@@ -1,6 +1,7 @@
 import { useEffect, CSSProperties } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkFrontmatter from 'remark-frontmatter';
 import rehypeRaw from 'rehype-raw';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import {oneLight, oneDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
@@ -32,14 +33,24 @@ export default function Preview() {
             tabIndex={-1}
         >
             <Markdown
-                remarkPlugins={[remarkGfm]}
+                remarkPlugins={[remarkGfm, remarkFrontmatter]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                    a: ({ node, ...props }) => (
-                        <a {...props} target='_blank' rel='noreferrer noopener'>
-                            {props.children}
-                        </a>
-                    ),
+                    a: ({ node, ...props }) => {
+                        if (props.href && props.href.startsWith('#')) {
+                            return (
+                                <a {...props}>
+                                    {props.children}
+                                </a>
+                            );
+                        } else {
+                            return (
+                                <a {...props} target='_blank' rel='noreferrer noopener'>
+                                    {props.children}
+                                </a>
+                            );
+                        }
+                    },
                     code: ({children, className, node, ...rest}) => {
                         const match = /language-(\w+)/.exec(className || '')
                         return match ? (
