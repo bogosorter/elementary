@@ -15,6 +15,7 @@ export type Theme = {
     // Auxiliary colors
     strong: string;
     selection: string;
+    highlight: string;
 }
 
 const lightTheme: Theme = {
@@ -27,7 +28,8 @@ const lightTheme: Theme = {
     secondaryMuted: '#a986bf',
     accent: '#286c93',
     strong: '#303030',
-    selection: '#d5d5d5'
+    selection: '#d5d5d5',
+    highlight: '#D9DFE3',
 };
 
 const darkTheme: Theme = {
@@ -40,7 +42,8 @@ const darkTheme: Theme = {
     secondaryMuted: '#af95bf',
     accent: '#408fbd',
     strong: '#fbfbfb',
-    selection: '#5c5c5c'
+    selection: '#5c5c5c',
+    highlight: '#3D4B53',
 };
 
 const commaTheme: Theme = {
@@ -53,7 +56,8 @@ const commaTheme: Theme = {
     secondary: '#5f3878',
     secondaryMuted: '#9f69c2',
     strong: '#3e5e65',
-    selection: '#af9fa5'
+    selection: '#af9fa5',
+    highlight: '#D8B3B8',
 };
 
 function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneThemeData {
@@ -70,6 +74,7 @@ function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneT
             'editor.findMatchBackground': colors.accent + '80',
             'editor.findMatchHighlightBackground': colors.accent + '40',
             'editor.rangeHighlightBackground': colors.surfaceVariant + '80',
+            'editor.lineHighlightBackground': colors.highlight,
             'editorCursor.foreground': colors.accent,
             'editorWidget.background': colors.surface,
             'editorWidget.border': colors.surface,

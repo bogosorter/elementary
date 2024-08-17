@@ -9,6 +9,7 @@ export type Settings = {
     autoSave: number;
     showLineNumbers: boolean;
     sidebar: 'hidden' | 'fileActions' | 'markdownActions' | 'all';
+    highlightCurrentLine: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -19,7 +20,8 @@ const defaultSettings: Settings = {
     interfaceComplexity: 'normal',
     autoSave: 0,
     showLineNumbers: false,
-    sidebar: 'all'
+    sidebar: 'all',
+    highlightCurrentLine: false
 };
 
 export default defaultSettings;

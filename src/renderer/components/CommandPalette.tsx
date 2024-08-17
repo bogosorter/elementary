@@ -107,6 +107,9 @@ const actions = {
             label: 'Settings: Sidebar',
             action: () => store.getState().changeSetting('sidebar')
         }, {
+            label: 'Settings: Highlight current line',
+            action: () => store.getState().changeSetting('highlightCurrentLine')
+        }, {
             label: 'Markdown: Bold',
             action: () => store.getState().bold()
         }, {
@@ -212,6 +215,15 @@ const actions = {
         }, {
             label: 'All',
             action: () => store.getState().changeSetting('sidebar', 'all')
+        }
+    ],
+    highlightCurrentLine: [
+        {
+            label: 'Highlight Current Line',
+            action: () => store.getState().changeSetting('highlightCurrentLine', true)
+        }, {
+            label: 'Do Not Highlight Current Line',
+            action: () => store.getState().changeSetting('highlightCurrentLine', false)
         }
     ]
 };

@@ -25,6 +25,7 @@ function App() {
     const shortcuts = store((state) => state.shortcuts);
     const showSidebar = store(state => state.settings.interfaceComplexity) == 'normal';
     const showLineNumbers = store(state => state.settings.showLineNumbers);
+    const highlightCurrentLine = store(state => state.settings.highlightCurrentLine);
     const preview = store(state => state.preview);
 
     useEffect(() => {
@@ -46,7 +47,7 @@ function App() {
                         defaultLanguage='custom-markdown'
                         defaultValue='Hello world!'
                         width='100%'
-                        options={createEditorOptions(theme, fontSize, showLineNumbers)}
+                        options={createEditorOptions(theme, fontSize, showLineNumbers, highlightCurrentLine)}
                         onMount={(editor, monaco) => {
                             store.getState().initializeEditor(monaco, editor);
                         }}
@@ -74,7 +75,7 @@ function createAppVariables(theme: Theme, editorWidth: number): CSSProperties {
     } as CSSProperties;
 }
 
-function createEditorOptions(theme: Theme, fontSize: number, showLineNumbers: boolean): monaco.editor.IStandaloneEditorConstructionOptions {
+function createEditorOptions(theme: Theme, fontSize: number, showLineNumbers: boolean, highlightCurrentLine: boolean): monaco.editor.IStandaloneEditorConstructionOptions {
     return {
         lineNumbers: showLineNumbers? 'on' : 'off',
         cursorBlinking: 'phase',
@@ -85,7 +86,7 @@ function createEditorOptions(theme: Theme, fontSize: number, showLineNumbers: bo
         smoothScrolling: true,
         wordBasedSuggestions: 'off',
         wordWrap: 'on',
-        renderLineHighlight: 'none',
+        renderLineHighlight: highlightCurrentLine? 'all' : 'none',
         theme: theme.name,
         fontSize,
         padding: {
