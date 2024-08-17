@@ -110,6 +110,12 @@ const actions = {
             label: 'Settings: Highlight current line',
             action: () => store.getState().changeSetting('highlightCurrentLine')
         }, {
+            label: 'Settings: Preview text alignement',
+            action: () => store.getState().changeSetting('previewTextAlign')
+        }, {
+            label: 'Settings: Reset',
+            action: () => store.getState().resetSettings()
+        }, {
             label: 'Markdown: Bold',
             action: () => store.getState().bold()
         }, {
@@ -139,9 +145,6 @@ const actions = {
         }, {
             label: 'Markdown: Todo List',
             action: () => store.getState().todoList()
-        }, {
-            label: 'Settings: Reset',
-            action: () => store.getState().resetSettings()
         }, {
             label: 'Elementary: About',
             action: () => store.getState().openInfo()
@@ -224,6 +227,21 @@ const actions = {
         }, {
             label: 'Do Not Highlight Current Line',
             action: () => store.getState().changeSetting('highlightCurrentLine', false)
+        }
+    ],
+    previewTextAlign: [
+        {
+            label: 'Left',
+            action: () => store.getState().changeSetting('previewTextAlign', 'left')
+        }, {
+            label: 'Center',
+            action: () => store.getState().changeSetting('previewTextAlign', 'center')
+        }, {
+            label: 'Right',
+            action: () => store.getState().changeSetting('previewTextAlign', 'right')
+        }, {
+            label: 'Justify',
+            action: () => store.getState().changeSetting('previewTextAlign', 'justify')
         }
     ]
 };

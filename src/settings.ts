@@ -10,6 +10,7 @@ export type Settings = {
     showLineNumbers: boolean;
     sidebar: 'hidden' | 'fileActions' | 'markdownActions' | 'all';
     highlightCurrentLine: boolean;
+    previewTextAlign: 'left' | 'center' | 'right' | 'justify';
 }
 
 const defaultSettings: Settings = {
@@ -21,7 +22,8 @@ const defaultSettings: Settings = {
     autoSave: 0,
     showLineNumbers: false,
     sidebar: 'all',
-    highlightCurrentLine: false
+    highlightCurrentLine: false,
+    previewTextAlign: 'justify'
 };
 
 export default defaultSettings;

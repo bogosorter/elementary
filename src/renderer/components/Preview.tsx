@@ -11,6 +11,7 @@ export default function Preview() {
     const content = store(state => state.content);
     const theme = store(state => state.settings.theme);
     const fontSize = store(state => state.settings.fontSize);
+    const textAlign = store(state => state.settings.previewTextAlign);
 
     useEffect(() => {
         const preview = document.getElementById('preview')!;
@@ -21,6 +22,7 @@ export default function Preview() {
         <div
             id='preview'
             style={{
+                textAlign: textAlign,
                 '--selection': theme.selection,
                 '--primary': theme.primary,
                 '--accent': theme.accent,

@@ -6,7 +6,6 @@
     height: calc(100vh - 150px);
     width: calc(100vw - max(160px, calc(100% - var(--editor-width))));
 
-    text-align: justify;
     color: var(--primary);
     font-size: calc(var(--font-size));
 
