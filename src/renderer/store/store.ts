@@ -33,6 +33,7 @@ type Store = {
     // Monaco editor references
     monaco?: typeof Monaco;
     editor?: Monaco.editor.IStandaloneCodeEditor;
+    currentSelection: Monaco.Selection | null;
     initializeEditor: (monaco: typeof Monaco, editor: Monaco.editor.IStandaloneCodeEditor) => void;
 
     // App state methods
@@ -123,6 +124,7 @@ const store = create<Store>((set, get) => ({
 
     monaco: undefined,
     editor: undefined,
+    currentSelection: null,
     initializeEditor: (monaco, editor) => {
         set({ monaco, editor });
 
@@ -175,6 +177,14 @@ const store = create<Store>((set, get) => ({
         });
 
         editor.setValue(get().content);
+        if (get().currentSelection) {
+            editor.setSelection(get().currentSelection!);
+            // This has to be delayed, probably because the editor isn't able to
+            // calculate its height yet
+            setTimeout(() => {
+                editor.revealRangeInCenter(get().currentSelection!, Monaco.editor.ScrollType.Immediate);
+            }, 1);
+        }
         monaco.editor.setTheme(get().settings.theme.name);
         get().onChange();
         editor.focus();
@@ -230,6 +240,8 @@ const store = create<Store>((set, get) => ({
     },
     togglePreview: () => {
         if (!get().preview) {
+            // Save the current selection to restore it later
+            set({ currentSelection: get().editor!.getSelection() });
             // Remove quotes
             requestAnimationFrame(() => tagQuotes());
         }
@@ -247,6 +259,10 @@ const store = create<Store>((set, get) => ({
             if (save == 2) get().save();
         }
 
+        // The file is saved or the user chose not to save it
+
+        // Reset selection
+        set({ currentSelection: null });
         return true;
     },
 
