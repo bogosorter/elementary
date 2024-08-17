@@ -30,7 +30,27 @@
     background-color: transparent;
     cursor: pointer;
     border-radius: 5px;
+    position: relative;
 }
 .sidebar-button:hover {
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-button > .tooltip {
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 5px;
+    padding: 5px 10px;
+    text-wrap: nowrap;
+    font-family: "Droid Sans Mono", "monospace", monospace;
+    font-size: 16px;
+    opacity: 0;
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.sidebar-button:hover > .tooltip {
+    opacity: 1;
 }
