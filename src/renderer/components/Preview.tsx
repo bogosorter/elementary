@@ -3,8 +3,9 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkFrontmatter from 'remark-frontmatter';
 import rehypeRaw from 'rehype-raw';
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
-import {oneLight, oneDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import ImagePreview from './ImagePreview';
 import store from '../store/store';
 import './Preview.css';
 
@@ -36,10 +37,10 @@ export default function Preview() {
                 remarkPlugins={[remarkGfm, remarkFrontmatter]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                    a: ({ node, ...props }) => {
-                        if (props.href && props.href.startsWith('#')) {
+                    a: ({ href, ...props }) => {
+                        if (href && href.startsWith('#')) {
                             return (
-                                <a {...props}>
+                                <a href={href} {...props}>
                                     {props.children}
                                 </a>
                             );
@@ -67,7 +68,8 @@ export default function Preview() {
                             {children}
                         </code>
                         )
-                    }
+                    },
+                    img: ({src, ...props}) => <ImagePreview src={src} props={props} />
                 }}
             >
                 {content}

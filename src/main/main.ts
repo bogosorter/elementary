@@ -2,6 +2,8 @@
 
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import fs from 'fs';
+import mime from 'mime';
+import { resolve as resolvePath, dirname } from 'path';
 import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
 import defaultSettings, { Settings } from '../settings';
@@ -134,6 +136,17 @@ ipcMain.handle('showSaveDialog', async () => {
     });
 
     return response;
+});
+
+ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
+    const resolvedPath = resolvePath(dirname(basePath), path)
+    console.log(basePath, path, resolvedPath);
+    if (!fs.existsSync(resolvedPath)) return null;
+
+    const mimeType = mime.getType(resolvedPath)!;
+    const data = fs.readFileSync(resolvedPath).toString('base64');
+
+    return { mimeType, data }
 });
 
 ipcMain.handle('checkForUpdates', async () => {

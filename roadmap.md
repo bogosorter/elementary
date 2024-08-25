@@ -3,6 +3,7 @@
 ## Bugs
 
 - Resize file path in small screens
+- Fix syntax highlight in embedded html
 
 ## Features
 
@@ -11,6 +12,8 @@ The following features are ordered according to their importance and ease of imp
 ### Short term
 
 - Export to pdf
+- Customize rendered footnotes
+- Add ids to headings in preview
 
 ### Long term
 
