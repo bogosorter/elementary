@@ -87,7 +87,8 @@ type Store = {
     // Misc methods
     onChange: () => void;
     onWindowClose: () => Promise<void>;
-    getLocalFile: (path: string) => Promise<{mimeType: string, data: string} | null>;
+    getLocalFile: (path: string) => Promise<string | null>;
+    getLocalFileBase64: (path: string) => Promise<{mimeType: string, data: string} | null>;
     // Ensures that some custom markdown elements are rendered correctly
     updateDecorations: () => void;
     updateStats: () => void;
@@ -549,6 +550,10 @@ const store = create<Store>((set, get) => ({
     getLocalFile: async (path) => {
         if (!get().path) return null;
         return await window.electron.ipcRenderer.invoke('getLocalFile', get().path, path);
+    },
+    getLocalFileBase64: async (path) => {
+        if (!get().path) return null;
+        return await window.electron.ipcRenderer.invoke('getLocalFileBase64', get().path, path);
     },
     updateDecorations: () => {
         if (!get().monaco || !get().editor) return;

@@ -7,7 +7,7 @@
     width: calc(100vw - max(160px, calc(100% - var(--editor-width))));
 
     color: var(--primary);
-    font-size: calc(var(--font-size));
+    font-size: var(--font-size);
 
     overflow-y: scroll;
     scroll-behavior: smooth;

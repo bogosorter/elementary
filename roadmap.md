@@ -4,6 +4,7 @@
 
 - Resize file path in small screens
 - Fix syntax highlight in embedded html
+- Scroll to top after switching documents
 
 ## Features
 
@@ -21,6 +22,8 @@ The following features are ordered according to their importance and ease of imp
 - Subscript and superscript
 - Setting to show whitespace and non-visible characters
 - Translation
+- Outline sidebar
+- Custom themes / CSS
 
 ### Distant future
 

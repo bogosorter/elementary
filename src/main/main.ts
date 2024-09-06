@@ -138,15 +138,21 @@ ipcMain.handle('showSaveDialog', async () => {
     return response;
 });
 
-ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
-    const resolvedPath = resolvePath(dirname(basePath), path)
-    console.log(basePath, path, resolvedPath);
+ipcMain.handle('getLocalFileBase64', (_, basePath: string, path: string) => {
+    const resolvedPath = resolvePath(dirname(basePath), path);
     if (!fs.existsSync(resolvedPath)) return null;
 
     const mimeType = mime.getType(resolvedPath)!;
     const data = fs.readFileSync(resolvedPath).toString('base64');
 
     return { mimeType, data }
+});
+
+ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
+    const resolvedPath = resolvePath(dirname(basePath), path)
+    if (!fs.existsSync(resolvedPath)) return null;
+
+    return fs.readFileSync(resolvedPath).toString();
 });
 
 ipcMain.handle('checkForUpdates', async () => {

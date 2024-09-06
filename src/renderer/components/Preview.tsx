@@ -6,6 +6,7 @@ import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight, oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import ImagePreview from './ImagePreview';
+import LinkPreview from './LinkPreview';
 import store from '../store/store';
 import './Preview.css';
 
@@ -69,7 +70,8 @@ export default function Preview() {
                         </code>
                         )
                     },
-                    img: ({src, ...props}) => <ImagePreview src={src} props={props} />
+                    img: ({src, ...props}) => <ImagePreview src={src} props={props} />,
+                    link: ({rel, href, ...props}) => <LinkPreview rel={rel} href={href} props={props} />
                 }}
             >
                 {content}

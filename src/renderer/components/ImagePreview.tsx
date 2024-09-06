@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import store from '../store/store';
 
 export default function ImagePreview({ src, props }: { src: string | undefined, props: any }) {
@@ -10,8 +10,7 @@ export default function ImagePreview({ src, props }: { src: string | undefined, 
             return;
         }
 
-        store.getState().getLocalFile(src).then((result) => {
-            console.log(result);
+        store.getState().getLocalFileBase64(src).then((result) => {
             if (!result) return;
 
             const { mimeType, data } = result;
