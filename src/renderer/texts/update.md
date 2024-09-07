@@ -1,10 +1,10 @@
-# Elementary v1.1.0-alpha
+# Elementary v1.1.0-beta.0
 
 Hi there! Since Elementary was first released, just about a week ago, I've gotten a lot of feedback from you. It is really great to feel the community's support for this little project of mine :D
 
 I've implemented some of the changes that were suggested. They may have introduced unnoticed bugs. I'm releasing this alpha version in the hope that you'll be able (and willing) to report a few of them back to me. See the final section for information on how to do that.
 
-The main change is the implementation of a preview mode. You can toggle it using the binoculars icon on the sidebar or the new `ctrl+e` shortcut. This feature, due to its complexity, is also the most problematic. I've tried to make it as robust as possible, but some bugs must still be around.
+The main change is the implementation of a preview mode. You can toggle it using the eye icon on the sidebar or the new `ctrl+e` shortcut. This feature, due to its complexity, is also the most problematic. I've tried to make it as robust as possible, but some bugs must still be around.
 
 Here are some of the other improvements:
 
@@ -13,6 +13,7 @@ Here are some of the other improvements:
 - New shortcuts for bold (`ctrl+b`), italic (`ctrl+i`) and links (`ctrl+k`)
 - Word and character count information
 - Optional line numbers - activate on settings
+- Optional highlight of current line - activate on settings
 - Markdown is now rendered inside quotes. Quotes got more robust overall.
 - Bug fixes, of course. Especially a bug that made selecting text difficult, caused by the hacky quote implementation I had in place.
 

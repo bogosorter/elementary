@@ -85,7 +85,7 @@ Elementary defines the following shortcuts:
 `;
 
 export const changelog =
-`# Elementary v1.1.0-alpha
+`# Elementary v1.1.0-beta.0
 
 Hi there! Since Elementary was first released, just about a week ago, I've gotten a lot of feedback from you. It is really great to feel the community's support for this little project of mine :D
 
@@ -100,6 +100,7 @@ Here are some of the other improvements:
 - New shortcuts for bold (\`ctrl+b\`), italic (\`ctrl+i\`) and links (\`ctrl+k\`)
 - Word and character count information
 - Optional line numbers - activate on settings
+- Optional highlight of current line - activate on settings
 - Markdown is now rendered inside quotes. Quotes got more robust overall.
 - Bug fixes, of course. Especially a bug that made selecting text difficult, caused by the hacky quote implementation I had in place.
 
