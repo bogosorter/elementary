@@ -84,6 +84,7 @@
     "electron-settings": "^4.0.4",
     "electron-updater": "^6.1.4",
     "github-version-checker": "^2.3.0",
+    "marked-footnote": "^1.2.4",
     "md-to-pdf": "^5.2.4",
     "monaco-editor": "^0.50.0",
     "react": "^18.2.0",

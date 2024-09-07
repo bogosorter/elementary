@@ -7,6 +7,7 @@ import { resolve as resolvePath, dirname } from 'path';
 import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
 import mdToPdf from 'md-to-pdf';
+import markedFootnote from 'marked-footnote';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
 
@@ -162,7 +163,9 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
     });
     if (pdfPath.canceled) return 0;
 
-    const pdf = await mdToPdf({ path: mdPath });
+    const pdf = await mdToPdf({ path: mdPath }, {
+        marked_extensions: [markedFootnote({ description: '' })]
+    });
     if (!pdf) return 1;
 
     fs.writeFileSync(pdfPath.filePath!, pdf.content);
