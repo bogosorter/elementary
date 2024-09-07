@@ -57,6 +57,7 @@ type Store = {
     open: () => Promise<void>;
     openRecent: (path?: string) => Promise<void>;
     newFile: () => Promise<void>;
+    exportToPDF: () => Promise<void>;
 
     // Inline markdown elements
     bold: () => void;
@@ -188,8 +189,8 @@ const store = create<Store>((set, get) => ({
             }, 1);
         }
         monaco.editor.setTheme(get().settings.theme.name);
-        get().onChange();
         editor.focus();
+        get().onChange();
 
         // We need to enforce save = true here because the previous line sets
         // save = false and we don't want that to happen when the editor is
@@ -348,6 +349,34 @@ const store = create<Store>((set, get) => ({
         else get().editor!.setValue('Hello world!');
 
         get().closeCommandPalette();
+    },
+    exportToPDF: async () => {
+        get().closeCommandPalette();
+
+        if (!get().saved || get().path === '') {
+            toast('Please save your file before exporting it.', {
+                autoClose: false,
+                theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
+                position: 'bottom-right'
+            });
+            return;
+        }
+
+        const result = await window.electron.ipcRenderer.invoke('exportToPDF', get().path);
+
+        // User cancelled the export
+        if (result == 0) return;
+        // An error occurred
+        if (result == 1) toast('An error occurred.', {
+            autoClose: false,
+            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
+            position: 'bottom-right'
+        });
+        else toast(`File exported to ${result}`, {
+            autoClose: false,
+            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
+            position: 'bottom-right'
+        });
     },
 
     bold: () => {

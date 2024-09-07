@@ -83,6 +83,9 @@ const actions = {
             label: 'File: Preview',
             action: () => store.getState().togglePreview()
         }, {
+            label: 'File: Export to PDF',
+            action: () => store.getState().exportToPDF()
+        }, {
             label: 'Settings: Theme',
             action: () => store.getState().changeSetting('theme')
         }, {
