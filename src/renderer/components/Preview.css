@@ -116,3 +116,7 @@
     overflow-wrap: anywhere;
     scroll-margin-top: 100px;
 }
+
+#preview #footnote-label {
+    display: none;
+}
