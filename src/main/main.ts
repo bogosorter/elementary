@@ -10,6 +10,7 @@ import mdToPdf from 'md-to-pdf';
 import markedFootnote from 'marked-footnote';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
+import exportCSS from './utils/export';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -164,6 +165,8 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
     if (pdfPath.canceled) return 0;
 
     const pdf = await mdToPdf({ path: mdPath }, {
+        document_title: 'Elementary: Markdown Editor',
+        css: exportCSS,
         marked_extensions: [markedFootnote({ description: '' })]
     });
     if (!pdf) return 1;
