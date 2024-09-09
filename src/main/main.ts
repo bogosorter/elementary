@@ -165,8 +165,11 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
     if (pdfPath.canceled) return 0;
 
     const pdf = await mdToPdf({ path: mdPath }, {
-        document_title: 'Elementary: Markdown Editor',
+        document_title: 'Elementary',
         css: exportCSS,
+        pdf_options: {
+            printBackground: true
+        },
         marked_extensions: [markedFootnote({ description: '' })]
     });
     if (!pdf) return 1;
