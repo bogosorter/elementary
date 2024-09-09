@@ -19,7 +19,7 @@ I loved Typora's editing experience, but it has since become a paid app... On th
 
 Then, I learnt that VS Code's core editor, Monaco, was open-source. That's when the idea of adapting Monaco to fit my needs came to be. The core of Elementary is based on Monaco and should provide a reliable and bug-free experience. I did, however, change all of the editor's styles for aesthetic's sake, and built the logic that makes this a standalone app. Elementary uses electron and react, put together by the electron-react-boilerplate.
 
-Currently, I have yet to implement a spell-checker and a pdf exporter. I hope to tackle both of those soon.
+I plan to have an integrated PDF exporter soon and would like to implement a spell-checker as soon as possible.
 
 I hope you enjoy Elementary!
 
@@ -34,6 +34,8 @@ P.P.S.: If you got this far, you deserve a treat. I am a huge fan of clean inter
 ## Acknowledgements
 
 I must thank [comma](https://github.com/useyourcommas) for her precious help. She reviewed almost every detail in the app, patiently heard my chatter about it and designed Elementary's logo. Elementary would be a different app without her.
+
+Samej Spenser also deserves a special thank you. It's wonderful to have people from the other side of the globe willing to provide such a structured and thoughtful advice.
 
 
 
@@ -85,15 +87,11 @@ Elementary defines the following shortcuts:
 `;
 
 export const changelog =
-`# Elementary v1.1.0-beta.0
+`# Elementary v1.1.0
 
-Hi there! Since Elementary was first released, just about a week ago, I've gotten a lot of feedback from you. It is really great to feel the community's support for this little project of mine :D
+Hi there! Since Elementary was first released, just about a month ago, I've received a lot of feedback from you. It is really great to feel the community's support for this little project of mine :D
 
-I've implemented some of the changes that were suggested. They may have introduced unnoticed bugs. I'm releasing this alpha version in the hope that you'll be able (and willing) to report a few of them back to me. See the final section for information on how to do that.
-
-The main change is the implementation of a preview mode. You can toggle it using the binoculars icon on the sidebar or the new \`ctrl+e\` shortcut. This feature, due to its complexity, is also the most problematic. I've tried to make it as robust as possible, but some bugs must still be around.
-
-Here are some of the other improvements:
+The main change in this release is the implementation of a preview mode. You can toggle it using the eye icon on the sidebar or the new \`ctrl+e\` shortcut. Here are some other improvements:
 
 - New sidebar for markdown elements (can be hidden in the settings)
 - Support for strikethrough and highlight (highlight isn't supported in preview mode yet)
@@ -102,9 +100,9 @@ Here are some of the other improvements:
 - Optional line numbers - activate on settings
 - Optional highlight of current line - activate on settings
 - Markdown is now rendered inside quotes. Quotes got more robust overall.
-- Bug fixes, of course. Especially a bug that made selecting text difficult, caused by the hacky quote implementation I had in place.
+- Bug fixes, of course! Especially a bug that made selecting text difficult, caused by the hacky quote implementation I had in place.
 
-What's coming up in the future? I have a crude implementation of a PDF exporter. I'd like to polish that and publish an update later this summer. There are also plans for a spellchecker, but that will require some time.
+What's coming up in the future? An alpha version with an integrated PDF exporter will be released in the next few days. There are also plans for a spellchecker, though that will require some time. Other new features will depend, quite literally, on you! Most of the changes in this version came from suggestions made by users, and I'd love to hear from you.
 
 Happy writing!
 
@@ -122,7 +120,7 @@ I'd also like to thank all of the other people who asked for new features in Ele
 
 ## Get in touch
 
-I'd love to hear from you! These are a few useful links:
+I'd love to hear from you. These are a few useful links:
 
 - [Open an issue](https://github.com/bogosorter/elementary/issues) on GitHub or send an email to \`luiswbarbosa@gmail.com\`.
 - Elementary's [source code](https://github.com/bogosorter/elementary) might also be useful.

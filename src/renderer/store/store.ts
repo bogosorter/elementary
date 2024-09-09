@@ -34,6 +34,7 @@ type Store = {
     monaco?: typeof Monaco;
     editor?: Monaco.editor.IStandaloneCodeEditor;
     currentSelection: Monaco.Selection | null;
+    currentScroll: number | null;
     initializeEditor: (monaco: typeof Monaco, editor: Monaco.editor.IStandaloneCodeEditor) => void;
 
     // App state methods
@@ -127,6 +128,7 @@ const store = create<Store>((set, get) => ({
     monaco: undefined,
     editor: undefined,
     currentSelection: null,
+    currentScroll: null,
     initializeEditor: (monaco, editor) => {
         set({ monaco, editor });
 
@@ -245,8 +247,15 @@ const store = create<Store>((set, get) => ({
             // Save the current selection to restore it later
             set({ currentSelection: get().editor!.getSelection() });
             // Remove quotes
-            requestAnimationFrame(() => tagQuotes());
-        }
+            requestAnimationFrame(() => {
+                tagQuotes();
+                if (get().currentScroll) document.getElementById('preview')!.scrollTo({
+                    top: get().currentScroll!,
+                    behavior: 'instant'
+                });
+            });
+        } else set({ currentScroll: document.getElementById('preview')!.scrollTop });
+
         set({ preview: !get().preview });
         get().closeCommandPalette();
     },
@@ -264,7 +273,7 @@ const store = create<Store>((set, get) => ({
         // The file is saved or the user chose not to save it
 
         // Reset selection
-        set({ currentSelection: null });
+        set({ currentSelection: null, currentScroll: null });
         return true;
     },
 
