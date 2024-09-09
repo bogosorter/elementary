@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkFrontmatter from 'remark-frontmatter';
 import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
 import APreview from './APreview';
 import CodePreview from './CodePreview';
 import ImagePreview from './ImagePreview';
@@ -36,7 +37,7 @@ export default function Preview() {
         >
             <Markdown
                 remarkPlugins={[remarkGfm, remarkFrontmatter]}
-                rehypePlugins={[rehypeRaw]}
+                rehypePlugins={[rehypeRaw, rehypeSlug]}
                 components={{
                     a: ({href, ...props}) => <APreview href={href} props={props} />,
                     code: ({children, className, ...props}) => <CodePreview children={children} className={className} props={props} />,
