@@ -74,6 +74,8 @@
 /* A rather hacky way to remove background color in syntax highlighted elements */
 #preview pre div:has(code) {
     background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 #preview pre div code {
     background-color: transparent !important;

@@ -13,7 +13,6 @@ The following features are ordered according to their importance and ease of imp
 ### Short term
 
 - Export to pdf
-- Customize rendered footnotes
 - Add ids to headings in preview
 
 ### Long term
@@ -24,6 +23,7 @@ The following features are ordered according to their importance and ease of imp
 - Translation
 - Outline sidebar
 - Custom themes / CSS
+- Open linked markdown files in Elementary
 
 ### Distant future
 
@@ -32,4 +32,4 @@ The following features are ordered according to their importance and ease of imp
 
 ### Features to consider
 
-- Tags, wikilinks, YAML front matter, etc.
+- Tags, wikilinks, etc.
