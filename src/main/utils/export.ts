@@ -4,6 +4,7 @@ const exportCSS = `
     --accent: #286c93;
     --background-color: white;
     --font-size: 12px;
+    --text-align: justify;
 
     background-color: var(--background-color);
 }
@@ -12,6 +13,7 @@ const exportCSS = `
     overflow-wrap: anywhere;
     scroll-margin-top: 100px;
     font-size: var(--font-size);
+    text-align: var(--text-align);
     color: var(--primary);
     font-family: "Droid Sans Mono", "monospace", monospace;
 }

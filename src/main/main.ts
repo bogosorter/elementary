@@ -168,7 +168,13 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
         document_title: 'Elementary',
         css: exportCSS,
         pdf_options: {
-            printBackground: true
+            printBackground: true,
+            margin: {
+                top: '1in',
+                bottom: '1in',
+                left: '1in',
+                right: '1in'
+            }
         },
         marked_extensions: [markedFootnote({ description: '' })]
     });
