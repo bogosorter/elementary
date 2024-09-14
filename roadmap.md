@@ -1,21 +1,18 @@
 # Elementary roadmap
 
-## Bugs
+The following features are ordered according to their importance and ease of implementation
 
+## Short term
+
+- Export to pdf
+- Optional notification of alpha releases
+- Catch PDF export errors
+- Review code highlight themes in preview
 - Resize file path in small screens
 - Fix syntax highlight in embedded html
 - Scroll to top after switching documents
 
-## Features
-
-The following features are ordered according to their importance and ease of implementation
-
-### Short term
-
-- Export to pdf
-- Add ids to headings in preview
-
-### Long term
+## Long term
 
 - Spell-checking
 - Subscript and superscript
@@ -25,11 +22,11 @@ The following features are ordered according to their importance and ease of imp
 - Custom themes / CSS
 - Open linked markdown files in Elementary
 
-### Distant future
+## Distant future
 
 - Add new items to a list when return is pressed
 - Typewriter mode
 
-### Features to consider
+## Features to consider
 
 - Tags, wikilinks, etc.
