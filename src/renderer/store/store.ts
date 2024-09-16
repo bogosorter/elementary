@@ -368,7 +368,7 @@ const store = create<Store>((set, get) => ({
         // User cancelled the export
         if (result == 0) return;
         // An error occurred
-        if (result == 1) toast('An error occurred.', {
+        if (result == 1) toast('Couldn\t export document: an error occurred. Please check the export guide.', {
             autoClose: false,
             theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right'

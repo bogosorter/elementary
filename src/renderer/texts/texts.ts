@@ -263,4 +263,10 @@ The conversion from markdown into PDF is done in two steps:
 2. Conversion from HTML into a PDF
 
 The intermediate conversion into HTML is done using [Marked](https://marked.js.org/). You might find their [demo page](https://marked.js.org/demo/) a useful tool to inspect the generated HTML. This comes in handy, for instance, to know what CSS selectors you should use.
+
+
+
+## Export errors
+
+If Elementary reports an error while exporting, please check your export configuration carefully - that's where most errors come from. If the error persists please [file an issue](https://github.com/bogosorter/elementary/issues).
 `;

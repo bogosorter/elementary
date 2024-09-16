@@ -180,25 +180,29 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
         pdfPath = result.filePath!;
     }
 
-    const pdf = await mdToPdf({ path: mdPath }, {
-        document_title: 'Elementary',
-        css: exportCSS,
-        pdf_options: {
-            printBackground: true,
-            margin: {
-                top: '1in',
-                bottom: '1in',
-                left: '1in',
-                right: '1in'
-            }
-        },
-        body_class: ['elementary'],
-        marked_extensions: [markedFootnote({ description: '' })]
-    });
-    if (!pdf) return 1;
+    try {
+        const pdf = await mdToPdf({ path: mdPath }, {
+            document_title: 'Elementary',
+            css: exportCSS,
+            pdf_options: {
+                printBackground: true,
+                margin: {
+                    top: '1in',
+                    bottom: '1in',
+                    left: '1in',
+                    right: '1in'
+                }
+            },
+            body_class: ['elementary'],
+            marked_extensions: [markedFootnote({ description: '' })]
+        });
+        if (!pdf) return 1;
 
-    fs.writeFileSync(pdfPath, pdf.content);
-    return pdfPath;
+        fs.writeFileSync(pdfPath, pdf.content);
+        return pdfPath;
+    } catch (e) {
+        return 1;
+    }
 });
 
 ipcMain.handle('checkForUpdates', async () => {
