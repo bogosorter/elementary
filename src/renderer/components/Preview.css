@@ -29,39 +29,40 @@
 }
 
 #preview h1, #preview h2, #preview h3, #preview h4, #preview h5, #preview h6 {
-    color: var(--accent);
     font-weight: bold;
 }
 
 #preview h1 {
-    font-size: calc(var(--font-size) * 2);
-    margin-top: 48px;
+    color: var(--accent);
+    font-size: calc(var(--font-size) * 1.8);
+    margin-top: 100px;
     margin-bottom: 24px;
 }
 #preview h2 {
+    color: var(--accent);
     font-size: calc(var(--font-size) * 1.6);
-    margin-top: 40px;
+    margin-top: 100px;
     margin-bottom: 20px;
 }
 #preview h3 {
     font-size: calc(var(--font-size) * 1.4);
-    margin-top: 32px;
+    margin-top: 60px;
     margin-bottom: 16px;
 }
 #preview h4 {
     font-size: calc(var(--font-size) * 1.2);
-    margin-top: 24px;
+    margin-top: 45px;
     margin-bottom: 12px;
 }
 #preview h5 {
-    font-size: calc(var(--font-size) * 1.1);
-    margin-top: 16px;
-    margin-bottom: 8px;
+    font-size: calc(var(--font-size) * 1.2);
+    margin-top: 35px;
+    margin-bottom: 12px;
 }
 #preview h6 {
-    font-size: var(--font-size);
-    margin-top: 8px;
-    margin-bottom: 4px;
+    font-size: calc(var(--font-size) * 1.1);
+    margin-top: 20px;
+    margin-bottom: 12px;
 }
 
 #preview a {
@@ -72,7 +73,7 @@
 }
 
 #preview pre:has(code) {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.05);
     border-radius: 5px;
     padding: 10px;
 }
@@ -97,16 +98,11 @@
 
 #preview blockquote {
     border-left: 5px solid var(--accent);
-    padding: 0 10px;
+    padding: 5px 10px;
     margin-left: 0;
     margin-right: 0;
     border-radius: 5px;
-    background-color: rgba(0, 0, 0, 0.1);
-
-    /* A little trick that'll force the content's margins to be kept withing the
-    blockquote */
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid transparent;
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 #preview hr {

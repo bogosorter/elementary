@@ -5,6 +5,8 @@
 - Resize file path in small screens
 - Fix syntax highlight in embedded html
 - Scroll to top after switching documents
+- Including stylesheets in export not working?
+- Filed not saved on opening?
 
 ## Features
 

@@ -21,33 +21,40 @@ const exportCSS = `
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: var(--accent);
     font-weight: bold;
 }
 
 h1 {
-    font-size: calc(var(--font-size) * 2);
-    margin: 24px 0;
+    color: var(--accent);
+    font-size: calc(var(--font-size) * 1.8);
+    margin-top: 100px;
+    margin-bottom: 24px;
 }
 h2 {
+    color: var(--accent);
     font-size: calc(var(--font-size) * 1.6);
-    margin: 20px 0;
+    margin-top: 100px;
+    margin-bottom: 20px;
 }
 h3 {
     font-size: calc(var(--font-size) * 1.4);
-    margin: 16px 0;
+    margin-top: 60px;
+    margin-bottom: 16px;
 }
 h4 {
     font-size: calc(var(--font-size) * 1.2);
-    margin: 12px 0;
+    margin-top: 45px;
+    margin-bottom: 12px;
 }
 h5 {
-    font-size: calc(var(--font-size) * 1.1);
-    margin: 8px 0;
+    font-size: calc(var(--font-size) * 1.2);
+    margin-top: 35px;
+    margin-bottom: 12px;
 }
 h6 {
-    font-size: var(--font-size);
-    margin: 4px 0;
+    font-size: calc(var(--font-size) * 1.1);
+    margin-top: 20px;
+    margin-bottom: 12px;
 }
 
 code:not(pre code) {
