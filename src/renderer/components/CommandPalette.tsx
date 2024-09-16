@@ -116,6 +116,9 @@ const actions = {
             label: 'Settings: Preview text alignement',
             action: () => store.getState().changeSetting('previewTextAlign')
         }, {
+            label: 'Settings: Automatic PDF export filename',
+            action: () => store.getState().changeSetting('automaticExportFilename')
+        }, {
             label: 'Settings: Reset',
             action: () => store.getState().resetSettings()
         }, {
@@ -245,6 +248,15 @@ const actions = {
         }, {
             label: 'Justify',
             action: () => store.getState().changeSetting('previewTextAlign', 'justify')
+        }
+    ],
+    automaticExportFilename: [
+        {
+            label: 'Enable automatic PDF export filename',
+            action: () => store.getState().changeSetting('automaticExportFilename', true)
+        }, {
+            label: 'Disable automatic PDF export filename',
+            action: () => store.getState().changeSetting('automaticExportFilename', false)
         }
     ]
 };

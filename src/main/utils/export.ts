@@ -2,11 +2,8 @@ const exportCSS = `
 :root {
     --primary: #3c3c3c;
     --accent: #286c93;
-    --background-color: white;
     --font-size: 12px;
     --text-align: justify;
-
-    background-color: var(--background-color);
 }
 
 * {

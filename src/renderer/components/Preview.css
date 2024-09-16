@@ -35,27 +35,33 @@
 
 #preview h1 {
     font-size: calc(var(--font-size) * 2);
-    margin: 24px 0;
+    margin-top: 48px;
+    margin-bottom: 24px;
 }
 #preview h2 {
     font-size: calc(var(--font-size) * 1.6);
-    margin: 20px 0;
+    margin-top: 40px;
+    margin-bottom: 20px;
 }
 #preview h3 {
     font-size: calc(var(--font-size) * 1.4);
-    margin: 16px 0;
+    margin-top: 32px;
+    margin-bottom: 16px;
 }
 #preview h4 {
     font-size: calc(var(--font-size) * 1.2);
-    margin: 12px 0;
+    margin-top: 24px;
+    margin-bottom: 12px;
 }
 #preview h5 {
     font-size: calc(var(--font-size) * 1.1);
-    margin: 8px 0;
+    margin-top: 16px;
+    margin-bottom: 8px;
 }
 #preview h6 {
     font-size: var(--font-size);
-    margin: 4px 0;
+    margin-top: 8px;
+    margin-bottom: 4px;
 }
 
 #preview a {
