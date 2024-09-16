@@ -74,13 +74,17 @@ ipcMain.handle('saveAs', async (_, content: string) => {
     return path;
 });
 
-ipcMain.handle('getSettings', async () => {
+async function getSettings()  {
     const saved = await settings.get('settings');
     if (!saved) return defaultSettings;
 
     // Ensure compatibility after updates
     const result = { ...defaultSettings, ...saved as Settings };
     return result;
+}
+
+ipcMain.handle('getSettings', async () => {
+    return getSettings();
 });
 
 ipcMain.on('setSettings', async (_, value: Settings) => {
@@ -159,7 +163,7 @@ ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
 });
 
 ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
-    const automaticExportFilename = (await settings.get('settings') as Settings).automaticExportFilename;
+    const automaticExportFilename = (await getSettings()).automaticExportFilename;
 
     let pdfPath = '';
     if (automaticExportFilename) {
