@@ -163,6 +163,9 @@ const actions = {
         }, {
             label: 'Elementary: Shortcut Reference',
             action: () => store.getState().openShortcutReference()
+        }, {
+            label: 'Elementary: PDF Export Guide',
+            action: () => store.getState().openPDFExportGuide()
         }
     ],
     theme: [

@@ -5,7 +5,7 @@ import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
-import { info, markdown, shortcuts, changelog } from '../texts/texts';
+import { info, markdown, shortcuts, changelog, pdfExportGuide } from '../texts/texts';
 import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
 
@@ -83,6 +83,7 @@ type Store = {
     openUpdateNotice: () => Promise<void>;
     openMarkdownReference: () => Promise<void>;
     openShortcutReference: () => Promise<void>;
+    openPDFExportGuide: () => Promise<void>;
 
 
     // Misc methods
@@ -561,6 +562,13 @@ const store = create<Store>((set, get) => ({
 
         get().editor?.setValue(shortcuts);
         set({ path: '', content: shortcuts, saved: true });
+    },
+    openPDFExportGuide: async() => {
+        get().closeCommandPalette();
+        if (!await get().canCloseFile()) return;
+
+        get().editor?.setValue(pdfExportGuide);
+        set({ path: '', content: pdfExportGuide, saved: true });
     },
 
     onChange: () => {
