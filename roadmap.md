@@ -11,6 +11,7 @@ The following features are ordered according to their importance and ease of imp
 - Resize file path in small screens
 - Fix syntax highlight in embedded html
 - Scroll to top after switching documents
+- Filed not saved on opening?
 
 ## Long term
 

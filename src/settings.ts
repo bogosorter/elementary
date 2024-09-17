@@ -11,6 +11,7 @@ export type Settings = {
     sidebar: 'hidden' | 'fileActions' | 'markdownActions' | 'all';
     highlightCurrentLine: boolean;
     previewTextAlign: 'left' | 'center' | 'right' | 'justify';
+    automaticExportFilename: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -23,7 +24,8 @@ const defaultSettings: Settings = {
     showLineNumbers: false,
     sidebar: 'all',
     highlightCurrentLine: false,
-    previewTextAlign: 'justify'
+    previewTextAlign: 'justify',
+    automaticExportFilename: false
 };
 
 export default defaultSettings;

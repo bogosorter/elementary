@@ -1,4 +1,4 @@
-import { Folder2Open, Floppy, Eye, EyeSlash, PlusLg, Gear, TypeBold, TypeItalic, TypeStrikethrough, CodeSlash, Highlighter, Link45deg, Hash, Quote, ListUl, ListOl, ListCheck } from 'react-bootstrap-icons';
+import { Folder2Open, Floppy, Eye, EyeSlash, PlusLg, BoxArrowUp, Gear, TypeBold, TypeItalic, TypeStrikethrough, CodeSlash, Highlighter, Link45deg, Hash, Quote, ListUl, ListOl, ListCheck } from 'react-bootstrap-icons';
 import store from '../store/store';
 import './Sidebar.css';
 
@@ -15,6 +15,7 @@ export default function Sidebar() {
         { icon: <Folder2Open size={20} />, action: () => store.getState().open(), tooltip: 'Open file' },
         { icon: <Floppy size={20} />, action: () => store.getState().save(), tooltip: 'Save file' },
         { icon: preview? <EyeSlash size={20} /> : <Eye size={20} />, action: () => store.getState().togglePreview(), tooltip: 'Toggle preview' },
+        { icon: <BoxArrowUp size={20} />, action: () => store.getState().exportToPDF(), tooltip: 'Export to PDF' },
         { icon: <Gear size={20} />, action: () => store.getState().openCommandPalette(), tooltip: 'Command Palette' }
     ].map(({icon, action, tooltip}, index) =>
         <button

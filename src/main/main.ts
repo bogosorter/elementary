@@ -3,11 +3,14 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import fs from 'fs';
 import mime from 'mime';
-import { resolve as resolvePath, dirname } from 'path';
+import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath } from 'path';
 import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
+import mdToPdf from 'md-to-pdf';
+import markedFootnote from 'marked-footnote';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
+import exportCSS from './utils/export';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -71,13 +74,17 @@ ipcMain.handle('saveAs', async (_, content: string) => {
     return path;
 });
 
-ipcMain.handle('getSettings', async () => {
+async function getSettings()  {
     const saved = await settings.get('settings');
     if (!saved) return defaultSettings;
 
     // Ensure compatibility after updates
     const result = { ...defaultSettings, ...saved as Settings };
     return result;
+}
+
+ipcMain.handle('getSettings', async () => {
+    return getSettings();
 });
 
 ipcMain.on('setSettings', async (_, value: Settings) => {
@@ -153,6 +160,49 @@ ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
     if (!fs.existsSync(resolvedPath)) return null;
 
     return fs.readFileSync(resolvedPath).toString();
+});
+
+ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
+    const automaticExportFilename = (await getSettings()).automaticExportFilename;
+
+    let pdfPath = '';
+    if (automaticExportFilename) {
+        const parsed = parsePath(mdPath);
+        parsed.ext = '.pdf';
+        parsed.base = parsed.name + parsed.ext;
+        pdfPath = formatPath(parsed);
+    } else {
+        const result = await dialog.showSaveDialog(window!, {
+            filters: [{ name: 'PDF', extensions: ['pdf'] }]
+        });
+        if (result.canceled) return 0;
+
+        pdfPath = result.filePath!;
+    }
+
+    try {
+        const pdf = await mdToPdf({ path: mdPath }, {
+            document_title: 'Elementary',
+            css: exportCSS,
+            pdf_options: {
+                printBackground: true,
+                margin: {
+                    top: '1in',
+                    bottom: '1in',
+                    left: '1in',
+                    right: '1in'
+                }
+            },
+            body_class: ['elementary'],
+            marked_extensions: [markedFootnote({ description: '' })]
+        });
+        if (!pdf) return 1;
+
+        fs.writeFileSync(pdfPath, pdf.content);
+        return pdfPath;
+    } catch (e) {
+        return 1;
+    }
 });
 
 ipcMain.handle('checkForUpdates', async () => {
