@@ -119,6 +119,9 @@ const actions = {
             label: 'Settings: Automatic PDF export filename',
             action: () => store.getState().changeSetting('automaticExportFilename')
         }, {
+            label: 'Settings: Pre-release notification',
+            action: () => store.getState().changeSetting('prereleaseNotification')
+        }, {
             label: 'Settings: Reset',
             action: () => store.getState().resetSettings()
         }, {
@@ -260,6 +263,15 @@ const actions = {
         }, {
             label: 'Disable automatic PDF export filename',
             action: () => store.getState().changeSetting('automaticExportFilename', false)
+        }
+    ],
+    prereleaseNotification: [
+        {
+            label: 'Enable pre-release notification',
+            action: () => store.getState().changeSetting('prereleaseNotification', true)
+        }, {
+            label: 'Disable pre-release notification',
+            action: () => store.getState().changeSetting('prereleaseNotification', false)
         }
     ]
 };

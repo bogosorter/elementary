@@ -206,11 +206,14 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
 });
 
 ipcMain.handle('checkForUpdates', async () => {
+    const prereleaseNotification = (await getSettings()).prereleaseNotification;
+
     try {
         const result = await versionCheck({
             repo: 'elementary',
             owner: 'bogosorter',
-            currentVersion: app.getVersion()
+            currentVersion: app.getVersion(),
+            excludePrereleases: !prereleaseNotification
         });
 
         return result.update;

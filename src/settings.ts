@@ -12,6 +12,7 @@ export type Settings = {
     highlightCurrentLine: boolean;
     previewTextAlign: 'left' | 'center' | 'right' | 'justify';
     automaticExportFilename: boolean;
+    prereleaseNotification: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -25,7 +26,8 @@ const defaultSettings: Settings = {
     sidebar: 'all',
     highlightCurrentLine: false,
     previewTextAlign: 'justify',
-    automaticExportFilename: false
+    automaticExportFilename: false,
+    prereleaseNotification: false
 };
 
 export default defaultSettings;

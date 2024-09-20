@@ -4,14 +4,16 @@ The following features are ordered according to their importance and ease of imp
 
 ## Short term
 
-- Export to pdf
-- Optional notification of alpha releases
-- Catch PDF export errors
 - Review code highlight themes in preview
 - Resize file path in small screens
 - Fix syntax highlight in embedded html
 - Scroll to top after switching documents
-- Filed not saved on opening?
+- Files not saved on opening?
+- Open recent not working
+- Error on open recent when file not found
+- Not refocusing window after command palette is closed?
+- Add upper/lower case shortcuts a
+- Add line duplicate shortcut
 
 ## Long term
 
