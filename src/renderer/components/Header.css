@@ -56,3 +56,17 @@
 .header-button:hover {
     background-color: rgba(0, 0, 0, 0.1);
 }
+
+#path-short {
+    display: none;
+}
+
+
+@media screen and (max-width: 800px) {
+    #path-long {
+        display: none;
+    }
+    #path-short {
+        display: block;
+    }
+}

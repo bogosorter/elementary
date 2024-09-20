@@ -23,7 +23,8 @@ export default function Header() {
         <div id='header' style={{ color: theme.primary }}>
             {showHeaderButtons && <div id='header-buttons-placeholder' />}
             <div id='path'>
-                {pathElements}
+                <span id='path-long'>{pathElements}</span>
+                <span id='path-short'>{pathElements[pathElements.length - 1]}</span>
                 {!saved && <span id='unsaved' style={{ backgroundColor: theme.accent }}></span>}
             </div>
             {showHeaderButtons && <div id='header-buttons'>

@@ -5,7 +5,6 @@ The following features are ordered according to their importance and ease of imp
 ## Short term
 
 - Review code highlight themes in preview
-- Resize file path in small screens
 - Fix syntax highlight in embedded html
 - Scroll to top after switching documents
 - Files not saved on opening?
@@ -14,6 +13,7 @@ The following features are ordered according to their importance and ease of imp
 - Not refocusing window after command palette is closed?
 - Add upper/lower case shortcuts a
 - Add line duplicate shortcut
+- Add bold filename on open recent
 
 ## Long term
 
