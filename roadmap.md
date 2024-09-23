@@ -6,10 +6,6 @@ The following features are ordered according to their importance and ease of imp
 
 - Review code highlight themes in preview
 - Fix syntax highlight in embedded html
-- Scroll to top after switching documents
-- Files not saved on opening?
-- Open recent not working
-- Error on open recent when file not found
 - Add upper/lower case shortcuts a
 - Add line duplicate shortcut
 - Add bold filename on open recent

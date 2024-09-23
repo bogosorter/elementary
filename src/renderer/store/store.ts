@@ -332,6 +332,7 @@ const store = create<Store>((set, get) => ({
         if (!file) return;
 
         get().editor?.setValue(file.content);
+        get().editor?.setScrollTop(0);
         set({ path: file.path, content: file.content, saved: true });
     },
     openRecent: async (path) => {
@@ -341,6 +342,8 @@ const store = create<Store>((set, get) => ({
             get().openCommandPalette('recentlyOpened');
             return;
         }
+
+        get().closeCommandPalette();
 
         if (!await get().canCloseFile()) return;
 
