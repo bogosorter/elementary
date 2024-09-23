@@ -345,7 +345,14 @@ const store = create<Store>((set, get) => ({
         if (!await get().canCloseFile()) return;
 
         const content = await window.electron.ipcRenderer.invoke('loadFile', path);
-        if (!content) return;
+        if (!content) {
+            toast('An error occurred. Please check if the file exists.', {
+                autoClose: false,
+                theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
+                position: 'bottom-right'
+            });
+            return;
+        }
 
         get().editor?.setValue(content);
         set({ path: path, content: content, saved: true });
