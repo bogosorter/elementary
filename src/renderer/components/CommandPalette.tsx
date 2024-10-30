@@ -42,9 +42,9 @@ export default function CommandPalette() {
             <Command.List>
                 <Command.Empty style={{ color: theme.primary }}>No results found <span className='emoticon'>:(</span></Command.Empty>
                 {
-                    items.map(({ label, action }) => (
+                    items.map(({ label, action }, index) => (
                         <Command.Item
-                            key={label}
+                            key={index}
                             onSelect={() => {
                                 setValue('');
                                 action();
@@ -152,6 +152,15 @@ const actions = {
         }, {
             label: 'Markdown: Todo List',
             action: () => store.getState().todoList()
+        }, {
+            label: 'Markdown: Uppercase',
+            action: () => store.getState().uppercase()
+        }, {
+            label: 'Markdown: Lowercase',
+            action: () => store.getState().lowercase()
+        }, {
+            label: 'Markdown: Duplicate Lines',
+            action: () => store.getState().duplicateLines()
         }, {
             label: 'Elementary: About',
             action: () => store.getState().openInfo()

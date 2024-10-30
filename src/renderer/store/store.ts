@@ -75,8 +75,14 @@ type Store = {
     unorderedList: () => void;
     todoList: () => void;
 
-    // Auxiliar markdown methods
+    // Other text editing operations
+    uppercase: () => void;
+    lowercase: () => void;
+    duplicateLines: () => void;
+
+    // Auxiliar text methods
     surroundText: (start: string, end: string) => void;
+    transformText: (transformation: (input: string) => string) => void;
     prependText: (start: string) => void;
 
     // Documentation
@@ -92,6 +98,7 @@ type Store = {
     onWindowClose: () => Promise<void>;
     getLocalFile: (path: string) => Promise<string | null>;
     getLocalFileBase64: (path: string) => Promise<{mimeType: string, data: string} | null>;
+    getSelectedText: () => Monaco.Selection | null;
     // Ensures that some custom markdown elements are rendered correctly
     updateDecorations: () => void;
     updateStats: () => void;
@@ -112,7 +119,10 @@ const store = create<Store>((set, get) => ({
         'ctrl+n': () => get().newFile(),
         'ctrl+b': () => get().bold(),
         'ctrl+i': () => get().italic(),
-        'ctrl+k': () => get().link()
+        'ctrl+k': () => get().link(),
+        'ctrl+u': () => get().uppercase(),
+        'ctrl+l': () => get().lowercase(),
+        'ctrl+d': () => get().duplicateLines()
     },
     commandPalette: {
         open: false,
@@ -151,6 +161,16 @@ const store = create<Store>((set, get) => ({
             }, {
                 // Disable trigger suggestion on Ctrl+I
                 keybinding: Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.KeyI,
+                command: null
+            }, {
+                // Disable Ctrl+U keybindings
+                keybinding: Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.KeyU,
+                command: null
+            }, {
+                keybinding: Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.KeyL
+            }, {
+                // Disable Ctrl+D keybindings
+                keybinding: Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.KeyD,
                 command: null
             }
         ]);
@@ -358,8 +378,8 @@ const store = create<Store>((set, get) => ({
         }
 
         get().editor?.setValue(content);
+        get().editor?.setScrollTop(0);
         set({ path: path, content: content, saved: true });
-        get().closeCommandPalette();
     },
     newFile: async () => {
         if (!await get().canCloseFile()) return;
@@ -486,6 +506,40 @@ const store = create<Store>((set, get) => ({
         get().closeCommandPalette();
     },
 
+    uppercase: () => {
+        get().transformText((input) => input.toUpperCase());
+        get().closeCommandPalette();
+    },
+    lowercase: () => {
+        get().transformText((input) => input.toLowerCase());
+        get().closeCommandPalette();
+    },
+    duplicateLines: () => {
+        get().closeCommandPalette();
+
+        if (!(get().editor && get().monaco)) return;
+
+        let selection = get().editor!.getSelection();
+        if (!selection) return;
+
+        selection = new Monaco.Selection(
+            selection.startLineNumber,
+            0,
+            selection.endLineNumber,
+            get().editor!.getModel()!.getLineContent(selection.endLineNumber).length + 1
+        );
+
+        const lines = get().editor!.getModel()!.getValueInRange(selection);
+        console.log(lines);
+        get().editor!.executeEdits('', [{
+            range: selection,
+            // A double newline is needed since the newline character is not returned by
+            // `getValueInRange` and markdown paragraphs are separated by an extra newline.
+            text: lines + '\n\n' + lines,
+            forceMoveMarkers: true
+        }]);
+    },
+
     surroundText: (start, end) => {
         if (!get().editor) return;
 
@@ -535,6 +589,23 @@ const store = create<Store>((set, get) => ({
             get().editor!.setSelection(newSelection);
         }
 
+        get().editor!.focus();
+    },
+    transformText: (transformation) => {
+        const selection = get().getSelectedText();
+        if (!selection) return;
+
+        const source = get().editor!.getModel()!.getValueInRange(selection);
+        const result = transformation(source);
+
+        get().editor!.executeEdits('', [{
+            range: selection,
+            text: result,
+            forceMoveMarkers: true
+        }]);
+
+        // TODO: Is this necessary?
+        get().editor!.setSelection(selection);
         get().editor!.focus();
     },
     prependText: (start) => {
@@ -610,6 +681,27 @@ const store = create<Store>((set, get) => ({
     getLocalFileBase64: async (path) => {
         if (!get().path) return null;
         return await window.electron.ipcRenderer.invoke('getLocalFileBase64', get().path, path);
+    },
+    getSelectedText: () => {
+        if (!get().editor) return null;
+
+        let selection = get().editor!.getSelection();
+        if (!selection) return null;
+
+        // If the selection is empty but near a word, select the word
+        if (selection.startColumn === selection.endColumn) {
+            const word = get().editor!.getModel()!.getWordAtPosition(selection.getStartPosition());
+            if (word) {
+                selection = new Monaco.Selection(
+                    selection.startLineNumber,
+                    word.startColumn,
+                    selection.endLineNumber,
+                    word.endColumn
+                );
+            }
+        }
+
+        return selection;
     },
     updateDecorations: () => {
         if (!get().monaco || !get().editor) return;
