@@ -3,6 +3,7 @@ import './CommandPalette.css';
 import { lightTheme, darkTheme, commaTheme } from '../../themes';
 import store from '../store/store';
 import { CSSProperties, useEffect, useState } from 'react';
+import makeRecentFile from '../utils/makeRecentFile';
 
 export default function CommandPalette() {
 
@@ -13,10 +14,7 @@ export default function CommandPalette() {
 
     const [value, setValue] = useState('');
 
-    const items = commandPalettePage == 'recentlyOpened' ? recentlyOpened.map(path => ({
-        label: path,
-        action: () => store.getState().openRecent(path)
-    })) : actions[commandPalettePage];
+    const items = commandPalettePage == 'recentlyOpened' ? recentlyOpened.map(makeRecentFile) : actions[commandPalettePage];
 
     useEffect(() => {
         setValue('');
