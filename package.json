@@ -1,6 +1,6 @@
 {
   "description": "A simple markdown editor",
-  "version": "1.2.0-alpha.0",
+  "version": "1.2.0-alpha.1",
   "keywords": [
     "markdown",
     "editor"
@@ -236,7 +236,11 @@
       "output": "release/build"
     },
     "extraResources": [
-      "./assets/**"
+      "./assets/**",
+      {
+        "from": "node_modules/highlight.js",
+        "to": "node_modules/highlight.js"
+      }
     ],
     "publish": {
       "provider": "github",

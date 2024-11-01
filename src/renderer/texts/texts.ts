@@ -19,8 +19,6 @@ I loved Typora's editing experience, but it has since become a paid app... On th
 
 Then, I learnt that VS Code's core editor, Monaco, was open-source. That's when the idea of adapting Monaco to fit my needs came to be. The core of Elementary is based on Monaco and should provide a reliable and bug-free experience. I did, however, change all of the editor's styles for aesthetic's sake, and built the logic that makes this a standalone app. Elementary uses electron and react, put together by the electron-react-boilerplate.
 
-I plan to have an integrated PDF exporter soon and would like to implement a spell-checker as soon as possible.
-
 I hope you enjoy Elementary!
 
 bogosorter
@@ -87,22 +85,19 @@ Elementary defines the following shortcuts:
 `;
 
 export const changelog =
-`# Elementary v1.1.0
+`# Elementary v1.2.0-alpha.1
 
-Hi there! Since Elementary was first released, just about a month ago, I've received a lot of feedback from you. It is really great to feel the community's support for this little project of mine :D
+Hi again!
 
-The main change in this release is the implementation of a preview mode. You can toggle it using the eye icon on the sidebar or the new \`ctrl+e\` shortcut. Here are some other improvements:
+The main highlight of this release is the new PDF exporter. To export a file, use the button on the sidebar or the command palette. For configuration details, open the command palette and search for "PDF Export Guide." Here’s what else has changed:
 
-- New sidebar for markdown elements (can be hidden in the settings)
-- Support for strikethrough and highlight (highlight isn't supported in preview mode yet)
-- New shortcuts for bold (\`ctrl+b\`), italic (\`ctrl+i\`) and links (\`ctrl+k\`)
-- Word and character count information
-- Optional line numbers - activate on settings
-- Optional highlight of current line - activate on settings
-- Markdown is now rendered inside quotes. Quotes got more robust overall.
-- Bug fixes, of course! Especially a bug that made selecting text difficult, caused by the hacky quote implementation I had in place.
+- New shortcuts for uppercase (\`ctrl+u\`), lowercase (\`ctrl+l\`) and duplicate lines (\`ctrl+d\`)
+- Improved file identification in "Open Recent"
+- Added an error message when opening a recent file that no longer exists
+- Shortened path display for the current file on small screens
+- New setting to receive notifications about future pre-releases
 
-What's coming up in the future? An alpha version with an integrated PDF exporter will be released in the next few days. There are also plans for a spellchecker, though that will require some time. Other new features will depend, quite literally, on you! Most of the changes in this version came from suggestions made by users, and I'd love to hear from you.
+What's coming next? I'm planning to add a spellchecker, though it may take some time. Other new features will depend, quite literally, on you! Most of the changes in this version came from suggestions made by users, and I'd love to hear from you.
 
 Happy writing!
 
@@ -124,73 +119,50 @@ I'd love to hear from you. These are a few useful links:
 
 - [Open an issue](https://github.com/bogosorter/elementary/issues) on GitHub or send an email to \`luiswbarbosa@gmail.com\`.
 - Elementary's [source code](https://github.com/bogosorter/elementary) might also be useful.
-- A bit of auto-promotion here, but I can't help myself: I'm too proud of [bogothoughts](https://bogosorter.github.io/blog/) not to share it here :)
 `;
 
 export const pdfExportGuide =
 `# PDF export guide
 
 - [Export configuration](#export-configuration)
+    - [Document title](#document-title)
+    - [PDF options](#pdf-options)
+    - [Custom header and footer](#custom-header-and-footer)
 - [Including CSS](#including-css)
 - [Additional tips](#additional-tips)
+- [Export errors](#export-errors)
+
+
 
 
 
 ## Export configuration
 
-Elementary's PDF exporter will work out of the box, but you'll likely want to configure it a little further. PDF configuration is done through some metadata at the top of the document in [YAML](https://en.wikipedia.org/wiki/YAML).
+Please note that Elementary's PDF exporter will work out of the box. All of the steps described here are optional. PDF configuration is done through some metadata at the top of the document in [YAML](https://en.wikipedia.org/wiki/YAML).
 
 To start a YAML block, insert this at the top of your document:
 
-\`\`\`txt
+\`\`\`markdown
 ---
 # Content goes here
 ---
 \`\`\`
 
-These are the available options:
+
+### Document title
 
 \`\`\`yaml
 ---
+document_title: The Complete History of Bogosort
+---
+\`\`\`
 
-document_title: Title
+### PDF options
 
-# There are four ways to add CSS to the document:
-#   - Inline CSS in the initial YAML (will only be rendered on exporting)
-#   - CSS files in initial YAML (will only be rendered on exporting)
-#   - Inline CSS using the <style> tag (see below)
-#   - CSS files included using the <link> tag (see below)
+You may change the output file's dimensions, margins, and orientation.
 
-# Inline CSS in the initial YAML
-css: "
-  # Some CSS variables defined for Elementary's theme that you might like to
-  # change
-  :root {
-      --font-size: 12px !important;
-      --text-align: justify !important;
-      --primary: "#3c3c3c" !important; # color used in text
-      --accent: "#286c93" !important; # colors used in headings, links, etc.
-  }
-
-  # Other CSS is also valid
-  p {
-      font-style: italic;
-  }
-"
-
-# CSS files in initial YAML
-# Please make sure to use the **absolute** path
-stylesheet:
-  - /home/bogosorter/styles.css
-  - etc.
-
-# These classes are added to the <body> tag of the generated html and are useful
-# to define various themes. By the default the \`elementary\` theme is used.
-body_class:
-  - elementary
-
+\`\`\`yaml
 pdf_options:
-
   landscape: true
   format: A6
   margin:
@@ -198,10 +170,15 @@ pdf_options:
     bottom: 10mm
     left: 10mm
     right: 10mm
+\`\`\`
 
-  # You can customize a header and a footer for your exported pdf using html.
-  # Some special variables are provided: \`date\`, \`title\`, \`pageNumber\`, and
-  # \`totalPages\`.
+### Custom header and footer
+
+You can customize a header and a footer for your exported pdf using html. Some special variables are provided: \`date\`, \`title\`, \`pageNumber\`, and \`totalPages\`. To use the \`pageNumber\`, for instance, you should have an element with the classname \`pageNumber\`. This might be a bit confusing - take a look at the examples:
+
+\`\`\`yaml
+---
+pdf_options:
   displayHeaderFooter: true
   headerTemplate: "
     <p style='font-size: 14px; text-align: center; width: 100%; font-weight: bold'>
@@ -213,17 +190,22 @@ pdf_options:
       <span class='pageNumber'></span>/<span class='totalPages'></span>
     </p>
   "
-
 ---
 \`\`\`
-
-
 
 ## Including CSS
 
 Markdown's simplicity is quite useful for text editing, but it becomes somewhat limited when you want to apply custom styles to your document. That's why markdown supports inline html and allows you to include CSS styles.
 
-You can embed CSS either into the initial metadata, as shown above, or into the body of your markdown file. Please note, though, that CSS included into the body will be rendered int both preview mode and the exported PDF, whereas CSS included in the YAML section will only be rendered in the exported PDF.
+You can embed CSS either into the initial metadata or into the body of your markdown file. Please note, though, that CSS included into the body will be rendered in both preview mode and the exported PDF, whereas CSS included in the YAML section will only be rendered in the exported PDF.
+
+Including CSS files in the YAML:
+
+\`\`\`yaml
+stylesheet:
+  - /home/bogosorter/styles.css
+  - etc.
+\`\`\`
 
 You can link to a CSS file in the body of your document:
 
@@ -240,7 +222,6 @@ Alternatively, you can include inline CSS like this:
     }
 </style>
 \`\`\`
-
 
 
 ## Additional tips

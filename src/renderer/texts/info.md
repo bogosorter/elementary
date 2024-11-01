@@ -18,8 +18,6 @@ I loved Typora's editing experience, but it has since become a paid app... On th
 
 Then, I learnt that VS Code's core editor, Monaco, was open-source. That's when the idea of adapting Monaco to fit my needs came to be. The core of Elementary is based on Monaco and should provide a reliable and bug-free experience. I did, however, change all of the editor's styles for aesthetic's sake, and built the logic that makes this a standalone app. Elementary uses electron and react, put together by the electron-react-boilerplate.
 
-I plan to have an integrated PDF exporter soon and would like to implement a spell-checker as soon as possible.
-
 I hope you enjoy Elementary!
 
 bogosorter

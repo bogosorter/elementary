@@ -6,9 +6,6 @@ The following features are ordered according to their importance and ease of imp
 
 - Review code highlight themes in preview
 - Fix syntax highlight in embedded html
-- Add upper/lower case shortcuts a
-- Add line duplicate shortcut
-- Add bold filename on open recent
 
 ## Long term
 

@@ -184,6 +184,7 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
         const pdf = await mdToPdf({ path: mdPath }, {
             document_title: 'Elementary',
             css: exportCSS,
+            stylesheet: [],
             pdf_options: {
                 printBackground: true,
                 margin: {
@@ -194,13 +195,17 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
                 }
             },
             body_class: ['elementary'],
-            marked_extensions: [markedFootnote({ description: '' })]
+            marked_extensions: [markedFootnote({ description: '' })],
+            launch_options: {
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            }
         });
         if (!pdf) return 1;
 
         fs.writeFileSync(pdfPath, pdf.content);
         return pdfPath;
     } catch (e) {
+        console.log(e);
         return 1;
     }
 });
@@ -233,3 +238,6 @@ ipcMain.handle('getVersionInfo', async () => {
 
     return { firstTime, update };
 });
+
+// @ts-ignore
+console.log(eval("require.resolve('highlight.js')"));

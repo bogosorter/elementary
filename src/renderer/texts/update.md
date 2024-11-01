@@ -1,19 +1,18 @@
-# Elementary v1.1.0
+# Elementary v1.2.0-alpha.0
 
-Hi there! Since Elementary was first released, just about a month ago, I've received a lot of feedback from you. It is really great to feel the community's support for this little project of mine :D
 
-The main change in this release is the implementation of a preview mode. You can toggle it using the eye icon on the sidebar or the new `ctrl+e` shortcut. Here are some other improvements:
 
-- New sidebar for markdown elements (can be hidden in the settings)
-- Support for strikethrough and highlight (highlight isn't supported in preview mode yet)
-- New shortcuts for bold (`ctrl+b`), italic (`ctrl+i`) and links (`ctrl+k`)
-- Word and character count information
-- Optional line numbers - activate on settings
-- Optional highlight of current line - activate on settings
-- Markdown is now rendered inside quotes. Quotes got more robust overall.
-- Bug fixes, of course! Especially a bug that made selecting text difficult, caused by the hacky quote implementation I had in place.
+Hi again!
 
-What's coming up in the future? An alpha version with an integrated PDF exporter will be released in the next few days. There are also plans for a spellchecker, though that will require some time. Other new features will depend, quite literally, on you! Most of the changes in this version came from suggestions made by users, and I'd love to hear from you.
+The main highlight of this release is the new PDF exporter. To export a file, use the button on the sidebar or the command palette. For configuration details, open the command palette and search for "PDF Export Guide." Here’s what else has changed:
+
+- New shortcuts for uppercase (`ctrl+u`), lowercase (`ctrl+l`) and duplicate lines (`ctrl+d`)
+- Improved file identification in "Open Recent"
+- Added an error message when opening a recent file that no longer exists
+- Shortened path display for the current file on small screens
+- New setting to receive notifications about future pre-releases
+
+What’s coming next? I’m planning to add a spellchecker, though it may take some time. Other new features will depend, quite literally, on you! Most of the changes in this version came from suggestions made by users, and I'd love to hear from you.
 
 Happy writing!
 
@@ -35,4 +34,3 @@ I'd love to hear from you. These are a few useful links:
 
 - [Open an issue](https://github.com/bogosorter/elementary/issues) on GitHub or send an email to `luiswbarbosa@gmail.com`.
 - Elementary's [source code](https://github.com/bogosorter/elementary) might also be useful.
-- A bit of auto-promotion here, but I can't help myself: I'm too proud of [bogothoughts](https://bogosorter.github.io/blog/) not to share it here :)

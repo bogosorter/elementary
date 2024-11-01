@@ -1,66 +1,44 @@
 # PDF export guide
 
 - [Export configuration](#export-configuration)
+    - [Document title](#document-title)
+    - [PDF options](#pdf-options)
+    - [Custom header and footer](#custom-header-and-footer)
 - [Including CSS](#including-css)
 - [Additional tips](#additional-tips)
+- [Export errors](#export-errors)
+
+
 
 
 
 ## Export configuration
 
-Elementary's PDF exporter will work out of the box, but you'll likely want to configure it a little further. PDF configuration is done through some metadata at the top of the document in [YAML](https://en.wikipedia.org/wiki/YAML).
+Please note that Elementary's PDF exporter will work out of the box. All of the steps described here are optional. PDF configuration is done through some metadata at the top of the document in [YAML](https://en.wikipedia.org/wiki/YAML).
 
 To start a YAML block, insert this at the top of your document:
 
-```txt
+```markdown
 ---
 # Content goes here
 ---
 ```
 
-These are the available options:
+
+### Document title
 
 ```yaml
 ---
+document_title: The Complete History of Bogosort
+---
+```
 
-document_title: Title
+### PDF options
 
-# There are four ways to add CSS to the document:
-#   - Inline CSS in the initial YAML (will only be rendered on exporting)
-#   - CSS files in initial YAML (will only be rendered on exporting)
-#   - Inline CSS using the <style> tag (see below)
-#   - CSS files included using the <link> tag (see below)
+You may change the output file's dimensions, margins, and orientation.
 
-# Inline CSS in the initial YAML
-css: "
-  # Some CSS variables defined for Elementary's theme that you might like to
-  # change
-  :root {
-      --font-size: 12px !important;
-      --text-align: justify !important;
-      --primary: "#3c3c3c" !important; # color used in text
-      --accent: "#286c93" !important; # colors used in headings, links, etc.
-  }
-
-  # Other CSS is also valid
-  p {
-      font-style: italic;
-  }
-"
-
-# CSS files in initial YAML
-# Please make sure to use the **absolute** path
-stylesheet:
-  - /home/bogosorter/styles.css
-  - etc.
-
-# These classes are added to the <body> tag of the generated html and are useful
-# to define various themes. By the default the `elementary` theme is used.
-body_class:
-  - elementary
-
+```yaml
 pdf_options:
-
   landscape: true
   format: A6
   margin:
@@ -68,10 +46,15 @@ pdf_options:
     bottom: 10mm
     left: 10mm
     right: 10mm
+```
 
-  # You can customize a header and a footer for your exported pdf using html.
-  # Some special variables are provided: `date`, `title`, `pageNumber`, and
-  # `totalPages`.
+### Custom header and footer
+
+You can customize a header and a footer for your exported pdf using html. Some special variables are provided: `date`, `title`, `pageNumber`, and `totalPages`. To use the `pageNumber`, for instance, you should have an element with the classname `pageNumber`. This might be a bit confusing - take a look at the examples:
+
+```yaml
+---
+pdf_options:
   displayHeaderFooter: true
   headerTemplate: "
     <p style='font-size: 14px; text-align: center; width: 100%; font-weight: bold'>
@@ -83,17 +66,22 @@ pdf_options:
       <span class='pageNumber'></span>/<span class='totalPages'></span>
     </p>
   "
-
 ---
 ```
-
-
 
 ## Including CSS
 
 Markdown's simplicity is quite useful for text editing, but it becomes somewhat limited when you want to apply custom styles to your document. That's why markdown supports inline html and allows you to include CSS styles.
 
-You can embed CSS either into the initial metadata, as shown above, or into the body of your markdown file. Please note, though, that CSS included into the body will be rendered int both preview mode and the exported PDF, whereas CSS included in the YAML section will only be rendered in the exported PDF.
+You can embed CSS either into the initial metadata or into the body of your markdown file. Please note, though, that CSS included into the body will be rendered in both preview mode and the exported PDF, whereas CSS included in the YAML section will only be rendered in the exported PDF.
+
+Including CSS files in the YAML:
+
+```yaml
+stylesheet:
+  - /home/bogosorter/styles.css
+  - etc.
+```
 
 You can link to a CSS file in the body of your document:
 
@@ -110,7 +98,6 @@ Alternatively, you can include inline CSS like this:
     }
 </style>
 ```
-
 
 
 ## Additional tips
