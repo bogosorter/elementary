@@ -1,11 +1,9 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { unlink } from 'fs/promises';
+import { unlink, writeFile, readFile } from 'fs/promises';
+import { existsSync } from 'fs';
 import { basename, join, dirname } from 'path';
-import { app } from 'electron';
-import { BrowserWindow } from 'electron';
-import { writeFileSync } from 'original-fs';
-import { readFileSync } from 'fs';
+import { app, BrowserWindow } from 'electron';
 const execAsync = promisify(exec);
 
 export async function pandocAvailable() {
@@ -19,9 +17,10 @@ export async function pandocAvailable() {
 
 export async function exportToPDF(input: string, output: string) {
     const htmlPath = join(dirname(input), `${basename(input, '.md')}_elementary_temp.html`);
-    const cssPath = join(app.getAppPath(), 'assets', 'export', 'github.css');
-    const highlightCssPath = join(app.getAppPath(), 'assets', 'export', 'highlight.css');
-    const templatePath = join(app.getAppPath(), 'assets', 'export', 'export.html');
+    const assetsPath = join(app.getAppPath(), 'assets', 'export');
+    const cssPath = join(assetsPath, 'github.css');
+    const highlightCssPath = join(assetsPath, 'highlight.css');
+    const templatePath = join(assetsPath, 'export.html');
 
     try {
         await execAsync(`pandoc "${input}" -o "${htmlPath}" --template="${templatePath}" --css="${cssPath}" --css="${highlightCssPath}" --embed-resources --standalone`);
@@ -29,24 +28,23 @@ export async function exportToPDF(input: string, output: string) {
         await unlink(htmlPath);
         return true;
     } catch (e) {
-        try {
-            unlink(htmlPath);
-        } catch {} // File may not have been created
-
         console.log(e);
+        if (existsSync(htmlPath)) unlink(htmlPath);
         return false;
     }
 }
 
 async function htmlToPdf(filePath: string, outputPdfPath: string) {
-    const highlightJSFile = join(app.getAppPath(), 'assets', 'export', 'highlight.js');
-
-    const win = new BrowserWindow({ show: false, webPreferences: { offscreen: true } });
+    const win = new BrowserWindow({ show: false });
     await win.loadFile(filePath);
-    const highlightJSContent = await readFileSync(highlightJSFile, 'utf-8');
+
+    const highlightJSFile = join(app.getAppPath(), 'assets', 'export', 'highlight.js');
+    const highlightJSContent = await readFile(highlightJSFile, 'utf-8');
     await win.webContents.executeJavaScript(highlightJSContent);
     await win.webContents.executeJavaScript('hljs.highlightAll();');
+
     const pdfData = await win.webContents.printToPDF({});
-    writeFileSync(outputPdfPath, pdfData);
+    writeFile(outputPdfPath, pdfData);
+
     win.close();
 }
