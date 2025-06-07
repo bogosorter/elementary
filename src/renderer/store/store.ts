@@ -319,7 +319,7 @@ const store = create<Store>((set, get) => ({
         window.electron.webFrame.setZoomFactor(settings.zoom);
         document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
         cancelAutoSave();
-        if (settings.autoSave) autoSave(settings.autoSave, get().save, () => !get().saved);
+        if (settings.autoSave) autoSave(settings.autoSave, get().save, () => !get().saved && get().path !== '');
     },
 
     save: async () => {
