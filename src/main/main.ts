@@ -162,7 +162,7 @@ ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
 
 ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
     const available = await pandocAvailable();
-    if (!available) return 2;
+    if (!available) return 'pandocMissing';
 
     const automaticExportFilename = (await getSettings()).automaticExportFilename;
 
@@ -176,13 +176,13 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
         const result = await dialog.showSaveDialog(window!, {
             filters: [{ name: 'PDF', extensions: ['pdf'] }]
         });
-        if (result.canceled) return 0;
+        if (result.canceled) return 'canceled';
 
         pdfPath = result.filePath!;
     }
 
     const success = await exportToPDF(mdPath, pdfPath);
-    if (!success) return 1;
+    if (!success) return 'error';
     return pdfPath;
 });
 

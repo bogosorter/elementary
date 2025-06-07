@@ -405,14 +405,14 @@ const store = create<Store>((set, get) => ({
         const result = await window.electron.ipcRenderer.invoke('exportToPDF', get().path);
 
         // User cancelled the export
-        if (result == 0) return;
+        if (result == 'canceled') return;
         // An error occurred
-        if (result == 1) toast('Couldn\t export document: an error occurred. Please check the export guide.', {
+        if (result == 'error') toast('Couldn\t export document: an error occurred. Please check the export guide.', {
             autoClose: false,
             theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right'
         });
-        else if (result == 2) toast('Couldn\'t export document: Pandoc is not installed. Please check the export guide.', {
+        else if (result == 'pandocMissing') toast('Couldn\'t export document: Pandoc is not installed. Please check the export guide.', {
             autoClose: false,
             theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right'
