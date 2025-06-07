@@ -6,11 +6,9 @@ import mime from 'mime';
 import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath } from 'path';
 import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
-import mdToPdf from 'md-to-pdf';
-import markedFootnote from 'marked-footnote';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
-import exportCSS from './utils/export';
+import { pandocAvailable, exportToPDF } from './utils/export';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -163,6 +161,9 @@ ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
 });
 
 ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
+    const available = await pandocAvailable();
+    if (!available) return 2;
+
     const automaticExportFilename = (await getSettings()).automaticExportFilename;
 
     let pdfPath = '';
@@ -180,34 +181,9 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
         pdfPath = result.filePath!;
     }
 
-    try {
-        const pdf = await mdToPdf({ path: mdPath }, {
-            document_title: 'Elementary',
-            css: exportCSS,
-            stylesheet: [],
-            pdf_options: {
-                printBackground: true,
-                margin: {
-                    top: '1in',
-                    bottom: '1in',
-                    left: '1in',
-                    right: '1in'
-                }
-            },
-            body_class: ['elementary'],
-            marked_extensions: [markedFootnote({ description: '' })],
-            launch_options: {
-                args: ['--no-sandbox', '--disable-setuid-sandbox']
-            }
-        });
-        if (!pdf) return 1;
-
-        fs.writeFileSync(pdfPath, pdf.content);
-        return pdfPath;
-    } catch (e) {
-        console.log(e);
-        return 1;
-    }
+    const success = await exportToPDF(mdPath, pdfPath);
+    if (!success) return 1;
+    return pdfPath;
 });
 
 ipcMain.handle('checkForUpdates', async () => {
