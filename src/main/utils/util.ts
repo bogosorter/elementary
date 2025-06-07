@@ -1,5 +1,6 @@
 /* eslint import/prefer-default-export: off */
 import { URL } from 'url';
+import { app } from 'electron';
 import path from 'path';
 
 export function resolveHtmlPath(htmlFileName: string) {
@@ -10,4 +11,9 @@ export function resolveHtmlPath(htmlFileName: string) {
         return url.href;
     }
     return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
+}
+
+export function assetsPath() {
+    if (app.isPackaged) return path.join(process.resourcesPath, 'assets');
+    return path.join(app.getAppPath(), 'assets');
 }
