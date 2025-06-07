@@ -412,7 +412,7 @@ const store = create<Store>((set, get) => ({
             theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right'
         });
-        else if (result == 2) toast('Couldn\'t export document: pandoc is not installed. Please check the export guide.', {
+        else if (result == 2) toast('Couldn\'t export document: Pandoc is not installed. Please check the export guide.', {
             autoClose: false,
             theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right'

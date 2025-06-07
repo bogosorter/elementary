@@ -29,11 +29,11 @@ export async function exportToPDF(input: string, output: string) {
         await unlink(htmlPath);
         return true;
     } catch (e) {
-        console.log(e);
         try {
             unlink(htmlPath);
         } catch {} // File may not have been created
 
+        console.log(e);
         return false;
     }
 }
