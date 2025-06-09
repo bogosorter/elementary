@@ -9,6 +9,9 @@ import versionCheck from '@version-checker/core';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
 import { pandocAvailable, exportToPDF } from './utils/export';
+import { assetsPath } from './utils/util';
+import { join } from 'path';
+import en from 'dictionary-en';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -184,6 +187,16 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
     const success = await exportToPDF(mdPath, pdfPath);
     if (!success) return 'error';
     return pdfPath;
+});
+
+ipcMain.handle('getDictionary', async () => {
+    const dictionariesPath = join(assetsPath(), 'dictionaries');
+    const dicPath = join(dictionariesPath, 'en_US.dic');
+    const affPath = join(dictionariesPath, 'en_US.aff');
+
+    const dic = fs.readFileSync(dicPath).toString();
+    const aff = fs.readFileSync(affPath).toString();
+    return { dic, aff };
 });
 
 ipcMain.handle('checkForUpdates', async () => {

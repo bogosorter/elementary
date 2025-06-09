@@ -12,6 +12,7 @@ import tagQuotes from '../utils/quotes';
 // TODO: Cleanup
 import { getSpellchecker } from 'monaco-spellchecker'
 import debounce from 'lodash/debounce';
+import NSpell from 'nspell';
 
 type CommandPalettePage = 'general' | 'recentlyOpened' | keyof Settings;
 
@@ -145,7 +146,7 @@ const store = create<Store>((set, get) => ({
     editor: undefined,
     currentSelection: null,
     currentScroll: null,
-    initializeEditor: (monaco, editor) => {
+    initializeEditor: async (monaco, editor) => {
         set({ monaco, editor });
 
         monaco.editor.defineTheme('light', createStyles(lightTheme));
@@ -224,8 +225,12 @@ const store = create<Store>((set, get) => ({
         // initialized
         set({ saved: true });
 
+        // @ts-ignore
+        const dictionary = await window.electron.ipcRenderer.invoke('getDictionary');
+        const nspell = new NSpell(dictionary);
+        console.log('nspell test:', nspell.correct('test'));
         const spellchecker = getSpellchecker(monaco, editor, {
-            check: (word) => word != 'Software',
+            check: (word) => nspell.correct(word),
             suggest: () => [],
             ignore: () => {},
             addWord: () => {}
