@@ -9,6 +9,10 @@ import { info, markdown, shortcuts, changelog, pdfExportGuide } from '../texts/t
 import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
 
+// TODO: Cleanup
+import { getSpellchecker } from 'monaco-spellchecker'
+import debounce from 'lodash/debounce';
+
 type CommandPalettePage = 'general' | 'recentlyOpened' | keyof Settings;
 
 type Store = {
@@ -219,6 +223,15 @@ const store = create<Store>((set, get) => ({
         // save = false and we don't want that to happen when the editor is
         // initialized
         set({ saved: true });
+
+        const spellchecker = getSpellchecker(monaco, editor, {
+            check: (word) => word != 'Software',
+            suggest: () => [],
+            ignore: () => {},
+            addWord: () => {}
+        })
+        const spellcheck = debounce(spellchecker.process, 500);
+        editor.onDidChangeModelContent(() => spellcheck());
     },
 
     init: async () => {
