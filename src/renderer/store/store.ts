@@ -233,10 +233,43 @@ const store = create<Store>((set, get) => ({
             check: (word) => nspell.correct(word),
             suggest: () => [],
             ignore: () => {},
-            addWord: () => {}
+            addWord: () => {},
+            severity: Monaco.MarkerSeverity.Error
         })
         const spellcheck = debounce(spellchecker.process, 500);
         editor.onDidChangeModelContent(() => spellcheck());
+
+        // Food for thought: https://chatgpt.com/share/6847498c-2c60-8012-a643-f696f45b1945
+        editor.onContextMenu(e => {
+            const position = e.target.position;
+            if (!position) return;
+
+            const model = editor.getModel();
+            const markers = monaco.editor.getModelMarkers({ resource: model!.uri });
+            const marker = markers.find(m =>
+              position.lineNumber === m.startLineNumber &&
+              position.column >= m.startColumn &&
+              position.column <= m.endColumn &&
+              m.message.includes('misspelled')
+            );
+
+            if (marker) {
+              const word = marker.message.match(/"(.+)" is misspelled/)![1];
+
+              // Show your custom context menu here or add an action:
+              editor.addAction({
+                id: 'add-to-dict',
+                label: `Add "${word}" to dictionary`,
+                contextMenuGroupId: 'spellcheck',
+                contextMenuOrder: 1,
+                run: () => {
+                  // Your code to add word to dictionary
+                  console.log(`Added "${word}" to dictionary`);
+                }
+              });
+            }
+          });
+
     },
 
     init: async () => {

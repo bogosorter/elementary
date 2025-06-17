@@ -110,6 +110,9 @@ function createEditorOptions(theme: Theme, fontSize: number, showLineNumbers: bo
         lineDecorationsWidth: showLineNumbers? 30 : 0,
         stickyScroll: {
             enabled: false
+        },
+        hover: {
+            enabled: false
         }
     };
 }
