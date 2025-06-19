@@ -1,6 +1,6 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import fs from 'fs';
 import mime from 'mime';
 import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath } from 'path';
@@ -184,6 +184,11 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
     const success = await exportToPDF(mdPath, pdfPath);
     if (!success) return 'error';
     return pdfPath;
+});
+
+ipcMain.on('showInFolder', async (_, path: string) => {
+    if (!fs.existsSync(path)) return;
+    shell.showItemInFolder(path);
 });
 
 ipcMain.handle('checkForUpdates', async () => {

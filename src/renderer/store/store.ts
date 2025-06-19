@@ -420,7 +420,10 @@ const store = create<Store>((set, get) => ({
         else toast(`File exported to ${result}`, {
             autoClose: false,
             theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
-            position: 'bottom-right'
+            position: 'bottom-right',
+            onClick: () => {
+                window.electron.ipcRenderer.send('showInFolder', result);
+            }
         });
     },
 
