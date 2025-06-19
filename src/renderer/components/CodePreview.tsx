@@ -13,6 +13,10 @@ export default function CodePreview({ children, className, props }: { children: 
             children={String(children).replace(/\n$/, '')}
             language={match[1]}
             style={theme === 'dark' ? oneDark : oneLight}
+            customStyle={{
+                padding: 0,
+                backgroundColor: 'transparent',
+            }}
         />
     );
 

@@ -25,6 +25,8 @@ export default function Preview() {
     return (
         <div
             id='preview'
+            className='markdown-body'
+            data-theme={theme.name == 'dark' ? 'dark' : 'light'}
             style={{
                 textAlign: textAlign,
                 '--selection': theme.selection,
