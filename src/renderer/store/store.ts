@@ -237,8 +237,8 @@ const store = create<Store>((set, get) => ({
             content = file.content;
         }
 
-        set({ path, content });
         if (get().editor) get().editor!.setValue(content);
+        set({ path, content, saved: true });
 
 
 
