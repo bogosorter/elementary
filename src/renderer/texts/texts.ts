@@ -82,10 +82,13 @@ Elementary defines the following shortcuts:
 - Bold - \`ctrl+b\`
 - Italic - \`ctrl+i\`
 - Link - \`ctrl+k\`
+- Uppercase (\`ctrl+u\`)
+- Lowercase (\`ctrl+l\`)
+- Duplicate lines (\`ctrl+d\`)
 `;
 
 export const changelog =
-`# Elementary v1.2.0-alpha.1
+`# Elementary v1.2.0-alpha.2
 
 Hi again!
 
