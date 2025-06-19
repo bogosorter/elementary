@@ -7,14 +7,29 @@ body {
     width: 100vw;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     flex-direction: column;
     font-family: "Droid Sans Mono", "monospace", monospace;
+    --header-height: 40px;
+    --app-horizontal-padding: 80px;
+    --app-vertical-padding: 35px;
+}
+
+@media (max-width: 800px) {
+    #app {
+        --app-horizontal-padding: 60px;
+    }
+}
+
+@media (max-height: 400px) {
+    #app {
+        --app-vertical-padding: 10px;
+    }
 }
 
 #container {
-    height: calc(100vh - 70px);
-    width: min(calc(100vw - 160px), var(--editor-width));
+    height: calc(100vh - var(--header-height) - var(--app-vertical-padding) * 2);
+    width: min(calc(100vw - var(--app-horizontal-padding) * 2), var(--editor-width));
 }
 
 /* A trick to display the scrollbar to the right instead of next to the text */
@@ -66,10 +81,12 @@ body {
     border-left: 5px solid var(--accent);
     pointer-events: none;
 }
+
 .quote-border-start {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
+
 .quote-border-end {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
