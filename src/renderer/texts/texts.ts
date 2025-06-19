@@ -82,9 +82,9 @@ Elementary defines the following shortcuts:
 - Bold - \`ctrl+b\`
 - Italic - \`ctrl+i\`
 - Link - \`ctrl+k\`
-- Uppercase (\`ctrl+u\`)
-- Lowercase (\`ctrl+l\`)
-- Duplicate lines (\`ctrl+d\`)
+- Uppercase - \`ctrl+u\`
+- Lowercase - \`ctrl+l\`
+- Duplicate line - \`ctrl+d\`
 `;
 
 export const changelog =
@@ -94,7 +94,7 @@ Hi again!
 
 The main highlight of this release is the new PDF exporter. To export a file, use the button on the sidebar or the command palette. For configuration details, open the command palette and search for "PDF Export Guide." Here’s what else has changed:
 
-- New shortcuts for uppercase (\`ctrl+u\`), lowercase (\`ctrl+l\`) and duplicate lines (\`ctrl+d\`)
+- New shortcuts for uppercase (\`ctrl+u\`), lowercase (\`ctrl+l\`) and duplicate line (\`ctrl+d\`)
 - Improved file identification in "Open Recent"
 - Added an error message when opening a recent file that no longer exists
 - Shortened path display for the current file on small screens
@@ -156,6 +156,7 @@ Or embed CSS directly:
 \`\`\`
 
 **Page Breaks**
+
 Sometimes content breaks awkwardly in the PDF. You can force a page break with:
 
 \`\`\`html

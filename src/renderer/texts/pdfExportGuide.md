@@ -28,7 +28,8 @@ Or embed CSS directly:
 </style>
 ```
 
-**Page Breaks**  
+**Page Breaks**
+
 Sometimes content breaks awkwardly in the PDF. You can force a page break with:
 
 ```html
