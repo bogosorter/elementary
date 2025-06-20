@@ -220,6 +220,3 @@ ipcMain.handle('getVersionInfo', async () => {
 
     return { firstTime, update };
 });
-
-// @ts-ignore
-console.log(eval("require.resolve('highlight.js')"));
