@@ -156,6 +156,11 @@
   --color-prettylights-syntax-sublimelinter-gutter-mark: #3d444d;
 }
 
+.markdown-body[data-theme="comma"] {
+  --borderColor-default: var(--accent);
+  --borderColor-muted: var(--primary-muted);
+}
+
 .markdown-body {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
