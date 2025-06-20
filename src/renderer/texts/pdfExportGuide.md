@@ -1,16 +1,6 @@
 # PDF Export Guide
 
-- [Pandoc](#pandoc)
-- [Additional Tips](#additional-tips)  
-- [Export Errors](#export-errors)  
-
-## Pandoc
-
-Elementary relies on [Pandoc](https://pandoc.org/) to convert markdown files into PDF. To use PDF export, you must have Pandoc installed. Install it via your package manager or from the [Pandoc website](https://pandoc.org/installing.html).
-
-## Additional Tips
-
-**Including CSS**
+## Including CSS
 
 Markdown is simple but limited for styling. You can include CSS to customize your document. Link an external CSS file inside your markdown with:
 
@@ -28,7 +18,7 @@ Or embed CSS directly:
 </style>
 ```
 
-**Page Breaks**
+## Page Breaks
 
 Sometimes content breaks awkwardly in the PDF. You can force a page break with:
 
