@@ -196,6 +196,14 @@ a:has(.button) {
     flex-direction: column;
 }
 
+#download h1 {
+    margin: 1em 0;
+}
+
+#download h2 {
+    margin-top: 2em;
+}
+
 #download-buttons {
     display: flex;
     align-items: center;
