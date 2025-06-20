@@ -3,8 +3,8 @@
   padding-bottom: 30px;
   padding-left: max(80px, calc((100% - var(--editor-width)) / 2));
   padding-right: max(80px, calc((100% - var(--editor-width)) / 2));
-  height: calc(100vh - 150px);
-  width: calc(100vw - max(160px, calc(100% - var(--editor-width))));
+  height: calc(100vh - var(--header-height) - var(--app-vertical-padding) * 2);
+  width: min(calc(100vw - var(--app-horizontal-padding) * 2), var(--editor-width));
 
   color: var(--primary);
   font-size: var(--font-size);
