@@ -21,7 +21,7 @@ async function installExtensions() {
     return installer.default(extensions.map((name) => installer[name]), forceDownload);
 }
 
-export default async function createWindow() {
+export default async function createWindow(windowType: 'main' | 'export', exportFile?: string) {
     if (isDebug) {
         await installExtensions();
     }
@@ -45,6 +45,7 @@ export default async function createWindow() {
             preload: app.isPackaged
                 ? path.join(__dirname, 'preload.js')
                 : path.join(__dirname, '../../.erb/dll/preload.js'),
+            additionalArguments: [windowType, `exportFile=${exportFile || ''}`],
         },
         frame: false,
     });

@@ -1,6 +1,6 @@
 /* eslint import/prefer-default-export: off */
 import { URL } from 'url';
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 import path from 'path';
 
 export function resolveHtmlPath(htmlFileName: string) {
@@ -17,3 +17,9 @@ export function assetsPath() {
     if (app.isPackaged) return path.join(process.resourcesPath, 'assets');
     return path.join(app.getAppPath(), 'assets');
 }
+
+export function waitForExportLoad(): Promise<void> {
+    return new Promise((resolve) => {
+      ipcMain.once('exportWindowLoad', () => resolve());
+    });
+  }

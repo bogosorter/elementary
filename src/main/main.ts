@@ -23,7 +23,7 @@ app.whenReady().then(async () => {
         }
     }
 
-    window = await createWindow();
+    window = await createWindow('main');
 
     // Instead of closing the window, check if all files are saved
     window.on('close', (e) => {
@@ -94,6 +94,10 @@ ipcMain.handle('getLastFile', async () => {
     if (!path || !fs.existsSync(path)) return { path: '', content: 'Hello world!' };
     const content = fs.readFileSync(path).toString();
     return { path, content };
+});
+
+ipcMain.handle('getFileContent', async (_, path: string) => {
+    return fs.readFileSync(path).toString();
 });
 
 ipcMain.handle('loadFile', async (_, path: string) => {

@@ -1,22 +1,29 @@
 import { useEffect, useState } from 'react';
-import store from '../store/store';
 
-export default function ImagePreview({ src, props }: { src: string | undefined, props: any }) {
+type LocalFileBase64Getter = (path: string) => Promise<{
+    mimeType: string;
+    data: string;
+} | null>;
+
+export default function ImagePreview({ src, props, getLocalFileBase64, onLoadStart, onLoadEnd }: { src: string | undefined, props: any, getLocalFileBase64: LocalFileBase64Getter, onLoadStart?: () => void, onLoadEnd?: () => void }) {
     const [content, setContent] = useState<string>();
 
     useEffect(() => {
-        if (!src || src.startsWith('http')) {
-            setContent(src);
-            return;
-        }
+        if (!src || src.startsWith('http')) return;
 
-        store.getState().getLocalFileBase64(src).then((result) => {
+        if (onLoadStart) onLoadStart();
+        getLocalFileBase64(src).then((result) => {
             if (!result) return;
 
             const { mimeType, data } = result;
             setContent(`data:${mimeType};base64,${data}`)
         });
-    }, []);
+    }, [src, getLocalFileBase64, onLoadStart, onLoadEnd]);
 
-    return <img src={content} {...props} />
+    useEffect(() => {
+        if (content && onLoadEnd) onLoadEnd();
+    }, [content]);
+
+    if (content) return <img src={content} {...props} />
+    return <img src={src} {...props} />
 }
