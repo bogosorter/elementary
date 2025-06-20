@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
 
-type LocalFileBase64Getter = (path: string) => Promise<{
-    mimeType: string;
-    data: string;
-} | null>;
+type ImagePreviewArguments = {
+    src?: string;
+    props?: any;
+    getLocalFileBase64: (path: string) => Promise<{
+        mimeType: string;
+        data: string;
+    } | null>;
+    onLoadStart?: () => void;
+    onLoadEnd?: () => void;
+}
 
-export default function ImagePreview({ src, props, getLocalFileBase64, onLoadStart, onLoadEnd }: { src: string | undefined, props: any, getLocalFileBase64: LocalFileBase64Getter, onLoadStart?: () => void, onLoadEnd?: () => void }) {
+export default function ImagePreview({ src, props, getLocalFileBase64, onLoadStart, onLoadEnd }: ImagePreviewArguments) {
     const [content, setContent] = useState<string>();
 
     useEffect(() => {

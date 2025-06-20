@@ -41,10 +41,30 @@ export default function Preview() {
                 remarkPlugins={[remarkGfm, remarkFrontmatter]}
                 rehypePlugins={[rehypeRaw, rehypeSlug]}
                 components={{
-                    a: ({href, ...props}) => <APreview href={href} props={props} />,
-                    code: ({children, className, ...props}) => <CodePreview children={children} className={className} props={props} theme={theme.name} />,
-                    img: ({src, ...props}) => <ImagePreview src={src} props={props} getLocalFileBase64={store.getState().getLocalFileBase64} />,
-                    link: ({rel, href, ...props}) => <LinkPreview rel={rel} href={href} props={props} getLocalFile={store.getState().getLocalFile} />,
+                    a: ({ href, ...props }) => <APreview href={href} props={props} />,
+                    code: ({ children, className, ...props }) => (
+                        <CodePreview
+                            children={children}
+                            className={className}
+                            props={props}
+                            theme={theme.name}
+                        />
+                    ),
+                    img: ({ src, ...props }) => (
+                        <ImagePreview
+                            src={src}
+                            props={props}
+                            getLocalFileBase64={store.getState().getLocalFileBase64}
+                        />
+                    ),
+                    link: ({ rel, href, ...props }) => (
+                        <LinkPreview
+                            rel={rel}
+                            href={href}
+                            props={props}
+                            getLocalFile={store.getState().getLocalFile}
+                        />
+                    ),
                     script: () => null
                 }}
             >

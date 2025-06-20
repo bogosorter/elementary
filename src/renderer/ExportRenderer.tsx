@@ -13,22 +13,22 @@ import './components/Preview.css';
 import './ExportRenderer.css';
 
 let pending = 0;
-const debounced = debounce(() => {
-    console.log('sending message');
+const exportToPDF = debounce(() => {
+    if (pending > 0) return;
     window.electron.ipcRenderer.send('exportWindowLoad');
 }, 300);
-debounced();
 
 export default function ExportRenderer() {
     const [path, setPath] = useState('');
     const [content, setContent] = useState('');
 
     useEffect(() => {
-        const p = window.electron.exportFile!;
-        window.electron.ipcRenderer.invoke('getFileContent', p).then((data: string) => {
-            setPath(p);
+        const exportFile = window.electron.exportFile!;
+        window.electron.ipcRenderer.invoke('getFileContent', exportFile).then((data: string) => {
+            setPath(exportFile);
             setContent(data);
-        })
+            exportToPDF();
+        });
     }, []);
 
     async function getLocalFileBase64(resourcePath: string) {
@@ -45,8 +45,7 @@ export default function ExportRenderer() {
 
     async function onLoadEnd() {
         pending--;
-        console.log(pending);
-        if (pending === 0) debounced();
+        exportToPDF();
     }
 
     return (
@@ -57,7 +56,12 @@ export default function ExportRenderer() {
             components={{
                 a: ({ href, ...props }) => <APreview href={href} props={props} />,
                 code: ({ children, className, ...props }) => (
-                    <CodePreview children={children} className={className} props={props} theme="light" />
+                    <CodePreview
+                        children={children}
+                        className={className}
+                        props={props}
+                        theme="light"
+                    />
                 ),
                 img: ({ src, ...props }) => (
                     <ImagePreview

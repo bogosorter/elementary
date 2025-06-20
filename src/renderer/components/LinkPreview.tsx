@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react';
-import store from '../store/store';
 
-type LocalFileGetter = (path: string) => Promise<string | null>;
+type LinkPreviewArguments = {
+    rel?: string;
+    href?: string;
+    props?: any;
+    getLocalFile: (path: string) => Promise<string | null>;
+    onLoadStart?: () => void;
+    onLoadEnd?: () => void;
+};
 
-export default function LinkPreview({ rel, href, props, getLocalFile, onLoadStart, onLoadEnd }: { rel: string | undefined, href: string | undefined, props: any, getLocalFile: LocalFileGetter, onLoadStart?: () => void, onLoadEnd?: () => void }) {
+export default function LinkPreview({ rel, href, props, getLocalFile, onLoadStart, onLoadEnd }: LinkPreviewArguments) {
     const [content, setContent] = useState<string>();
 
     useEffect(() => {

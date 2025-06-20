@@ -8,7 +8,7 @@ import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
-import { pandocAvailable, exportToPDF } from './utils/export';
+import { exportToPDF } from './utils/export';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -165,9 +165,6 @@ ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
 });
 
 ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
-    const available = await pandocAvailable();
-    if (!available) return 'pandocMissing';
-
     const automaticExportFilename = (await getSettings()).automaticExportFilename;
 
     let pdfPath = '';

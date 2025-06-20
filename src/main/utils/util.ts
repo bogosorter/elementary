@@ -20,6 +20,6 @@ export function assetsPath() {
 
 export function waitForExportLoad(): Promise<void> {
     return new Promise((resolve) => {
-      ipcMain.once('exportWindowLoad', () => resolve());
+        ipcMain.once('exportWindowLoad', () => resolve());
     });
-  }
+}

@@ -1,21 +1,6 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { unlink, writeFile, readFile } from 'fs/promises';
-import { existsSync } from 'fs';
-import { basename, join, dirname } from 'path';
-import { BrowserWindow } from 'electron';
-import { assetsPath, waitForExportLoad } from './util';
+import { writeFile } from 'fs/promises';
+import { waitForExportLoad } from './util';
 import createWindow from '../createWindow';
-const execAsync = promisify(exec);
-
-export async function pandocAvailable() {
-    try {
-        await execAsync('pandoc --version');
-        return true;
-    } catch {
-        return false;
-    }
-}
 
 export async function exportToPDF(input: string, output: string) {
     const window = await createWindow('export', input);
@@ -25,5 +10,7 @@ export async function exportToPDF(input: string, output: string) {
         printBackground: true
     });
     writeFile(output, pdfData);
+
+    window.close();
     return true;
 }

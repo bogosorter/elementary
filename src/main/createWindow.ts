@@ -52,6 +52,9 @@ export default async function createWindow(windowType: 'main' | 'export', export
 
     window.loadURL(resolveHtmlPath('index.html'));
 
+    // Event listeners shouldn't be set on export windows, as they are never displayed.
+    if (windowType === 'export') return window;
+
     window.on('ready-to-show', () => {
         if (process.env.START_MINIMIZED) {
             window.minimize();
