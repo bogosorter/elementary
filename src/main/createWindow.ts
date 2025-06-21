@@ -45,7 +45,7 @@ export default async function createWindow(windowType: 'main' | 'export', export
             preload: app.isPackaged
                 ? path.join(__dirname, 'preload.js')
                 : path.join(__dirname, '../../.erb/dll/preload.js'),
-            additionalArguments: [windowType, `exportFile=${exportFile || ''}`],
+            additionalArguments: [windowType, `exportFile="${encodeURIComponent(exportFile ?? '')}"`],
         },
         frame: false,
     });

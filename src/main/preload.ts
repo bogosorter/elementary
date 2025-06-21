@@ -6,7 +6,7 @@ export type Channels = 'save' | 'saveAs' | 'open' | 'window' | 'getSettings' | '
 
 const electronHandler = {
   windowType: process.argv.includes('export') ? 'export' : 'main',
-  exportFile: process.argv.find(arg => arg.startsWith('exportFile='))?.split('=')[1],
+  exportFile: decodeURIComponent(process.argv.find(arg => arg.startsWith('exportFile='))?.split('"')[1] ?? ''),
   ipcRenderer: {
     sendMessage(channel: Channels, ...args: unknown[]) {
       ipcRenderer.send(channel, ...args);
