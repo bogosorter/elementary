@@ -1,12 +1,12 @@
 .markdown-body {
     padding-left: 2em;
     padding-right: 2em;
+}
 
-    h1, h2, h3, h4, h5,h6 {
-        break-after: avoid-page;
-    }
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+    page-break-after: avoid;
+}
 
-    p {
-        text-align: justify;
-    }
+.markdown-body p {
+    text-align: justify;
 }
