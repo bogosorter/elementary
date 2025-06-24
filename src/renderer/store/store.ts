@@ -351,8 +351,18 @@ const store = create<Store>((set, get) => ({
         const file = await window.electron.ipcRenderer.invoke('open');
         if (!file) return;
 
-        get().editor?.setValue(file.content);
-        get().editor?.setScrollTop(0);
+        if (get().preview) requestAnimationFrame(() => {
+            document.getElementById('preview')!.scrollTo({
+                top: 0,
+                behavior: 'instant'
+            });
+        });
+        else {
+            get().editor!.setValue(file.content);
+            get().editor!.setScrollTop(0);
+        }
+
+
         set({ path: file.path, content: file.content, saved: true });
     },
     openRecent: async (path) => {
@@ -377,8 +387,17 @@ const store = create<Store>((set, get) => ({
             return;
         }
 
-        get().editor?.setValue(content);
-        get().editor?.setScrollTop(0);
+        if (get().preview) requestAnimationFrame(() => {
+            document.getElementById('preview')!.scrollTo({
+                top: 0,
+                behavior: 'instant'
+            });
+        });
+        else {
+            get().editor!.setValue(content);
+            get().editor!.setScrollTop(0);
+        }
+
         set({ path: path, content: content, saved: true });
     },
     newFile: async () => {
