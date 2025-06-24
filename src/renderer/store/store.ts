@@ -384,9 +384,9 @@ const store = create<Store>((set, get) => ({
     newFile: async () => {
         if (!await get().canCloseFile()) return;
 
-        set({ path: '', content: 'Hello world!', saved: true });
+        set({ path: '', content: 'hello, world', saved: true });
         if (get().preview) get().togglePreview();
-        else get().editor!.setValue('Hello world!');
+        else get().editor!.setValue('hello, world');
 
         get().closeCommandPalette();
     },
