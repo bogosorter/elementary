@@ -766,8 +766,16 @@ const store = create<Store>((set, get) => ({
         if (!get().editor) return;
 
         const text = get().editor!.getValue();
-        const characterCount = text.length;
-        const wordCount = text.split(/\s+/).filter((word) => word.length > 0).length;
+        const characterCount = text
+                                .replace(/[`*_~[\]()>#+=!-]/g, '') // Remove markdown syntax
+                                .replace(/\s/g, '') // Remove whitespace characters
+                                .length;
+        const wordCount = text
+                            .replace(/[^\w\s]|_/g, '') // Keep only alphanumeric characters and whitespace
+                            .split(/\s+/) // Split by whitespace
+                            .filter((word) => word.length > 0) // Filter out empty strings
+                            .length;
+
         set({ characterCount, wordCount });
     },
 }));
