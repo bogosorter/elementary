@@ -1,4 +1,4 @@
-# Elementary v1.2.0-alpha.2
+# Elementary v1.2.0
 
 
 
