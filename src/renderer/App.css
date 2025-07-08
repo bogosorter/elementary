@@ -7,10 +7,10 @@ body {
     width: 100vw;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-direction: column;
     font-family: "Droid Sans Mono", "monospace", monospace;
     --header-height: 40px;
+    --footer-height: 30px;
     --app-horizontal-padding: 80px;
     --app-vertical-padding: 35px;
 }
@@ -28,7 +28,7 @@ body {
 }
 
 #container {
-    height: calc(100vh - var(--header-height) - var(--app-vertical-padding) * 2);
+    height: calc(100vh - var(--header-height) - var(--footer-height));
     width: min(calc(100vw - var(--app-horizontal-padding) * 2), var(--editor-width));
 }
 

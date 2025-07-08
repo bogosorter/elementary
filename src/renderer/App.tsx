@@ -67,6 +67,7 @@ function createAppVariables(theme: Theme, editorWidth: number): CSSProperties {
     return {
         backgroundColor: theme.surface,
         color: theme.primary,
+        '--surface': theme.surface,
         '--accent': theme.accent,
         '--primary-muted': theme.primaryMuted,
         '--editor-width': `${editorWidth}px`,

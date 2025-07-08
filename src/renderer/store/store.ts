@@ -194,10 +194,6 @@ const store = create<Store>((set, get) => ({
             });
         };
 
-        editor.onDidContentSizeChange(() => {
-            requestAnimationFrame(() => tagQuotes());
-        });
-
         editor.onDidScrollChange(() => {
             requestAnimationFrame(() => tagQuotes());
         });
@@ -240,8 +236,6 @@ const store = create<Store>((set, get) => ({
         if (get().editor) get().editor!.setValue(content);
         set({ path, content, saved: true });
 
-
-
         window.electron.ipcRenderer.invoke('checkForUpdates').then((update) => {
             if (!update) return;
             toast('A new version of Elementary is available. Click here to download it.', {
@@ -250,6 +244,10 @@ const store = create<Store>((set, get) => ({
                 theme: settings.theme.name === 'dark' ? 'dark' : 'light',
                 position: 'bottom-right'
             });
+        });
+
+        window.addEventListener('resize', () => {
+            if (get().preview == false) requestAnimationFrame(() => tagQuotes());
         });
     },
     openCommandPalette: (page) => {
