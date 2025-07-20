@@ -152,7 +152,7 @@ export const tokenProvider: languages.IMonarchLanguage = {
 			[/\b_[^_]+_\b/, 'emphasis'],
 			[/\*([^\\*]|@escapes)+\*/, 'emphasis'],
 			[/`.+?`/, 'inline-code'],
-            [/~~([^\\~]|@escapes|~(?!~))+~~/, 'strikethrough'],
+            [/(~|~~)([^\\~]|@escapes)+\1/, 'strikethrough'],
             [/==([^\\=]|@escapes|=(?!=))+==/, 'highlight'],
 
 			// links
