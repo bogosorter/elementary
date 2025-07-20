@@ -11,12 +11,12 @@ export default function Sidebar() {
     const showMarkdownActions = (sidebar === 'markdownActions' || sidebar === 'all') && !preview;
 
     const fileButtons = [
-        { icon: <PlusLg size={20} />, action: () => store.getState().newFile(), tooltip: 'New file' },
-        { icon: <Folder2Open size={20} />, action: () => store.getState().open(), tooltip: 'Open file' },
-        { icon: <Floppy size={20} />, action: () => store.getState().save(), tooltip: 'Save file' },
-        { icon: preview? <EyeSlash size={20} /> : <Eye size={20} />, action: () => store.getState().togglePreview(), tooltip: 'Toggle preview' },
+        { icon: <PlusLg size={20} />, action: () => store.getState().newFile(), tooltip: 'New file (ctrl+n)' },
+        { icon: <Folder2Open size={20} />, action: () => store.getState().open(), tooltip: 'Open file (ctrl+o)' },
+        { icon: <Floppy size={20} />, action: () => store.getState().save(), tooltip: 'Save file (ctrl+s)' },
+        { icon: preview? <EyeSlash size={20} /> : <Eye size={20} />, action: () => store.getState().togglePreview(), tooltip: 'Toggle preview (ctrl+e)' },
         { icon: <BoxArrowUp size={20} />, action: () => store.getState().exportToPDF(), tooltip: 'Export to PDF' },
-        { icon: <Gear size={20} />, action: () => store.getState().openCommandPalette(), tooltip: 'Command Palette' }
+        { icon: <Gear size={20} />, action: () => store.getState().openCommandPalette(), tooltip: 'Command Palette (ctrl+p)' }
     ].map(({icon, action, tooltip}, index) =>
         <button
             className='sidebar-button'
@@ -35,11 +35,11 @@ export default function Sidebar() {
     );
 
     const markdownButtons = [
-        { icon: <TypeBold size={20} />, action: () => store.getState().bold(), tooltip: 'Bold' },
-        { icon: <TypeItalic size={20} />, action: () => store.getState().italic(), tooltip: 'Italic' },
+        { icon: <TypeBold size={20} />, action: () => store.getState().bold(), tooltip: 'Bold (ctrl+b)' },
+        { icon: <TypeItalic size={20} />, action: () => store.getState().italic(), tooltip: 'Italic (ctrl+i)' },
         { icon: <TypeStrikethrough size={20} />, action: () => store.getState().strikethrough(), tooltip: 'Strikethrough' },
         { icon: <CodeSlash size={18} />, action: () => store.getState().inlineCode(), tooltip: 'Inline code' },
-        { icon: <Link45deg size={20} />, action: () => store.getState().link(), tooltip: 'Link' },
+        { icon: <Link45deg size={20} />, action: () => store.getState().link(), tooltip: 'Link (ctrl+k)' },
         { icon: <Hash size={20} />, action: () => store.getState().heading(), tooltip: 'Heading' },
         { icon: <Quote size={20} />, action: () => store.getState().quote(), tooltip: 'Quote' },
         { icon: <ListUl size={20} />, action: () => store.getState().unorderedList(), tooltip: 'Unordered list' },
