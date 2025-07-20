@@ -28,6 +28,7 @@ type Store = {
     wordCount: number;
     characterCount: number;
     preview: boolean;
+    knownModified: number; // The last time the file was modified, used to check for external modifications
 
     // Monaco editor references
     monaco?: typeof Monaco;
@@ -43,8 +44,7 @@ type Store = {
     toggleCommandPalette: () => void;
     toggleFullscreen: () => void;
     togglePreview: () => void;
-    // Checks if the current file is saved and prompts the user to save it
-    canCloseFile: () => Promise<boolean>;
+    canCloseFile: () => Promise<boolean>; // Checks if the current file is saved and prompts the user to save it
 
     // Settings methods
     changeSetting: (setting: keyof Settings, value?: any) => void;
@@ -91,15 +91,13 @@ type Store = {
     openShortcutReference: () => Promise<void>;
     openPDFExportGuide: () => Promise<void>;
 
-
     // Misc methods
     onChange: () => void;
     onWindowClose: () => Promise<void>;
     getLocalFile: (path: string) => Promise<string | null>;
     getLocalFileBase64: (path: string) => Promise<{mimeType: string, data: string} | null>;
     getSelectedText: () => Monaco.Selection | null;
-    // Ensures that some custom markdown elements are rendered correctly
-    updateDecorations: () => void;
+    updateDecorations: () => void; // Ensures that some custom markdown elements are rendered correctly
     updateStats: () => void;
 };
 
@@ -135,6 +133,7 @@ const store = create<Store>((set, get) => ({
     wordCount: 0,
     characterCount: 0,
     preview: false,
+    knownModified: 0,
 
     monaco: undefined,
     editor: undefined,
@@ -231,6 +230,7 @@ const store = create<Store>((set, get) => ({
             const file = await window.electron.ipcRenderer.invoke('getLastFile');
             path = file.path;
             content = file.content;
+            set({ knownModified: Date.now() });
         }
 
         if (get().editor) get().editor!.setValue(content);
@@ -329,8 +329,15 @@ const store = create<Store>((set, get) => ({
             return;
         }
 
-        await window.electron.ipcRenderer.invoke('save', get().path, get().content);
-        set({ saved: true });
+        // If the file has been modified externally, a dialog will be shown and
+        // the user may take some time to respond. We cancel auto-save to
+        // prevent a miriad of dialogs from being shown.
+        cancelAutoSave();
+        const saved = await window.electron.ipcRenderer.invoke('save', get().path, get().content, get().knownModified);
+        if (get().settings.autoSave) autoSave(get().settings.autoSave, get().save, () => !get().saved && get().path !== '');
+
+        if (saved) set({ saved, knownModified: Date.now() });
+        else set({ saved });
 
     },
     saveAs: async () => {
@@ -339,7 +346,7 @@ const store = create<Store>((set, get) => ({
         const path = await window.electron.ipcRenderer.invoke('saveAs', get().content);
         if (!path) return;
 
-        set({ path, saved: true });
+        set({ path, saved: true, knownModified: Date.now() });
     },
     open: async () => {
         get().closeCommandPalette();
@@ -361,7 +368,7 @@ const store = create<Store>((set, get) => ({
         }
 
 
-        set({ path: file.path, content: file.content, saved: true });
+        set({ path: file.path, content: file.content, saved: true, knownModified: Date.now() });
     },
     openRecent: async (path) => {
         if (!path) {
@@ -396,7 +403,7 @@ const store = create<Store>((set, get) => ({
             get().editor!.setScrollTop(0);
         }
 
-        set({ path: path, content: content, saved: true });
+        set({ path: path, content: content, saved: true, knownModified: Date.now() });
     },
     newFile: async () => {
         if (!await get().canCloseFile()) return;

@@ -2,7 +2,7 @@
 
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import mime from 'mime';
-import { readFile, writeFile, access } from 'fs/promises';
+import { readFile, writeFile, access, stat } from 'fs/promises';
 import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath, join as joinPath } from 'path';
 import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
@@ -56,9 +56,32 @@ ipcMain.handle('open', async () => {
     return { path, content };
 });
 
-ipcMain.handle('save', async (_, path: string, content: string) => {
-    await writeFile(path, content);
-    return path;
+// `knownModified` is the Unix timestamp of the last modification the program knows
+// of. This is used to determine if there has been an external modification
+// since
+ipcMain.handle('save', async (_, path: string, content: string, knownModified: number) => {
+    try {
+        const modifiedOnDisk = (await stat(path)).mtimeMs;
+        if (modifiedOnDisk > knownModified) {
+            const result = await dialog.showMessageBox({
+                type: 'warning',
+                buttons: ['Overwrite', 'Cancel'],
+                defaultId: 1,
+                title: 'File Changed',
+                message: 'The file has been edited externally. Overwrite?',
+            });
+
+            if (result.response === 1) return false;
+        }
+
+        await writeFile(path, content);
+        return true;
+
+    } catch {
+        // If the file doesn't exist, we can just write it
+        await writeFile(path, content);
+        return true;
+    }
 });
 
 ipcMain.handle('saveAs', async (_, content: string) => {
