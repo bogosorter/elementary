@@ -3,12 +3,13 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import mime from 'mime';
 import { readFile, writeFile, access } from 'fs/promises';
-import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath, resolve } from 'path';
+import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath, join as joinPath } from 'path';
 import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
 import { exportToPDF } from './utils/export';
+import { assetsPath } from './utils/util';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -215,6 +216,12 @@ ipcMain.on('showInFolder', async (_, path: string) => {
         await access(path);
         shell.showItemInFolder(path);
     } catch {}
+});
+
+ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide' | 'shortcuts' | 'update') => {
+    const path = joinPath(assetsPath(), 'texts', text + '.md');
+    const file = await readFile(path);
+    return file.toString();
 });
 
 ipcMain.handle('checkForUpdates', async () => {

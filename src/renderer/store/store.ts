@@ -5,7 +5,6 @@ import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
-import { info, markdown, shortcuts, changelog, pdfExportGuide } from '../texts/texts';
 import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
 
@@ -225,8 +224,9 @@ const store = create<Store>((set, get) => ({
         const { firstTime, update } = await window.electron.ipcRenderer.invoke('getVersionInfo');
         let path = '';
         let content = '';
-        if (firstTime) content = info;
-        else if (update) content = changelog;
+
+        if (firstTime) content = await window.electron.ipcRenderer.invoke('getText', 'info');
+        else if (update) content = await window.electron.ipcRenderer.invoke('getText', 'update');
         else {
             const file = await window.electron.ipcRenderer.invoke('getLastFile');
             path = file.path;
@@ -649,36 +649,46 @@ const store = create<Store>((set, get) => ({
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(info);
-        set({ path: '', content: info, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'info');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openUpdateNotice: async () => {
+        get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(changelog);
-        set({ path: '', content: changelog, saved: true });
-        get().closeCommandPalette();
+        const content = await window.electron.ipcRenderer.invoke('getText', 'update');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openMarkdownReference: async () => {
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(markdown);
-        set({ path: '', content: markdown, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'markdown');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openShortcutReference: async () => {
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(shortcuts);
-        set({ path: '', content: shortcuts, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'shortcuts');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openPDFExportGuide: async() => {
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(pdfExportGuide);
-        set({ path: '', content: pdfExportGuide, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'pdfExportGuide');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
 
     onChange: () => {

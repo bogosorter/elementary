@@ -43,4 +43,4 @@ I'd love to get some feedback from you. A thumbs up, a critique, a feature reque
 - [This](https://github.com/bogosorter/elementary) is Elementary's repository
 - You can open GitHub issues [here](https://github.com/bogosorter/elementary/issues)
 
-Happy writing! 
+Happy writing!
