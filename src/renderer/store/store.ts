@@ -241,8 +241,10 @@ const store = create<Store>((set, get) => ({
             toast('A new version of Elementary is available. Click here to download it.', {
                 onClick: () => window.open('https://bogosorter.github.io/elementary#download'),
                 autoClose: false,
-                theme: settings.theme.name === 'dark' ? 'dark' : 'light',
-                position: 'bottom-right'
+                position: 'bottom-right',
+                className: 'clickable-toast'
+                // There is no need to choose a color theme, since the colors are
+                // manipulated in App.tsx to always match the current theme.
             });
         });
 
@@ -290,7 +292,7 @@ const store = create<Store>((set, get) => ({
             if (save == 2) get().save();
         }
 
-        // The file is saved or the user chose not to save it
+        // The file is saved or the user choose not to save it
 
         // Reset selection
         set({ currentSelection: null, currentScroll: null });
@@ -386,8 +388,9 @@ const store = create<Store>((set, get) => ({
         if (!content) {
             toast('An error occurred. Please check if the file exists.', {
                 autoClose: false,
-                theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
-                position: 'bottom-right'
+                position: 'bottom-right',
+                // There is no need to choose a color theme, since the colors are
+                // manipulated in App.tsx to always match the current theme.
             });
             return;
         }
@@ -420,8 +423,9 @@ const store = create<Store>((set, get) => ({
         if (!get().saved || get().path === '') {
             toast('Please save your file before exporting it.', {
                 autoClose: false,
-                theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
-                position: 'bottom-right'
+                position: 'bottom-right',
+                // There is no need to choose a color theme, since the colors are
+                // manipulated in App.tsx to always match the current theme.
             });
             return;
         }
@@ -433,16 +437,19 @@ const store = create<Store>((set, get) => ({
         // An error occurred
         if (result == 'error') toast('Couldn\t export document: an error occurred. Please check the export guide.', {
             autoClose: false,
-            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right'
+            // There is no need to choose a color theme, since the colors are
+            // manipulated in App.tsx to always match the current theme.
         });
         else toast(`File exported to ${result}`, {
             autoClose: false,
-            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right',
             onClick: () => {
                 window.electron.ipcRenderer.send('showInFolder', result);
-            }
+            },
+            className: 'clickable-toast'
+            // There is no need to choose a color theme, since the colors are
+            // manipulated in App.tsx to always match the current theme.
         });
     },
 

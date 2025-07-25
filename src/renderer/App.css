@@ -56,16 +56,6 @@ body {
     border-radius: 5px !important;
 }
 
-
-/* Toastify styles */
-:root {
-    --toastify-color-light: #fff;
-    --toastify-color-dark: #121212;
-
-    --toastify-text-color-light: #757575;
-    --toastify-text-color-dark: #fff;
-}
-
 .strikethrough {
     text-decoration: line-through;
 }
@@ -90,4 +80,12 @@ body {
 .quote-border-end {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+}
+
+.Toastify__close-button--light {
+    color: var(--primary-muted);
+}
+
+.clickable-toast {
+    cursor: pointer;
 }
