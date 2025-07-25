@@ -11,6 +11,8 @@ export type Settings = {
     sidebar: 'hidden' | 'fileActions' | 'markdownActions' | 'all';
     highlightCurrentLine: boolean;
     previewTextAlign: 'left' | 'center' | 'right' | 'justify';
+    cursorBlinking: 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
+    smoothCursor: boolean;
     automaticExportFilename: boolean;
     prereleaseNotification: boolean;
 }
@@ -26,6 +28,8 @@ const defaultSettings: Settings = {
     sidebar: 'all',
     highlightCurrentLine: false,
     previewTextAlign: 'justify',
+    cursorBlinking: 'phase',
+    smoothCursor: true,
     automaticExportFilename: false,
     prereleaseNotification: false
 };
