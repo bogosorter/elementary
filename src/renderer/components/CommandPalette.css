@@ -6,6 +6,7 @@
     top: 0;
     left: 0;
     pointer-events: all !important;
+    z-index: 2;
 }
 
 [cmdk-root] {
@@ -16,6 +17,7 @@
     border-radius: 5px;
     padding: 10px;
     outline: none;
+    z-index: 3;
 }
 
 [cmdk-list] {
