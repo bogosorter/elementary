@@ -38,7 +38,7 @@ export default async function createWindow(windowType: 'main' | 'export', export
         show: false,
         width: 1024,
         height: 728,
-        minHeight: 300,
+        minHeight: 350,
         minWidth: 400,
         icon: getAssetPath('icon.png'),
         webPreferences: {

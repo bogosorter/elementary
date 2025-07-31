@@ -14,7 +14,7 @@
     border-radius: 10px;
 }
 
-@media screen and (max-height: 650px) {
+@media screen and (max-height: 750px) {
     .sidebar-component.hide-small {
         display: none;
     }
