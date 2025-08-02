@@ -8,7 +8,7 @@ export default function Sidebar() {
     const preview = store((state) => state.preview);
 
     const showFileActions = sidebar === 'fileActions' || sidebar === 'all';
-    const showMarkdownActions = (sidebar === 'markdownActions' || sidebar === 'all') && !preview;
+    const showMarkdownActions = (sidebar === 'markdownActions' || sidebar === 'all');
 
     const fileButtons = [
         { icon: <PlusLg size={20} />, action: () => store.getState().newFile(), tooltip: 'New file (ctrl+n)' },
@@ -47,18 +47,18 @@ export default function Sidebar() {
         { icon: <ListCheck size={16} />, action: () => store.getState().todoList(), tooltip: 'Todo list' }
     ].map(({icon, action, tooltip}, index) =>
         <button
-            className='sidebar-button'
-            onClick={action}
+            className={preview? 'sidebar-button disabled' : 'sidebar-button'}
+            onClick={preview? () => {} : action}
             style={{ color: theme.primary }}
             key={index}
         >
             {icon}
-            <div
+            {!preview && <div
                 className='tooltip'
                 style={{ backgroundColor: theme.surfaceVariant}}
             >
                 {tooltip}
-            </div>
+            </div>}
         </button>
     );
 
@@ -70,7 +70,7 @@ export default function Sidebar() {
                 </div>
             }
             {showMarkdownActions &&
-                <div className='sidebar-component hide-small' style={{ backgroundColor: theme.surfaceVariant }}>
+                <div className='sidebar-component hide-small' style={{ backgroundColor: theme.surfaceVariant, opacity: preview? 0.5 : 1 }}>
                     {markdownButtons}
                 </div>
             }
