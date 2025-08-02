@@ -148,7 +148,7 @@ function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneT
                 fontStyle: 'bold'
             }, {
                 token: 'quote',
-                foreground: colors.accent
+                foreground: colors.primaryMuted
             }, {
                 token: 'list',
                 foreground: colors.accent,
@@ -157,8 +157,8 @@ function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneT
                 token: 'code',
                 foreground: colors.accent
             }, {
-                token: 'string.link',
-                foreground: colors.accent
+                token: 'delimiters',
+                foreground: colors.primaryMuted
             }, {
                 token: 'inline-code',
                 foreground: colors.accent

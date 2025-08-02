@@ -67,19 +67,19 @@ export const tokenProvider: languages.IMonarchLanguage = {
 
 			// headings
             // h1
-            [/^(\s{0,3})(#)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'heading1', 'heading1', 'heading1']],
-            [/^\s*(=+)\s*$/, 'heading1'],
+            [/^(\s{0,3})(#)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'delimiters', 'heading1', 'heading1']],
+            [/^\s*(=+)\s*$/, 'delimiters'],
             // h2
-            [/^(\s{0,3})(##)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'heading2', 'heading2', 'heading2']],
-            [/^\s*(\-+)\s*$/, 'heading2'],
+            [/^(\s{0,3})(##)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'delimiters', 'heading2', 'heading2']],
+            [/^\s*(\-+)\s*$/, 'delimiters'],
             // h3
-            [/^(\s{0,3})(###)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'heading3', 'heading3', 'heading3']],
+            [/^(\s{0,3})(###)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'delimiters', 'heading3', 'heading3']],
             // h4
-            [/^(\s{0,3})(####)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'heading4', 'heading4', 'heading4']],
+            [/^(\s{0,3})(####)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'delimiters', 'heading4', 'heading4']],
             // h5
-            [/^(\s{0,3})(#####)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'heading5', 'heading5', 'heading5']],
+            [/^(\s{0,3})(#####)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'delimiters', 'heading5', 'heading5']],
             // h6
-            [/^(\s{0,3})(######)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'heading6', 'heading6', 'heading6']],
+            [/^(\s{0,3})(######)((?:[^\\#]|@escapes)+)((?:\2)?)/, ['white', 'delimiters', 'heading6', 'heading6']],
 
 			// quote
 			[/^\s*>+/, 'quote'],
@@ -147,18 +147,16 @@ export const tokenProvider: languages.IMonarchLanguage = {
 			[/@escapes/, 'escape'],
 
 			// various markup
-			[/\b__([^\\_]|@escapes|_(?!_))+__\b/, 'strong'],
-			[/\*\*([^\\*]|@escapes|\*(?!\*))+\*\*/, 'strong'],
-			[/\b_[^_]+_\b/, 'emphasis'],
-			[/\*([^\\*]|@escapes)+\*/, 'emphasis'],
-			[/`.+?`/, 'inline-code'],
+			[/\b(__)((?:[^\\_]|@escapes|_(?!_))+)(__)\b/, ['delimiters', 'strong', 'delimiters']],
+			[/(\*\*)((?:[^\\*]|@escapes|\*(?!\*))+)(\*\*)/, ['delimiters', 'strong', 'delimiters']],
+			[/(\b_)([^_]+)(_)\b/, ['delimiters', 'emphasis', 'delimiters']],
+			[/(\*)((?:[^\\*]|@escapes)+)(\*)/, ['delimiters', 'emphasis', 'delimiters']],
+			[/(`)(.+?)(`)/, ['delimiters', 'inline-code', 'delimiters']],
             [/(~|~~)([^\\~]|@escapes)+\1/, 'strikethrough'],
-            [/==([^\\=]|@escapes|=(?!=))+==/, 'highlight'],
 
 			// links
-			[/\{+[^}]+\}+/, 'string.target'],
-			[/(!?\[)((?:[^\]\\]|@escapes)*)(\]\([^\)]+\))/, ['string.link', '', 'string.link']],
-			[/(!?\[)((?:[^\]\\]|@escapes)*)(\])/, 'string.link'],
+			[/(!?\[)((?:[^\]\\]|@escapes)*)(\]\([^\)]+\))/, ['delimiters', 'string.link', 'delimiters']],
+			[/(!?\[)((?:[^\]\\]|@escapes)*)(\])/, ['delimiters', 'string.link', 'delimiters']],
 
 			// or html
 			{ include: 'html' }

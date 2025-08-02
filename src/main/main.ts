@@ -191,6 +191,7 @@ ipcMain.handle('getLocalFileBase64', async (_, basePath: string, path: string) =
     try {
         await access(resolvedPath);
 
+        // @ts-ignore
         const mimeType = mime.getType(resolvedPath)!;
         const data = (await readFile(resolvedPath)).toString('base64');
 
