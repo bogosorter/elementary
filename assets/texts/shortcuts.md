@@ -12,6 +12,6 @@ Elementary defines the following shortcuts:
 - Bold - `ctrl+b`
 - Italic - `ctrl+i`
 - Link - `ctrl+k`
-- Uppercase - \`ctrl+u\`-
-- Lowercase - \`ctrl+l\`
-- Duplicate line - \`ctrl+d\`
+- Uppercase - `ctrl+u`
+- Lowercase - `ctrl+l`
+- Duplicate line - `ctrl+d`

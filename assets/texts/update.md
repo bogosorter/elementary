@@ -1,36 +1,29 @@
-# Elementary v1.2.0-alpha.2
-
-
+# Elementary v1.3.0-alpha.0
 
 Hi again!
 
-The main highlight of this release is the new PDF exporter. To export a file, use the button on the sidebar or the command palette. For configuration details, open the command palette and search for "PDF Export Guide." Here’s what else has changed:
+Yet another release of Elementary is out. This one focuses on polishing the app, addressing several problems pointed out by users and myself. This only emphasizes the importance of user feedback, so please, [keep it coming](#get-in-touch)! Here's what's new in this version:
 
-- New shortcuts for uppercase (`ctrl+u`), lowercase (`ctrl+l`) and duplicate lines (`ctrl+d`)
-- Improved file identification in "Open Recent"
-- Added an error message when opening a recent file that no longer exists
-- Shortened path display for the current file on small screens
-- New setting to receive notifications about future pre-releases
+- Settings for cursor style and movement.
+- Warning when saving a document edited externally.
+- Toolbar doesn't change position in preview mode, which means that you can now toggle between preview and edit mode without moving the mouse 🎉
+- Word and character counting now ignore markdown syntax and white-space.
+- Shortcuts displayed when hovering items in the toolbar.
+- The text "Hello, world!", displayed on new documents, now reads "hello, world". [Here](https://bogosorter.github.io/blog/#hello-world)'s why.
+- Improved themes both in edit and preview modes.
+- Several other bugs fixes and little improvements.
 
-What’s coming next? I’m planning to add a spellchecker, though it may take some time. Other new features will depend, quite literally, on you! Most of the changes in this version came from suggestions made by users, and I'd love to hear from you.
-
-Happy writing!
+The plan for the next release is to add support for LaTeX math syntax. After that, a bold new goal: a spellchecker. It’s a complex feature and will definitely take some time. Until then, happy writing!
 
 bogosorter
 
-
-
 ## Acknowledgements
 
-Samej Spenser deserves a special thank you. It's wonderful to have people from the other side of the globe willing to provide such a structured and thoughtful advice.
-
-I'd also like to thank all of the other people who asked for new features in Elementary. I've felt, in previous projects of mine, a barrier of communication between me and the project's users. Elementary has so far been different. Please, keep it up!
-
-
+This release owes a lot to [Dead4ever07](https://github.com/Dead4ever07) and [LuisGoncalves05](https://github.com/LuisGoncalves05). They provided important feedback and allowed me to see Elementary from a user's perspective.
 
 ## Get in touch
 
-I'd love to hear from you. These are a few useful links:
+I'd love to hear from you. Here are a few useful links:
 
 - [Open an issue](https://github.com/bogosorter/elementary/issues) on GitHub or send an email to `luiswbarbosa@gmail.com`.
 - Elementary's [source code](https://github.com/bogosorter/elementary) might also be useful.
