@@ -5,9 +5,11 @@
     align-items: center;
     justify-content: center;
     -webkit-app-region: drag;
+    background-color: var(--surface);
+    z-index: 1;
 }
 
-#path {
+#path-container {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,18 +57,4 @@
 
 .header-button:hover {
     background-color: rgba(0, 0, 0, 0.1);
-}
-
-#path-short {
-    display: none;
-}
-
-
-@media screen and (max-width: 800px) {
-    #path-long {
-        display: none;
-    }
-    #path-short {
-        display: block;
-    }
 }

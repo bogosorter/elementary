@@ -7,10 +7,10 @@ body {
     width: 100vw;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-direction: column;
     font-family: "Droid Sans Mono", "monospace", monospace;
     --header-height: 40px;
+    --footer-height: 30px;
     --app-horizontal-padding: 80px;
     --app-vertical-padding: 35px;
 }
@@ -28,7 +28,7 @@ body {
 }
 
 #container {
-    height: calc(100vh - var(--header-height) - var(--app-vertical-padding) * 2);
+    height: calc(100vh - var(--header-height) - var(--footer-height));
     width: min(calc(100vw - var(--app-horizontal-padding) * 2), var(--editor-width));
 }
 
@@ -56,16 +56,6 @@ body {
     border-radius: 5px !important;
 }
 
-
-/* Toastify styles */
-:root {
-    --toastify-color-light: #fff;
-    --toastify-color-dark: #121212;
-
-    --toastify-text-color-light: #757575;
-    --toastify-text-color-dark: #fff;
-}
-
 .strikethrough {
     text-decoration: line-through;
 }
@@ -90,4 +80,12 @@ body {
 .quote-border-end {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+}
+
+.Toastify__close-button--light {
+    color: var(--primary-muted);
+}
+
+.clickable-toast {
+    cursor: pointer;
 }

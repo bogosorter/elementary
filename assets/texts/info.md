@@ -2,15 +2,11 @@
 
 Elementary is a simple markdown editor built by [bogosorter](https://bogosorter.github.io).
 
-
-
 ## Getting started
 
 If you're in a hurry, start typing right away: Elementary is fairly intuitive.
 
 For more info on the markdown elements and Elementary shortcuts, check the command palette using the settings icon to your left or `ctrl+p`. If you'd like to know a little more about how Elementary came to be, read on!
-
-
 
 ## Background
 
@@ -26,14 +22,11 @@ P.S.: Those quotes took a really long time to implement, you should check them o
 
 P.P.S.: If you got this far, you deserve a treat. I am a huge fan of clean interfaces and, since you're using Elementary, I'm guessing you are too. You can use the command palette to set the interface complexity to Minimal, as I do. Beware: you mustn't forget the shortcut to open the command palette since that's where the app's logic resides.
 
-
-
 ## Acknowledgements
 
 I must thank [comma](https://github.com/useyourcommas) for her precious help. She reviewed almost every detail in the app, patiently heard my chatter about it and designed Elementary's logo. Elementary would be a different app without her.
 
 Samej Spenser also deserves a special thank you. It's wonderful to have people from the other side of the globe willing to provide such a structured and thoughtful advice.
-
 
 ## Get in touch
 
@@ -43,4 +36,4 @@ I'd love to get some feedback from you. A thumbs up, a critique, a feature reque
 - [This](https://github.com/bogosorter/elementary) is Elementary's repository
 - You can open GitHub issues [here](https://github.com/bogosorter/elementary/issues)
 
-Happy writing! 
+Happy writing!

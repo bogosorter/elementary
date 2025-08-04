@@ -1,7 +1,12 @@
 #footer {
-    height: 30px;
-    opacity: 0.8;
+    height: var(--footer-height);
+    opacity: 1;
     font-size: 14px;
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-color: var(--surface);
+    color: var(--primary-muted);
+    z-index: 1;
 }

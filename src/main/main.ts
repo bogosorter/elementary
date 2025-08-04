@@ -1,14 +1,15 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
-import fs from 'fs';
 import mime from 'mime';
-import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath } from 'path';
+import { readFile, writeFile, access, stat } from 'fs/promises';
+import { resolve as resolvePath, dirname, parse as parsePath, format as formatPath, join as joinPath } from 'path';
 import settings from 'electron-settings';
 import versionCheck from '@version-checker/core';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
 import { exportToPDF } from './utils/export';
+import { assetsPath } from './utils/util';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -17,9 +18,13 @@ app.whenReady().then(async () => {
     // Handle file opening on app startup
     if (process.argv.length >= 2) {
         const filePath = process.argv[process.argv.length - 1];
-        if (fs.existsSync(filePath) && filePath.endsWith('.md')) {
-            await settings.set('path', filePath);
-            await updateRecentlyOpened(filePath);
+
+        if (filePath.endsWith('.md')) {
+            try {
+                await access(filePath)
+                await settings.set('path', filePath);
+                await updateRecentlyOpened(filePath);
+            } catch {}
         }
     }
 
@@ -42,7 +47,7 @@ ipcMain.handle('open', async () => {
     if (result.canceled) return null;
 
     const path = result.filePaths[0];
-    const content = fs.readFileSync(path).toString();
+    const content = (await readFile(path)).toString();
 
     // Update stored information
     await settings.set('path', path);
@@ -51,9 +56,32 @@ ipcMain.handle('open', async () => {
     return { path, content };
 });
 
-ipcMain.handle('save', async (_, path: string, content: string) => {
-    fs.writeFileSync(path, content);
-    return path;
+// `knownModified` is the Unix timestamp of the last modification the program knows
+// of. This is used to determine if there has been an external modification
+// since
+ipcMain.handle('save', async (_, path: string, content: string, knownModified: number) => {
+    try {
+        const modifiedOnDisk = (await stat(path)).mtimeMs;
+        if (modifiedOnDisk > knownModified) {
+            const result = await dialog.showMessageBox({
+                type: 'warning',
+                buttons: ['Overwrite', 'Cancel'],
+                defaultId: 1,
+                title: 'File Changed',
+                message: 'The file has been edited externally. Overwrite?',
+            });
+
+            if (result.response === 1) return false;
+        }
+
+        await writeFile(path, content);
+        return true;
+
+    } catch {
+        // If the file doesn't exist, we can just write it
+        await writeFile(path, content);
+        return true;
+    }
 });
 
 ipcMain.handle('saveAs', async (_, content: string) => {
@@ -68,7 +96,7 @@ ipcMain.handle('saveAs', async (_, content: string) => {
     await settings.set('path', path);
     await updateRecentlyOpened(path);
 
-    fs.writeFileSync(path, content);
+    await writeFile(path, content);
     return path;
 });
 
@@ -91,24 +119,34 @@ ipcMain.on('setSettings', async (_, value: Settings) => {
 
 ipcMain.handle('getLastFile', async () => {
     const path = await settings.get('path') as string;
-    if (!path || !fs.existsSync(path)) return { path: '', content: 'Hello world!' };
-    const content = fs.readFileSync(path).toString();
-    return { path, content };
+    if (!path) return { path: '', content: 'hello, world' };
+
+    try {
+        await access(path);
+        const content = (await readFile(path)).toString();
+        return { path, content };
+    } catch {
+        return { path: '', content: 'hello, world' };
+    }
 });
 
 ipcMain.handle('getFileContent', async (_, path: string) => {
-    return fs.readFileSync(path).toString();
+    return (await readFile(path)).toString();
 });
 
 ipcMain.handle('loadFile', async (_, path: string) => {
-    if (!fs.existsSync(path)) return null;
+    try {
+        await access(path);
 
-    // Update stored information
-    await settings.set('path', path);
-    await updateRecentlyOpened(path);
+        // Update stored information
+        await settings.set('path', path);
+        await updateRecentlyOpened(path);
 
-    const content = fs.readFileSync(path).toString();
-    return content;
+        const content = (await readFile(path)).toString();
+        return content;
+    } catch {
+        return null;
+    }
 });
 
 ipcMain.handle('getRecent', async () => {
@@ -147,21 +185,31 @@ ipcMain.handle('showSaveDialog', async () => {
     return response;
 });
 
-ipcMain.handle('getLocalFileBase64', (_, basePath: string, path: string) => {
+ipcMain.handle('getLocalFileBase64', async (_, basePath: string, path: string) => {
     const resolvedPath = resolvePath(dirname(basePath), path);
-    if (!fs.existsSync(resolvedPath)) return null;
 
-    const mimeType = mime.getType(resolvedPath)!;
-    const data = fs.readFileSync(resolvedPath).toString('base64');
+    try {
+        await access(resolvedPath);
 
-    return { mimeType, data }
+        // @ts-ignore
+        const mimeType = mime.getType(resolvedPath)!;
+        const data = (await readFile(resolvedPath)).toString('base64');
+
+        return { mimeType, data }
+    } catch {
+        return null;
+    }
 });
 
-ipcMain.handle('getLocalFile', (_, basePath: string, path: string) => {
+ipcMain.handle('getLocalFile', async (_, basePath: string, path: string) => {
     const resolvedPath = resolvePath(dirname(basePath), path)
-    if (!fs.existsSync(resolvedPath)) return null;
 
-    return fs.readFileSync(resolvedPath).toString();
+    try {
+        await access(resolvedPath);
+        return (await readFile(resolvedPath)).toString();
+    } catch {
+        return null;
+    }
 });
 
 ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
@@ -188,8 +236,16 @@ ipcMain.handle('exportToPDF', async (_, mdPath: string) => {
 });
 
 ipcMain.on('showInFolder', async (_, path: string) => {
-    if (!fs.existsSync(path)) return;
-    shell.showItemInFolder(path);
+    try {
+        await access(path);
+        shell.showItemInFolder(path);
+    } catch {}
+});
+
+ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide' | 'shortcuts' | 'update') => {
+    const path = joinPath(assetsPath(), 'texts', text + '.md');
+    const file = await readFile(path);
+    return file.toString();
 });
 
 ipcMain.handle('checkForUpdates', async () => {

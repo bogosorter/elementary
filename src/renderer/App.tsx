@@ -14,28 +14,23 @@ import tagQuotes from './utils/quotes';
 import { Theme } from '../themes';
 
 import './App.css';
+import { Settings } from '../settings';
 
 loader.config({ monaco });
 
 function App() {
-
-    const theme = store((state) => state.settings.theme);
-    const fontSize = store((state) => state.settings.fontSize);
-    const editorWidth = store((state) => state.settings.editorWidth);
+    const settings = store((state) => state.settings);
     const shortcuts = store((state) => state.shortcuts);
-    const showSidebar = store(state => state.settings.interfaceComplexity) == 'normal';
-    const showLineNumbers = store(state => state.settings.showLineNumbers);
-    const highlightCurrentLine = store(state => state.settings.highlightCurrentLine);
     const preview = store(state => state.preview);
 
     useEffect(() => {
         requestAnimationFrame(() => tagQuotes());
-    }, [theme]);
+    }, [settings.theme]);
 
     return (
         <div
             id='app'
-            style={createAppVariables(theme, editorWidth)}
+            style={createAppVariables(settings.theme, settings.editorWidth)}
             onKeyDown={(e) => handleShortcut(e, shortcuts)}
             tabIndex={-1}
         >
@@ -47,7 +42,7 @@ function App() {
                         defaultLanguage='custom-markdown'
                         defaultValue='Hello world!'
                         width='100%'
-                        options={createEditorOptions(theme, fontSize, showLineNumbers, highlightCurrentLine)}
+                        options={createEditorOptions(settings)}
                         onMount={(editor, monaco) => {
                             store.getState().initializeEditor(monaco, editor);
                         }}
@@ -57,7 +52,7 @@ function App() {
             }
             {preview && <Preview />}
             <Footer />
-            {showSidebar && <Sidebar />}
+            {settings.interfaceComplexity === 'normal' && <Sidebar />}
             <ToastContainer />
         </div>
     );
@@ -67,6 +62,7 @@ function createAppVariables(theme: Theme, editorWidth: number): CSSProperties {
     return {
         backgroundColor: theme.surface,
         color: theme.primary,
+        '--surface': theme.surface,
         '--accent': theme.accent,
         '--primary-muted': theme.primaryMuted,
         '--editor-width': `${editorWidth}px`,
@@ -76,20 +72,20 @@ function createAppVariables(theme: Theme, editorWidth: number): CSSProperties {
     } as CSSProperties;
 }
 
-function createEditorOptions(theme: Theme, fontSize: number, showLineNumbers: boolean, highlightCurrentLine: boolean): monaco.editor.IStandaloneEditorConstructionOptions {
+function createEditorOptions(settings: Settings): monaco.editor.IStandaloneEditorConstructionOptions {
     return {
-        lineNumbers: showLineNumbers? 'on' : 'off',
-        cursorBlinking: 'phase',
-        cursorSmoothCaretAnimation: 'on',
+        lineNumbers: settings.showLineNumbers? 'on' : 'off',
+        cursorBlinking: settings.cursorBlinking,
+        cursorSmoothCaretAnimation: settings.smoothCursor? 'on' : 'off',
         minimap: {
             enabled: false,
         },
         smoothScrolling: true,
         wordBasedSuggestions: 'off',
         wordWrap: 'on',
-        renderLineHighlight: highlightCurrentLine? 'all' : 'none',
-        theme: theme.name,
-        fontSize,
+        renderLineHighlight: settings.highlightCurrentLine? 'all' : 'none',
+        theme: settings.theme.name,
+        fontSize: settings.fontSize,
         padding: {
             top: 50,
             bottom: 30
@@ -108,7 +104,7 @@ function createEditorOptions(theme: Theme, fontSize: number, showLineNumbers: bo
         guides: {
             indentation: false
         },
-        lineDecorationsWidth: showLineNumbers? 30 : 0,
+        lineDecorationsWidth: settings.showLineNumbers? 30 : 0,
         stickyScroll: {
             enabled: false
         }

@@ -5,7 +5,6 @@ import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
-import { info, markdown, shortcuts, changelog, pdfExportGuide } from '../texts/texts';
 import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
 
@@ -29,6 +28,7 @@ type Store = {
     wordCount: number;
     characterCount: number;
     preview: boolean;
+    knownModified: number; // The last time the file was modified, used to check for external modifications
 
     // Monaco editor references
     monaco?: typeof Monaco;
@@ -44,8 +44,7 @@ type Store = {
     toggleCommandPalette: () => void;
     toggleFullscreen: () => void;
     togglePreview: () => void;
-    // Checks if the current file is saved and prompts the user to save it
-    canCloseFile: () => Promise<boolean>;
+    canCloseFile: () => Promise<boolean>; // Checks if the current file is saved and prompts the user to save it
 
     // Settings methods
     changeSetting: (setting: keyof Settings, value?: any) => void;
@@ -92,15 +91,13 @@ type Store = {
     openShortcutReference: () => Promise<void>;
     openPDFExportGuide: () => Promise<void>;
 
-
     // Misc methods
     onChange: () => void;
     onWindowClose: () => Promise<void>;
     getLocalFile: (path: string) => Promise<string | null>;
     getLocalFileBase64: (path: string) => Promise<{mimeType: string, data: string} | null>;
     getSelectedText: () => Monaco.Selection | null;
-    // Ensures that some custom markdown elements are rendered correctly
-    updateDecorations: () => void;
+    updateDecorations: () => void; // Ensures that some custom markdown elements are rendered correctly
     updateStats: () => void;
 };
 
@@ -136,6 +133,7 @@ const store = create<Store>((set, get) => ({
     wordCount: 0,
     characterCount: 0,
     preview: false,
+    knownModified: 0,
 
     monaco: undefined,
     editor: undefined,
@@ -194,10 +192,6 @@ const store = create<Store>((set, get) => ({
             });
         };
 
-        editor.onDidContentSizeChange(() => {
-            requestAnimationFrame(() => tagQuotes());
-        });
-
         editor.onDidScrollChange(() => {
             requestAnimationFrame(() => tagQuotes());
         });
@@ -229,27 +223,33 @@ const store = create<Store>((set, get) => ({
         const { firstTime, update } = await window.electron.ipcRenderer.invoke('getVersionInfo');
         let path = '';
         let content = '';
-        if (firstTime) content = info;
-        else if (update) content = changelog;
+
+        if (firstTime) content = await window.electron.ipcRenderer.invoke('getText', 'info');
+        else if (update) content = await window.electron.ipcRenderer.invoke('getText', 'update');
         else {
             const file = await window.electron.ipcRenderer.invoke('getLastFile');
             path = file.path;
             content = file.content;
+            set({ knownModified: Date.now() });
         }
 
         if (get().editor) get().editor!.setValue(content);
         set({ path, content, saved: true });
-
-
 
         window.electron.ipcRenderer.invoke('checkForUpdates').then((update) => {
             if (!update) return;
             toast('A new version of Elementary is available. Click here to download it.', {
                 onClick: () => window.open('https://bogosorter.github.io/elementary#download'),
                 autoClose: false,
-                theme: settings.theme.name === 'dark' ? 'dark' : 'light',
-                position: 'bottom-right'
+                position: 'bottom-right',
+                className: 'clickable-toast'
+                // There is no need to choose a color theme, since the colors are
+                // manipulated in App.tsx to always match the current theme.
             });
+        });
+
+        window.addEventListener('resize', () => {
+            if (get().preview == false) requestAnimationFrame(() => tagQuotes());
         });
     },
     openCommandPalette: (page) => {
@@ -292,7 +292,7 @@ const store = create<Store>((set, get) => ({
             if (save == 2) get().save();
         }
 
-        // The file is saved or the user chose not to save it
+        // The file is saved or the user choose not to save it
 
         // Reset selection
         set({ currentSelection: null, currentScroll: null });
@@ -331,8 +331,15 @@ const store = create<Store>((set, get) => ({
             return;
         }
 
-        await window.electron.ipcRenderer.invoke('save', get().path, get().content);
-        set({ saved: true });
+        // If the file has been modified externally, a dialog will be shown and
+        // the user may take some time to respond. We cancel auto-save to
+        // prevent a miriad of dialogs from being shown.
+        cancelAutoSave();
+        const saved = await window.electron.ipcRenderer.invoke('save', get().path, get().content, get().knownModified);
+        if (get().settings.autoSave) autoSave(get().settings.autoSave, get().save, () => !get().saved && get().path !== '');
+
+        if (saved) set({ saved, knownModified: Date.now() });
+        else set({ saved });
 
     },
     saveAs: async () => {
@@ -341,7 +348,7 @@ const store = create<Store>((set, get) => ({
         const path = await window.electron.ipcRenderer.invoke('saveAs', get().content);
         if (!path) return;
 
-        set({ path, saved: true });
+        set({ path, saved: true, knownModified: Date.now() });
     },
     open: async () => {
         get().closeCommandPalette();
@@ -351,9 +358,19 @@ const store = create<Store>((set, get) => ({
         const file = await window.electron.ipcRenderer.invoke('open');
         if (!file) return;
 
-        get().editor?.setValue(file.content);
-        get().editor?.setScrollTop(0);
-        set({ path: file.path, content: file.content, saved: true });
+        if (get().preview) requestAnimationFrame(() => {
+            document.getElementById('preview')!.scrollTo({
+                top: 0,
+                behavior: 'instant'
+            });
+        });
+        else {
+            get().editor!.setValue(file.content);
+            get().editor!.setScrollTop(0);
+        }
+
+
+        set({ path: file.path, content: file.content, saved: true, knownModified: Date.now() });
     },
     openRecent: async (path) => {
         if (!path) {
@@ -371,22 +388,32 @@ const store = create<Store>((set, get) => ({
         if (!content) {
             toast('An error occurred. Please check if the file exists.', {
                 autoClose: false,
-                theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
-                position: 'bottom-right'
+                position: 'bottom-right',
+                // There is no need to choose a color theme, since the colors are
+                // manipulated in App.tsx to always match the current theme.
             });
             return;
         }
 
-        get().editor?.setValue(content);
-        get().editor?.setScrollTop(0);
-        set({ path: path, content: content, saved: true });
+        if (get().preview) requestAnimationFrame(() => {
+            document.getElementById('preview')!.scrollTo({
+                top: 0,
+                behavior: 'instant'
+            });
+        });
+        else {
+            get().editor!.setValue(content);
+            get().editor!.setScrollTop(0);
+        }
+
+        set({ path: path, content: content, saved: true, knownModified: Date.now() });
     },
     newFile: async () => {
         if (!await get().canCloseFile()) return;
 
-        set({ path: '', content: 'Hello world!', saved: true });
+        set({ path: '', content: 'hello, world', saved: true });
         if (get().preview) get().togglePreview();
-        else get().editor!.setValue('Hello world!');
+        else get().editor!.setValue('hello, world');
 
         get().closeCommandPalette();
     },
@@ -396,8 +423,9 @@ const store = create<Store>((set, get) => ({
         if (!get().saved || get().path === '') {
             toast('Please save your file before exporting it.', {
                 autoClose: false,
-                theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
-                position: 'bottom-right'
+                position: 'bottom-right',
+                // There is no need to choose a color theme, since the colors are
+                // manipulated in App.tsx to always match the current theme.
             });
             return;
         }
@@ -409,16 +437,19 @@ const store = create<Store>((set, get) => ({
         // An error occurred
         if (result == 'error') toast('Couldn\t export document: an error occurred. Please check the export guide.', {
             autoClose: false,
-            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right'
+            // There is no need to choose a color theme, since the colors are
+            // manipulated in App.tsx to always match the current theme.
         });
         else toast(`File exported to ${result}`, {
             autoClose: false,
-            theme: get().settings.theme.name === 'dark'? 'dark' : 'light',
             position: 'bottom-right',
             onClick: () => {
                 window.electron.ipcRenderer.send('showInFolder', result);
-            }
+            },
+            className: 'clickable-toast'
+            // There is no need to choose a color theme, since the colors are
+            // manipulated in App.tsx to always match the current theme.
         });
     },
 
@@ -632,36 +663,46 @@ const store = create<Store>((set, get) => ({
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(info);
-        set({ path: '', content: info, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'info');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openUpdateNotice: async () => {
+        get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(changelog);
-        set({ path: '', content: changelog, saved: true });
-        get().closeCommandPalette();
+        const content = await window.electron.ipcRenderer.invoke('getText', 'update');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openMarkdownReference: async () => {
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(markdown);
-        set({ path: '', content: markdown, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'markdown');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openShortcutReference: async () => {
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(shortcuts);
-        set({ path: '', content: shortcuts, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'shortcuts');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
     openPDFExportGuide: async() => {
         get().closeCommandPalette();
         if (!await get().canCloseFile()) return;
 
-        get().editor?.setValue(pdfExportGuide);
-        set({ path: '', content: pdfExportGuide, saved: true });
+        const content = await window.electron.ipcRenderer.invoke('getText', 'pdfExportGuide');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
     },
 
     onChange: () => {
@@ -747,8 +788,16 @@ const store = create<Store>((set, get) => ({
         if (!get().editor) return;
 
         const text = get().editor!.getValue();
-        const characterCount = text.length;
-        const wordCount = text.split(/\s+/).filter((word) => word.length > 0).length;
+        const characterCount = text
+                                .replace(/[`*_~[\]()>#+=!-]/g, '') // Remove markdown syntax
+                                .replace(/\s/g, '') // Remove whitespace characters
+                                .length;
+        const wordCount = text
+                            .replace(/[^\w\s]|_/g, '') // Keep only alphanumeric characters and whitespace
+                            .split(/\s+/) // Split by whitespace
+                            .filter((word) => word.length > 0) // Filter out empty strings
+                            .length;
+
         set({ characterCount, wordCount });
     },
 }));

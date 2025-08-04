@@ -1,10 +1,10 @@
+import { useRef, useState, useEffect, useReducer, useLayoutEffect } from 'react';
 import { Line } from './Line';
 import { Square, XLg } from 'react-bootstrap-icons';
 import store from '../store/store';
 import './Header.css';
 
 export default function Header() {
-
     const path = store(state => state.path) || 'Untitled';
     const saved = store(state => state.saved);
     const theme = store(state => state.settings.theme);
@@ -17,15 +17,46 @@ export default function Header() {
     const pathElements = interleaved.map((item, index) => {
         if (!item) return <span className='path-separator' key={index}>&gt;</span>;
         return <span className='path-segment' key={index}>{item}</span>;
-    })
+    });
+
+    // The next section is concerned with adapting the displayed path to the
+    // size of the window. If the window is too small to display the whole path
+    // only the filename is shown.
+
+    const ref = useRef<HTMLDivElement>(null); // Reference to the path container div
+
+    // Width of the full path. If zero, the width for this path wasn't tested yet.
+    const [pathWidth, setPathWidth] = useState(0);
+
+    // This reducer is used to force a reload when the page size changes
+    const [_, reload] = useReducer((value) => value + 1, 0);
+
+    // If the path changes, we of course have to recalculate the maximum width
+    // on the next frame
+    useEffect(() => {
+        setPathWidth(0);
+    }, [path]);
+
+    // If the window is resized, we reload to check if the full path can be
+    // displayed
+    useEffect(() => {
+        window.addEventListener('resize', reload);
+        return () => window.removeEventListener('resize', reload);
+    }, []);
+
+    useLayoutEffect(() => {
+        if (!ref.current) return;
+        if (pathWidth === 0) setPathWidth(ref.current.children[0].clientWidth);
+    }, [pathWidth]);
 
     return (
         <div id='header' style={{ color: theme.primary }}>
             {showHeaderButtons && <div id='header-buttons-placeholder' />}
-            <div id='path'>
-                <span id='path-long'>{pathElements}</span>
-                <span id='path-short'>{pathElements[pathElements.length - 1]}</span>
-                {!saved && <span id='unsaved' style={{ backgroundColor: theme.accent }}></span>}
+            <div id='path-container' ref={ref}>
+                <span>
+                    {pathWidth !== 0 && ref.current && ref.current.clientWidth - 80 < pathWidth ? pathElements[pathElements.length - 1] : pathElements }
+                    {!saved && <span id='unsaved' style={{ backgroundColor: theme.accent }}></span>}
+                </span>
             </div>
             {showHeaderButtons && <div id='header-buttons'>
                 <button

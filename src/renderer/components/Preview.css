@@ -1266,3 +1266,7 @@
 .markdown-body pre div code {
   background: none !important;
 }
+
+.markdown-body a {
+  color: var(--accent);
+}

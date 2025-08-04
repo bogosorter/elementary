@@ -111,8 +111,14 @@ const actions = {
             label: 'Settings: Highlight current line',
             action: () => store.getState().changeSetting('highlightCurrentLine')
         }, {
-            label: 'Settings: Preview text alignement',
+            label: 'Settings: Preview text alignment',
             action: () => store.getState().changeSetting('previewTextAlign')
+        }, {
+            label: 'Settings: Cursor blinking',
+            action: () => store.getState().changeSetting('cursorBlinking')
+        }, {
+            label: 'Settings: Smooth cursor',
+            action: () => store.getState().changeSetting('smoothCursor')
         }, {
             label: 'Settings: Automatic PDF export filename',
             action: () => store.getState().changeSetting('automaticExportFilename')
@@ -261,6 +267,33 @@ const actions = {
         }, {
             label: 'Justify',
             action: () => store.getState().changeSetting('previewTextAlign', 'justify')
+        }
+    ],
+    cursorBlinking: [
+        {
+            label: 'Blink',
+            action: () => store.getState().changeSetting('cursorBlinking', 'blink')
+        }, {
+            label: 'Smooth',
+            action: () => store.getState().changeSetting('cursorBlinking', 'smooth')
+        }, {
+            label: 'Phase',
+            action: () => store.getState().changeSetting('cursorBlinking', 'phase')
+        }, {
+            label: 'Expand',
+            action: () => store.getState().changeSetting('cursorBlinking', 'expand')
+        }, {
+            label: 'Solid',
+            action: () => store.getState().changeSetting('cursorBlinking', 'solid')
+        }
+    ],
+    smoothCursor: [
+        {
+            label: 'Enable smooth cursor',
+            action: () => store.getState().changeSetting('smoothCursor', true)
+        }, {
+            label: 'Disable smooth cursor',
+            action: () => store.getState().changeSetting('smoothCursor', false)
         }
     ],
     automaticExportFilename: [
