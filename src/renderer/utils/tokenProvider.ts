@@ -102,6 +102,9 @@ export const tokenProvider: languages.IMonarchLanguage = {
 			// github style code blocks (with backticks but no language)
 			[/^\s*```\s*$/, { token: 'code', next: '@codeblock' }],
 
+            // math block
+            [/^\s*\$\$\s*$/, { token: 'delimiters', next: '@mathblock' }],
+
 			// markup within lines
 			{ include: '@linecontent' }
 		],
@@ -141,6 +144,11 @@ export const tokenProvider: languages.IMonarchLanguage = {
 			[/[^`]+/, 'variable.source']
 		],
 
+        mathblock: [
+            [/\s*\$\$\s*$/, { token: 'delimiters', next: '@pop' }],
+            [/[^`]+/, 'math']
+        ],
+
 		linecontent: [
 			// escapes
 			[/&\w+;/, 'string.escape'],
@@ -153,6 +161,7 @@ export const tokenProvider: languages.IMonarchLanguage = {
 			[/(\*)((?:[^\\*]|@escapes)+)(\*)/, ['delimiters', 'emphasis', 'delimiters']],
 			[/(`)(.+?)(`)/, ['delimiters', 'inline-code', 'delimiters']],
             [/(~|~~)([^\\~]|@escapes)+\1/, 'strikethrough'],
+            [/(\$)(.+?)(\$)/, ['delimiters', 'math', 'delimiters']],
 
 			// links
 			[/(!?\[)((?:[^\]\\]|@escapes)*)(\]\([^\)]+\))/, ['delimiters', 'string.link', 'delimiters']],

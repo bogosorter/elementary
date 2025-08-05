@@ -150,6 +150,9 @@ function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneT
                 token: 'quote',
                 foreground: colors.primaryMuted
             }, {
+                token: 'math',
+                foreground: colors.secondary
+            }, {
                 token: 'list',
                 foreground: colors.accent,
                 fontStyle: 'bold'
