@@ -2,8 +2,10 @@ import { useEffect, CSSProperties } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkFrontmatter from 'remark-frontmatter';
+import remarkMath from 'remark-math';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
+import rehypeKatex from 'rehype-katex';
 import APreview from './APreview';
 import CodePreview from './CodePreview';
 import ImagePreview from './ImagePreview';
@@ -38,8 +40,8 @@ export default function Preview() {
             tabIndex={-1}
         >
             <Markdown
-                remarkPlugins={[remarkGfm, remarkFrontmatter]}
-                rehypePlugins={[rehypeRaw, rehypeSlug]}
+                remarkPlugins={[remarkGfm, remarkFrontmatter, remarkMath]}
+                rehypePlugins={[rehypeRaw, rehypeSlug, rehypeKatex]}
                 components={{
                     a: ({ href, ...props }) => <APreview href={href} props={props} />,
                     code: ({ children, className, ...props }) => (

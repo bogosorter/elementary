@@ -10,3 +10,10 @@
 .markdown-body p {
     text-align: justify;
 }
+
+.katex {
+    font-size: 1.2em;
+}
+.katex-html {
+    display: none;
+}

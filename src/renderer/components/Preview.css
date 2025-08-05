@@ -1270,3 +1270,10 @@
 .markdown-body a {
   color: var(--accent);
 }
+
+.katex {
+  font-size: 1.2em;
+}
+.katex-html {
+  display: none;
+}
