@@ -53,10 +53,8 @@ export default function Header() {
         <div id='header' style={{ color: theme.primary }}>
             {showHeaderButtons && <div id='header-buttons-placeholder' />}
             <div id='path-container' ref={ref}>
-                <span>
-                    {pathWidth !== 0 && ref.current && ref.current.clientWidth - 80 < pathWidth ? pathElements[pathElements.length - 1] : pathElements }
-                    {!saved && <span id='unsaved' style={{ backgroundColor: theme.accent }}></span>}
-                </span>
+                {pathWidth !== 0 && ref.current && ref.current.clientWidth - 80 < pathWidth ? pathElements[pathElements.length - 1] : pathElements }
+                {!saved && <span id='unsaved' style={{ backgroundColor: theme.accent }}></span>}
             </div>
             {showHeaderButtons && <div id='header-buttons'>
                 <button
