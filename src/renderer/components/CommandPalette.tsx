@@ -1,9 +1,16 @@
 import { Command } from 'cmdk';
-import './CommandPalette.css';
 import { lightTheme, darkTheme, commaTheme } from '../../themes';
 import store from '../store/store';
 import { CSSProperties, useEffect, useState } from 'react';
 import makeRecentFile from '../utils/makeRecentFile';
+import { Settings } from '../../settings';
+import './CommandPalette.css';
+
+export type CommandPaletteAction = {
+    label: string | React.ReactNode;
+    action: () => void;
+    selected?: () => boolean;
+}
 
 export default function CommandPalette() {
 
@@ -42,16 +49,17 @@ export default function CommandPalette() {
             <Command.List>
                 <Command.Empty style={{ color: theme.primary }}>No results found <span className='emoticon'>:(</span></Command.Empty>
                 {
-                    items.map(({ label, action }, index) => (
+                    items.map((item, index) => (
                         <Command.Item
                             key={index}
                             onSelect={() => {
                                 setValue('');
-                                action();
+                                item.action();
                             }}
                             style={{ color: theme.primary }}
                         >
-                            {label}
+                            {item.selected?.() && <span id='selected-option' style={{ backgroundColor: theme.accent }}></span>}
+                            {item.label}
                         </Command.Item>
                     ))
                 }
@@ -60,7 +68,7 @@ export default function CommandPalette() {
     );
 }
 
-const actions = {
+const actions: Record<"general" | keyof Settings, CommandPaletteAction[]> = {
     general: [
         {
             label: 'File: Open',
@@ -187,131 +195,163 @@ const actions = {
     theme: [
         {
             label: 'Theme: Light',
-            action: () => store.getState().changeSetting('theme', lightTheme)
+            action: () => store.getState().changeSetting('theme', lightTheme),
+            selected: () => store.getState().settings.theme.name === 'light'
         }, {
             label: 'Theme: Dark',
-            action: () => store.getState().changeSetting('theme', darkTheme)
+            action: () => store.getState().changeSetting('theme', darkTheme),
+            selected: () => store.getState().settings.theme.name === 'dark'
         }, {
             label: 'Theme: Comma',
-            action: () => store.getState().changeSetting('theme', commaTheme)
+            action: () => store.getState().changeSetting('theme', commaTheme),
+            selected: () => store.getState().settings.theme.name === 'comma'
         }
     ],
     zoom: [75, 90, 100, 110, 125, 140, 150, 175, 200].map(z => ({
         label: `Zoom: ${z}%`,
-        action: () => store.getState().changeSetting('zoom', z / 100)
+        action: () => store.getState().changeSetting('zoom', z / 100),
+        selected: () => store.getState().settings.zoom === z / 100
     })),
     fontSize: [12, 14, 16, 18, 20, 22, 24, 26, 28].map(fontSize => ({
         label: `Font Size: ${fontSize}px`,
-        action: () => store.getState().changeSetting('fontSize', fontSize)
+        action: () => store.getState().changeSetting('fontSize', fontSize),
+        selected: () => store.getState().settings.fontSize === fontSize
     })),
     editorWidth: [600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600].map(editorWidth => ({
         label: `Editor Width: ${editorWidth}px`,
-        action: () => store.getState().changeSetting('editorWidth', editorWidth)
+        action: () => store.getState().changeSetting('editorWidth', editorWidth),
+        selected: () => store.getState().settings.editorWidth === editorWidth
     })),
     interfaceComplexity: [
         {
             label: 'Normal',
-            action: () => store.getState().changeSetting('interfaceComplexity', 'normal')
+            action: () => store.getState().changeSetting('interfaceComplexity', 'normal'),
+            selected: () => store.getState().settings.interfaceComplexity === 'normal'
         }, {
             label: 'Minimal',
-            action: () => store.getState().changeSetting('interfaceComplexity', 'minimal')
+            action: () => store.getState().changeSetting('interfaceComplexity', 'minimal'),
+            selected: () => store.getState().settings.interfaceComplexity === 'minimal'
         }
     ],
     autoSave: [0, 1000, 2000, 3000, 4000, 5000, 10000].map(period => ({
         label: period? `Auto Save: ${period / 1000}s` : 'Auto Save: off',
-        action: () => store.getState().changeSetting('autoSave', period)
+        action: () => store.getState().changeSetting('autoSave', period),
+        selected: () => store.getState().settings.autoSave === period
     })),
     showLineNumbers: [
         {
             label: 'Show Line Numbers',
-            action: () => store.getState().changeSetting('showLineNumbers', true)
+            action: () => store.getState().changeSetting('showLineNumbers', true),
+            selected: () => store.getState().settings.showLineNumbers === true
         }, {
             label: 'Hide Line Numbers',
-            action: () => store.getState().changeSetting('showLineNumbers', false)
+            action: () => store.getState().changeSetting('showLineNumbers', false),
+            selected: () => store.getState().settings.showLineNumbers === false
         }
     ],
     sidebar: [
         {
             label: 'Hidden',
-            action: () => store.getState().changeSetting('sidebar', 'hidden')
+            action: () => store.getState().changeSetting('sidebar', 'hidden'),
+            selected: () => store.getState().settings.sidebar === 'hidden'
         }, {
             label: 'File Actions',
-            action: () => store.getState().changeSetting('sidebar', 'fileActions')
+            action: () => store.getState().changeSetting('sidebar', 'fileActions'),
+            selected: () => store.getState().settings.sidebar === 'fileActions'
         }, {
             label: 'Markdown Actions',
-            action: () => store.getState().changeSetting('sidebar', 'markdownActions')
+            action: () => store.getState().changeSetting('sidebar', 'markdownActions'),
+            selected: () => store.getState().settings.sidebar === 'markdownActions'
         }, {
             label: 'All',
-            action: () => store.getState().changeSetting('sidebar', 'all')
+            action: () => store.getState().changeSetting('sidebar', 'all'),
+            selected: () => store.getState().settings.sidebar === 'all'
         }
     ],
     highlightCurrentLine: [
         {
             label: 'Highlight Current Line',
-            action: () => store.getState().changeSetting('highlightCurrentLine', true)
+            action: () => store.getState().changeSetting('highlightCurrentLine', true),
+            selected: () => store.getState().settings.highlightCurrentLine === true
         }, {
             label: 'Do Not Highlight Current Line',
-            action: () => store.getState().changeSetting('highlightCurrentLine', false)
+            action: () => store.getState().changeSetting('highlightCurrentLine', false),
+            selected: () => store.getState().settings.highlightCurrentLine === false
         }
     ],
     previewTextAlign: [
         {
             label: 'Left',
-            action: () => store.getState().changeSetting('previewTextAlign', 'left')
+            action: () => store.getState().changeSetting('previewTextAlign', 'left'),
+            selected: () => store.getState().settings.previewTextAlign === 'left'
         }, {
             label: 'Center',
-            action: () => store.getState().changeSetting('previewTextAlign', 'center')
+            action: () => store.getState().changeSetting('previewTextAlign', 'center'),
+            selected: () => store.getState().settings.previewTextAlign === 'center'
         }, {
             label: 'Right',
-            action: () => store.getState().changeSetting('previewTextAlign', 'right')
+            action: () => store.getState().changeSetting('previewTextAlign', 'right'),
+            selected: () => store.getState().settings.previewTextAlign === 'right'
         }, {
             label: 'Justify',
-            action: () => store.getState().changeSetting('previewTextAlign', 'justify')
+            action: () => store.getState().changeSetting('previewTextAlign', 'justify'),
+            selected: () => store.getState().settings.previewTextAlign === 'justify'
         }
     ],
     cursorBlinking: [
         {
             label: 'Blink',
-            action: () => store.getState().changeSetting('cursorBlinking', 'blink')
+            action: () => store.getState().changeSetting('cursorBlinking', 'blink'),
+            selected: () => store.getState().settings.cursorBlinking === 'blink'
         }, {
             label: 'Smooth',
-            action: () => store.getState().changeSetting('cursorBlinking', 'smooth')
+            action: () => store.getState().changeSetting('cursorBlinking', 'smooth'),
+            selected: () => store.getState().settings.cursorBlinking === 'smooth'
         }, {
             label: 'Phase',
-            action: () => store.getState().changeSetting('cursorBlinking', 'phase')
+            action: () => store.getState().changeSetting('cursorBlinking', 'phase'),
+            selected: () => store.getState().settings.cursorBlinking === 'phase'
         }, {
             label: 'Expand',
-            action: () => store.getState().changeSetting('cursorBlinking', 'expand')
+            action: () => store.getState().changeSetting('cursorBlinking', 'expand'),
+            selected: () => store.getState().settings.cursorBlinking === 'expand'
         }, {
             label: 'Solid',
-            action: () => store.getState().changeSetting('cursorBlinking', 'solid')
+            action: () => store.getState().changeSetting('cursorBlinking', 'solid'),
+            selected: () => store.getState().settings.cursorBlinking === 'solid'
         }
     ],
     smoothCursor: [
         {
             label: 'Enable smooth cursor',
-            action: () => store.getState().changeSetting('smoothCursor', true)
+            action: () => store.getState().changeSetting('smoothCursor', true),
+            selected: () => store.getState().settings.smoothCursor === true
         }, {
             label: 'Disable smooth cursor',
-            action: () => store.getState().changeSetting('smoothCursor', false)
+            action: () => store.getState().changeSetting('smoothCursor', false),
+            selected: () => store.getState().settings.smoothCursor === false
         }
     ],
     automaticExportFilename: [
         {
             label: 'Enable automatic PDF export filename',
-            action: () => store.getState().changeSetting('automaticExportFilename', true)
+            action: () => store.getState().changeSetting('automaticExportFilename', true),
+            selected: () => store.getState().settings.automaticExportFilename === true
         }, {
             label: 'Disable automatic PDF export filename',
-            action: () => store.getState().changeSetting('automaticExportFilename', false)
+            action: () => store.getState().changeSetting('automaticExportFilename', false),
+            selected: () => store.getState().settings.automaticExportFilename === false
         }
     ],
     prereleaseNotification: [
         {
             label: 'Enable pre-release notification',
-            action: () => store.getState().changeSetting('prereleaseNotification', true)
+            action: () => store.getState().changeSetting('prereleaseNotification', true),
+            selected: () => store.getState().settings.prereleaseNotification === true
         }, {
             label: 'Disable pre-release notification',
-            action: () => store.getState().changeSetting('prereleaseNotification', false)
+            action: () => store.getState().changeSetting('prereleaseNotification', false),
+            selected: () => store.getState().settings.prereleaseNotification === false
         }
     ]
 };

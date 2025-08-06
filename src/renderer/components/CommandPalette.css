@@ -65,11 +65,22 @@
     margin-top: 3px;
     font-family: "Droid Sans Mono", "monospace", monospace;
     transition: all 0.5s ease;
+    display: flex;
+    align-items: center;
 }
 
 [cmdk-item]:hover {
     background-color: rgba(0, 0, 0, 0.05);
     cursor: pointer;
+}
+#selected-option {
+    background-color: var(--accent);
+    display: inline-block;
+    height: 5px;
+    width: 5px;
+    border-radius: 2.5px;
+    align-self: center;
+    margin-right: 5px;
 }
 
 [cmdk-item][data-selected='true'] {

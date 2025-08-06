@@ -1,4 +1,6 @@
-import store from "../store/store"
+import store from '../store/store';
+import { CommandPaletteAction } from '../components/CommandPalette';
+
 
 export default function makeRecentFile(path: string) {
     // TODO: find the correct filename
@@ -8,5 +10,5 @@ export default function makeRecentFile(path: string) {
     return {
         label: <><strong>{filename}</strong>&nbsp;({displayPath})</>,
         action: () => store.getState().openRecent(path)
-    }
+    } as CommandPaletteAction;
 }
