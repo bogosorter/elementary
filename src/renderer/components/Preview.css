@@ -1271,9 +1271,6 @@
   color: var(--accent);
 }
 
-.katex {
-  font-size: 1.2em;
-}
-.katex-html {
-  display: none;
+.katex .katex-mathml {
+  bottom: 0; /* This prevents a strange overflow */
 }

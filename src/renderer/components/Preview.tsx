@@ -11,6 +11,7 @@ import CodePreview from './CodePreview';
 import ImagePreview from './ImagePreview';
 import LinkPreview from './LinkPreview';
 import store from '../store/store';
+import '../utils/katex/katex.min.css';
 import './Preview.css';
 
 export default function Preview() {
