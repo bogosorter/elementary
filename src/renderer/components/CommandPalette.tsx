@@ -190,6 +190,9 @@ const actions: Record<"general" | keyof Settings, CommandPaletteAction[]> = {
         }, {
             label: 'Elementary: PDF Export Guide',
             action: () => store.getState().openPDFExportGuide()
+        }, {
+            label: 'Elementary: Markdown Math Guide',
+            action: () => store.getState().openMath()
         }
     ],
     theme: [

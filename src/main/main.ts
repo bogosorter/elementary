@@ -242,7 +242,7 @@ ipcMain.on('showInFolder', async (_, path: string) => {
     } catch {}
 });
 
-ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide' | 'shortcuts' | 'update') => {
+ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide' | 'shortcuts' | 'update' | 'math') => {
     const path = joinPath(assetsPath(), 'texts', text + '.md');
     const file = await readFile(path);
     return file.toString();

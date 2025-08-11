@@ -89,6 +89,7 @@ type Store = {
     openUpdateNotice: () => Promise<void>;
     openMarkdownReference: () => Promise<void>;
     openShortcutReference: () => Promise<void>;
+    openMath: () => Promise<void>;
     openPDFExportGuide: () => Promise<void>;
 
     // Misc methods
@@ -691,6 +692,15 @@ const store = create<Store>((set, get) => ({
         if (!await get().canCloseFile()) return;
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'shortcuts');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
+    },
+    openMath: async () => {
+        get().closeCommandPalette();
+        if (!await get().canCloseFile()) return;
+
+        const content = await window.electron.ipcRenderer.invoke('getText', 'math');
 
         get().editor?.setValue(content);
         set({ path: '', content, saved: true });
