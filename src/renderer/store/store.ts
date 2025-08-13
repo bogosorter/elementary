@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import * as Monaco from 'monaco-editor';
+import { getSpellchecker } from 'monaco-spellchecker';
 import { toast } from 'react-toastify';
 import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
-import 'react-toastify/dist/ReactToastify.css';
 import tagQuotes from '../utils/quotes';
+import debounce from '../utils/debounce';
+import 'react-toastify/dist/ReactToastify.css';
 
 type CommandPalettePage = 'general' | 'recentlyOpened' | keyof Settings;
 
@@ -214,6 +216,17 @@ const store = create<Store>((set, get) => ({
         // save = false and we don't want that to happen when the editor is
         // initialized
         set({ saved: true });
+
+
+        const spellchecker = getSpellchecker(monaco, editor, {
+            check: (word) => word != 'Software',
+            suggest: () => [],
+            ignore: () => {},
+            addWord: () => {}
+        })
+        const spellcheck = debounce(spellchecker.process, 500);
+        editor.onDidChangeModelContent(() => spellcheck());
+        spellchecker.process();
     },
 
     init: async () => {
