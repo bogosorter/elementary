@@ -248,6 +248,15 @@ ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide'
     return file.toString();
 });
 
+ipcMain.handle('getDictionary', async () => {
+    const dictionariesPath = joinPath(assetsPath(), 'dictionaries');
+    const dicPath = joinPath(dictionariesPath, 'en_US.dic');
+    const affPath = joinPath(dictionariesPath, 'en_US.aff');
+    const dic = (await readFile(dicPath)).toString();
+    const aff = (await readFile(affPath)).toString();
+    return { dic, aff };
+});
+
 ipcMain.handle('checkForUpdates', async () => {
     const prereleaseNotification = (await getSettings()).prereleaseNotification;
 

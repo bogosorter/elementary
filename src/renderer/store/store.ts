@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import * as Monaco from 'monaco-editor';
 import { getSpellchecker } from 'monaco-spellchecker';
 import { toast } from 'react-toastify';
+import NSpell from 'nspell';
 import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
@@ -142,7 +143,7 @@ const store = create<Store>((set, get) => ({
     editor: undefined,
     currentSelection: null,
     currentScroll: null,
-    initializeEditor: (monaco, editor) => {
+    initializeEditor: async (monaco, editor) => {
         set({ monaco, editor });
 
         monaco.editor.defineTheme('light', createStyles(lightTheme));
@@ -217,13 +218,15 @@ const store = create<Store>((set, get) => ({
         // initialized
         set({ saved: true });
 
-
+        const dictionary = await window.electron.ipcRenderer.invoke('getDictionary');
+        const nspell = NSpell(dictionary);
         const spellchecker = getSpellchecker(monaco, editor, {
-            check: (word) => word != 'Software',
-            suggest: () => [],
+            check: (word) => nspell.correct(word),
+            suggest: (word) => nspell.suggest(word),
             ignore: () => {},
             addWord: () => {}
-        })
+        });
+
         const spellcheck = debounce(spellchecker.process, 500);
         editor.onDidChangeModelContent(() => spellcheck());
         spellchecker.process();
