@@ -91,12 +91,12 @@ export const tokenProvider: languages.IMonarchLanguage = {
 			[/^(\t|[ ]{4})[^ ].*$/, 'code'],
 
 			// code block (3 tilde)
-			[/^\s*~~~\s*((?:\w|[\/\-#])+)?\s*$/, { token: 'string', next: '@codeblock' }],
+			[/^\s*~~~\s*((?:\w|[\/\-#])+)?\s*$/, { token: 'code', next: '@codeblock' }],
 
 			// github style code blocks (with backticks and language)
 			[
 				/^\s*```\s*((?:\w|[\/\-#])+).*$/,
-				{ token: 'code', next: '@codeblockgh', nextEmbedded: '$1' }
+				{ token: 'code-start', next: '@codeblockgh', nextEmbedded: '$1' }
 			],
 
 			// github style code blocks (with backticks but no language)
@@ -140,7 +140,7 @@ export const tokenProvider: languages.IMonarchLanguage = {
 
 		// github style code blocks
 		codeblockgh: [
-			[/```\s*$/, { token: 'code', next: '@pop', nextEmbedded: '@pop' }],
+			[/```\s*$/, { token: 'code-end', next: '@pop', nextEmbedded: '@pop' }],
 			[/[^`]+/, 'variable.source']
 		],
 

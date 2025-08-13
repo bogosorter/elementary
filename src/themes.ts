@@ -160,6 +160,12 @@ function createStyles(colors: Theme, dark: boolean = false): editor.IStandaloneT
                 token: 'code',
                 foreground: colors.accent
             }, {
+                token: 'code-start',
+                foreground: colors.accent
+            }, {
+                token: 'code-end',
+                foreground: colors.accent
+            }, {
                 token: 'delimiters',
                 foreground: colors.primaryMuted
             }, {

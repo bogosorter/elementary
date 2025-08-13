@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as Monaco from 'monaco-editor';
-import { getSpellchecker } from 'monaco-spellchecker';
+import { getSpellchecker } from '../utils/spellchecker';
 import { toast } from 'react-toastify';
 import NSpell from 'nspell';
 import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
