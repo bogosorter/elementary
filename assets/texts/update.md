@@ -1,25 +1,14 @@
-# Elementary v1.3.0-alpha.0
+# Elementary v1.4.0-alpha.0
 
 Hi again!
 
-Yet another release of Elementary is out. This one focuses on polishing the app, addressing several problems pointed out by users and myself. This only emphasizes the importance of user feedback, so please, [keep it coming](#get-in-touch)! Here's what's new in this version:
+As promised in the previous release, this version adds support for LaTeX math formulas. If you're not familiar with LaTeX, Elementary now includes a guide on how to use it (open the command palette with `ctrl+shift+p` and search for "Math"). It covers the basics of writing inline and block equations, as well as some useful commands.
 
-- Settings for cursor style and movement.
-- Warning when saving a document edited externally.
-- Toolbar doesn't change position in preview mode, which means that you can now toggle between preview and edit mode without moving the mouse 🎉
-- Word and character counting now ignore markdown syntax and white-space.
-- Shortcuts displayed when hovering items in the toolbar.
-- The text "Hello, world!", displayed on new documents, now reads "hello, world". [Here](https://bogosorter.github.io/blog/#hello-world)'s why.
-- Improved themes both in edit and preview modes.
-- Several other bugs fixes and little improvements.
+Besides that, the command palette now shows the selected setting from a setting's options.
 
-The plan for the next release is to add support for LaTeX math syntax. After that, a bold new goal: a spellchecker. It’s a complex feature and will definitely take some time. Until then, happy writing!
+The plan for the next release is rather bold: a spellchecker. It’s a complex feature and will definitely take some time. Until then, happy writing!
 
 bogosorter
-
-## Acknowledgements
-
-This release owes a lot to [Dead4ever07](https://github.com/Dead4ever07) and [LuisGoncalves05](https://github.com/LuisGoncalves05). They provided important feedback and allowed me to see Elementary from a user's perspective.
 
 ## Get in touch
 
