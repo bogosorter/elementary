@@ -224,7 +224,8 @@ const store = create<Store>((set, get) => ({
             check: (word) => nspell.correct(word),
             suggest: (word) => nspell.suggest(word),
             ignore: () => {},
-            addWord: () => {}
+            addWord: () => {},
+            severity: Monaco.MarkerSeverity.Error
         });
 
         const spellcheck = debounce(spellchecker.process, 500);

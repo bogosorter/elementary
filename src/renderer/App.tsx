@@ -107,6 +107,13 @@ function createEditorOptions(settings: Settings): monaco.editor.IStandaloneEdito
         lineDecorationsWidth: settings.showLineNumbers? 30 : 0,
         stickyScroll: {
             enabled: false
+        },
+        hover: {
+            enabled: false
+        },
+        lightbulb: {
+            // @ts-ignore
+            enabled: 'off'
         }
     };
 }
