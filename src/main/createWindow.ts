@@ -1,6 +1,6 @@
 import path from 'path';
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './utils/util';
+import { resolveHtmlPath } from './utils/utils';
 import { shell, app, BrowserWindow } from 'electron';
 
 if (process.env.NODE_ENV === 'production') {

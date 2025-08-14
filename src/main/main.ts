@@ -9,7 +9,9 @@ import versionCheck from '@version-checker/core';
 import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
 import { exportToPDF } from './utils/export';
-import { assetsPath } from './utils/util';
+import { assetsPath } from './utils/utils';
+import { availableDictionaries, loadSpellchecker, spellcheck } from './utils/spellchecker';
+import { Token } from 'monaco-editor';
 
 let window: BrowserWindow | null = null;
 let preventClose = true;
@@ -248,14 +250,9 @@ ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide'
     return file.toString();
 });
 
-ipcMain.handle('getDictionary', async () => {
-    const dictionariesPath = joinPath(assetsPath(), 'dictionaries');
-    const dicPath = joinPath(dictionariesPath, 'en_US.dic');
-    const affPath = joinPath(dictionariesPath, 'en_US.aff');
-    const dic = (await readFile(dicPath)).toString();
-    const aff = (await readFile(affPath)).toString();
-    return { dic, aff };
-});
+ipcMain.handle('availableDictionaries', () => availableDictionaries());
+ipcMain.handle('loadSpellchecker', (_, language: string) => loadSpellchecker(language));
+ipcMain.handle('spellcheck', (_, lines: string[], tokens: Token[][]) => spellcheck(lines, tokens))
 
 ipcMain.handle('checkForUpdates', async () => {
     const prereleaseNotification = (await getSettings()).prereleaseNotification;

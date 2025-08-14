@@ -15,6 +15,7 @@ export type Settings = {
     smoothCursor: boolean;
     automaticExportFilename: boolean;
     prereleaseNotification: boolean;
+    dictionary: string | null;
 }
 
 const defaultSettings: Settings = {
@@ -31,7 +32,8 @@ const defaultSettings: Settings = {
     cursorBlinking: 'phase',
     smoothCursor: true,
     automaticExportFilename: false,
-    prereleaseNotification: false
+    prereleaseNotification: false,
+    dictionary: 'en_US'
 };
 
 export default defaultSettings;

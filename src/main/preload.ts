@@ -2,7 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent, webFrame } from 'electron';
 
-export type Channels = 'save' | 'saveAs' | 'open' | 'window' | 'getSettings' | 'setSettings' | 'resetSettings' | 'loadFile' | 'getRecent' | 'getLastFile' | 'toggleFullscreen' | 'newWindow' | 'showSaveDialog' | 'getVersionInfo' | 'checkForUpdates' | 'close' | 'getLocalFile' | 'getLocalFileBase64' | 'exportToPDF' | 'showInFolder' | 'getFileContent' | 'exportWindowLoad' | 'getText' | 'getDictionary';
+export type Channels = 'save' | 'saveAs' | 'open' | 'window' | 'getSettings' | 'setSettings' | 'resetSettings' | 'loadFile' | 'getRecent' | 'getLastFile' | 'toggleFullscreen' | 'newWindow' | 'showSaveDialog' | 'getVersionInfo' | 'checkForUpdates' | 'close' | 'getLocalFile' | 'getLocalFileBase64' | 'exportToPDF' | 'showInFolder' | 'getFileContent' | 'exportWindowLoad' | 'getText' | 'availableDictionaries' | 'loadSpellchecker' | 'spellcheck';
 
 const electronHandler = {
   windowType: process.argv.includes('export') ? 'export' : 'main',

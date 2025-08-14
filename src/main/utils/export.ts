@@ -1,5 +1,5 @@
 import { writeFile } from 'fs/promises';
-import { waitForExportLoad } from './util';
+import { waitForExportLoad } from './utils';
 import createWindow from '../createWindow';
 
 export async function exportToPDF(input: string, output: string) {

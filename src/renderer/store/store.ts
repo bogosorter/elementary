@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import * as Monaco from 'monaco-editor';
 import { getSpellchecker } from '../utils/spellchecker';
 import { toast } from 'react-toastify';
-import NSpell from 'nspell';
 import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
@@ -32,6 +31,10 @@ type Store = {
     characterCount: number;
     preview: boolean;
     knownModified: number; // The last time the file was modified, used to check for external modifications
+
+    // Spellchecking variables
+    dictionaries: string[];
+    spellcheck: (() => void) | null;
 
     // Monaco editor references
     monaco?: typeof Monaco;
@@ -139,10 +142,14 @@ const store = create<Store>((set, get) => ({
     preview: false,
     knownModified: 0,
 
+    dictionaries: [],
+    spellcheck: null,
+
     monaco: undefined,
     editor: undefined,
     currentSelection: null,
     currentScroll: null,
+
     initializeEditor: async (monaco, editor) => {
         set({ monaco, editor });
 
@@ -218,19 +225,34 @@ const store = create<Store>((set, get) => ({
         // initialized
         set({ saved: true });
 
-        const dictionary = await window.electron.ipcRenderer.invoke('getDictionary');
-        const nspell = NSpell(dictionary);
-        const spellchecker = getSpellchecker(monaco, editor, {
-            check: (word) => nspell.correct(word),
-            suggest: (word) => nspell.suggest(word),
-            ignore: () => {},
-            addWord: () => {},
-            severity: Monaco.MarkerSeverity.Error
-        });
+        if (!get().settings.dictionary) return;
 
-        const spellcheck = debounce(spellchecker.process, 500);
-        editor.onDidChangeModelContent(() => spellcheck());
-        spellchecker.process();
+        await window.electron.ipcRenderer.invoke('loadSpellchecker', get().settings.dictionary).then((success) => {
+            if (!success) {
+                toast('Couldn\'t load spellchecker. Please refer to the spellchecking guide', {
+                    autoClose: false,
+                    position: 'bottom-right',
+                    // There is no need to choose a color theme, since the colors are
+                    // manipulated in App.tsx to always match the current theme.
+                });
+                return;
+            }
+
+            const spellchecker = getSpellchecker(monaco, editor, {
+                // These are just dummy functions, since the spellchecker doesn't use them internally.
+                // TODO: Clean spellchecker code and remove these options
+                check: () => false,
+                suggest: (word) => [],
+                ignore: () => {},
+                addWord: () => {},
+            });
+
+            const debounced = debounce(spellchecker.process, 500);
+            editor.onDidChangeModelContent(() => debounced());
+            spellchecker.process();
+
+            set({ spellcheck: spellchecker.process });
+        });
     },
 
     init: async () => {
@@ -253,6 +275,10 @@ const store = create<Store>((set, get) => ({
 
         if (get().editor) get().editor!.setValue(content);
         set({ path, content, saved: true });
+
+        window.electron.ipcRenderer.invoke('availableDictionaries').then((dictionaries) => {
+            set({ dictionaries });
+        });
 
         window.electron.ipcRenderer.invoke('checkForUpdates').then((update) => {
             if (!update) return;
@@ -338,6 +364,21 @@ const store = create<Store>((set, get) => ({
         document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
         cancelAutoSave();
         if (settings.autoSave) autoSave(settings.autoSave, get().save, () => !get().saved && get().path !== '');
+        if (!get().preview && get().spellcheck) {
+            window.electron.ipcRenderer.invoke('loadSpellchecker', settings.dictionary).then((success) => {
+                if (!success) {
+                    toast('Couldn\'t load spellchecker. Please refer to the spellchecking guide', {
+                        autoClose: false,
+                        position: 'bottom-right',
+                        // There is no need to choose a color theme, since the colors are
+                        // manipulated in App.tsx to always match the current theme.
+                    });
+                    return;
+                }
+
+                get().spellcheck!();
+            });
+        }
     },
 
     save: async () => {

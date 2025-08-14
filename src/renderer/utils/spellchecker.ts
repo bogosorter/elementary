@@ -73,85 +73,9 @@ export function getSpellchecker(
         const model = editor.getModel();
         if (!model) return;
 
-        const marks: Monaco.editor.IMarkerData[] = [];
+        const lines = model.getLinesContent();
         const tokens = monaco.editor.tokenize(model.getValue(), model.getLanguageId());
-
-        const shouldSpellcheck = (type: string) => {
-            if (type === '') return true;
-            if (type === 'heading1.md') return true;
-            if (type === 'heading2.md') return true;
-            if (type === 'heading3.md') return true;
-            if (type === 'heading4.md') return true;
-            if (type === 'heading5.md') return true;
-            if (type === 'heading6.md') return true;
-            if (type === 'strong.md') return true;
-            if (type === 'emphasis.md') return true;
-            if (type === 'strikethrough.md') return true;
-            if (type === 'string.link.md') return true;
-            return false;
-        }
-
-        let codeOpen = false;
-
-        for (let lineIndex = 0; lineIndex < tokens.length; lineIndex++) {
-            if (marks.length > 500) {
-                // monaco editor has a limit of 500 markers.
-                // https://github.com/microsoft/monaco-editor/issues/2042
-                break;
-            }
-
-            for (let i = 0; i < tokens[lineIndex].length; i++) {
-                const token = tokens[lineIndex][i];
-
-                if (token.type === 'code-start.md') codeOpen = true;
-                else if (token.type === 'code-end.md') codeOpen = false;
-                if (codeOpen || !shouldSpellcheck(token.type)) continue;
-
-                const startColumn = token.offset + 1;
-                const endColumn = i === tokens[lineIndex].length - 1
-                    ? model.getLineMaxColumn(lineIndex + 1)
-                    : tokens[lineIndex][i + 1].offset + 1;
-
-                const text = model.getValueInRange({
-                    startLineNumber: lineIndex + 1,
-                    startColumn,
-                    endLineNumber: lineIndex + 1,
-                    endColumn,
-                });
-
-                // Regex adapted for international purposes
-                const wordReg = /(?<!\p{L})[\p{L}']+(?!\p{L})/gu;
-                let match: RegExpExecArray | null;
-
-                while ((match = wordReg.exec(text)) !== null) {
-                    const { 0: word, index: pos } = match;
-                    if (word.length < 2) continue;
-
-                    const result = check(word);
-                    const isCorrect = typeof result === 'boolean' ? result : await result;
-                    if (disposed) return;
-
-                    if (!isCorrect) {
-                        const range = {
-                            startLineNumber: lineIndex + 1,
-                            startColumn: pos + startColumn,
-                            endLineNumber: lineIndex + 1,
-                            endColumn: pos + startColumn + word.length,
-                        };
-
-                        marks.push({
-                            code: word,
-                            startLineNumber: range.startLineNumber,
-                            startColumn: range.startColumn,
-                            endLineNumber: range.endLineNumber,
-                            endColumn: range.endColumn,
-                            message: messageBuilder('hover-message', word, range, opts),
-                            severity: opts.severity || monaco.MarkerSeverity.Warning,
-                        });
-                    }
-                }
-            }
-        }
+        const marks = await window.electron.ipcRenderer.invoke('spellcheck', lines, tokens);
 
         monaco.editor.setModelMarkers(model, owner, marks);
     }
