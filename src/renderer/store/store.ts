@@ -16,6 +16,7 @@ type Store = {
     // General app state and settings
     settings: Settings;
     recentlyOpened: string[];
+    dictionaries: string[];
     shortcuts: { [key: string]: () => void };
     commandPalette: {
         open: boolean;
@@ -31,10 +32,6 @@ type Store = {
     characterCount: number;
     preview: boolean;
     knownModified: number; // The last time the file was modified, used to check for external modifications
-
-    // Spellchecking variables
-    dictionaries: string[];
-    spellcheck: (() => void) | null;
 
     // Monaco editor references
     monaco?: typeof Monaco;
@@ -106,11 +103,13 @@ type Store = {
     getSelectedText: () => Monaco.Selection | null;
     updateDecorations: () => void; // Ensures that some custom markdown elements are rendered correctly
     updateStats: () => void;
+    setupSpellchecker: () => void;
 };
 
 const store = create<Store>((set, get) => ({
     settings: defaultSettings,
     recentlyOpened: [],
+    dictionaries: [],
     shortcuts: {
         'ctrl+shift+p': () => get().toggleCommandPalette(),
         'ctrl+p': () => get().toggleCommandPalette(),
@@ -141,9 +140,6 @@ const store = create<Store>((set, get) => ({
     characterCount: 0,
     preview: false,
     knownModified: 0,
-
-    dictionaries: [],
-    spellcheck: null,
 
     monaco: undefined,
     editor: undefined,
@@ -225,34 +221,7 @@ const store = create<Store>((set, get) => ({
         // initialized
         set({ saved: true });
 
-        if (!get().settings.dictionary) return;
-
-        await window.electron.ipcRenderer.invoke('loadSpellchecker', get().settings.dictionary).then((success) => {
-            if (!success) {
-                toast('Couldn\'t load spellchecker. Please refer to the spellchecking guide', {
-                    autoClose: false,
-                    position: 'bottom-right',
-                    // There is no need to choose a color theme, since the colors are
-                    // manipulated in App.tsx to always match the current theme.
-                });
-                return;
-            }
-
-            const spellchecker = getSpellchecker(monaco, editor, {
-                // These are just dummy functions, since the spellchecker doesn't use them internally.
-                // TODO: Clean spellchecker code and remove these options
-                check: () => false,
-                suggest: (word) => [],
-                ignore: () => {},
-                addWord: () => {},
-            });
-
-            const debounced = debounce(spellchecker.process, 500);
-            editor.onDidChangeModelContent(() => debounced());
-            spellchecker.process();
-
-            set({ spellcheck: spellchecker.process });
-        });
+        get().setupSpellchecker();
     },
 
     init: async () => {
@@ -364,21 +333,7 @@ const store = create<Store>((set, get) => ({
         document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
         cancelAutoSave();
         if (settings.autoSave) autoSave(settings.autoSave, get().save, () => !get().saved && get().path !== '');
-        if (!get().preview && get().spellcheck) {
-            window.electron.ipcRenderer.invoke('loadSpellchecker', settings.dictionary).then((success) => {
-                if (!success) {
-                    toast('Couldn\'t load spellchecker. Please refer to the spellchecking guide', {
-                        autoClose: false,
-                        position: 'bottom-right',
-                        // There is no need to choose a color theme, since the colors are
-                        // manipulated in App.tsx to always match the current theme.
-                    });
-                    return;
-                }
-
-                get().spellcheck!();
-            });
-        }
+        get().setupSpellchecker();
     },
 
     save: async () => {
@@ -868,6 +823,41 @@ const store = create<Store>((set, get) => ({
 
         set({ characterCount, wordCount });
     },
+    setupSpellchecker: async () => {
+        if (!get().settings.dictionary) {
+            if (!get().preview && get().editor && get().monaco) {
+                // Remove suggestions from previous spellcheckers
+                get().monaco!.editor.setModelMarkers(get().editor!.getModel()!, 'spellchecker', []);
+            }
+            return;
+        }
+
+        const success = await window.electron.ipcRenderer.invoke('loadSpellchecker', get().settings.dictionary);
+        if (!success) {
+            toast('Couldn\'t load spellchecker. Please refer to the spellchecking guide', {
+                autoClose: false,
+                position: 'bottom-right',
+                // There is no need to choose a color theme, since the colors are
+                // manipulated in App.tsx to always match the current theme.
+            });
+            return;
+        }
+
+        if (get().preview || !get().monaco || !get().editor) return;
+
+        const spellchecker = getSpellchecker(get().monaco!, get().editor!, {
+            // These are just dummy functions, since the spellchecker doesn't use them internally.
+            // TODO: Clean spellchecker code and remove these options
+            check: () => false,
+            suggest: (word) => [],
+            ignore: () => {},
+            addWord: () => {},
+        });
+
+        const debounced = debounce(spellchecker.process, 500);
+        get().editor!.onDidChangeModelContent(() => debounced());
+        spellchecker.process();
+    }
 }));
 
 store.getState().init();

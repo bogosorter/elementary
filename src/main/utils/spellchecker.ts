@@ -4,12 +4,16 @@ import { join as joinPath } from 'path';
 import { readFile, access , readdir} from 'fs/promises';
 import { assetsPath } from './utils';
 
+let language: string | null = null;
 let spellchecker: Nodehun | null = null;
 
-export async function loadSpellchecker(language: string) {
-    const dictionary = await getDictionary(language);
+export async function loadSpellchecker(lang: string) {
+    if (language === lang) return true;
+
+    const dictionary = await getDictionary(lang);
     if (!dictionary) return false;
 
+    language = lang;
     spellchecker = new Nodehun(dictionary.aff, dictionary.dic);
     return true;
 }

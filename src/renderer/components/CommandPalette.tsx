@@ -379,9 +379,16 @@ function buildActions(page: 'general' | 'recentlyOpened' | keyof Settings, recen
         }
     ];
 
-    else return dictionaries.map(language => ({
-        label: language,
-        action: () => store.getState().changeSetting('dictionary', language),
-        selected: () => store.getState().settings.dictionary === language
-    }));
+    else return [
+        {
+            label: 'disabled',
+            action: () => store.getState().changeSetting('dictionary', null),
+            selected: () => store.getState().settings.dictionary === null
+        },
+        ...dictionaries.map(language => ({
+            label: language,
+            action: () => store.getState().changeSetting('dictionary', language),
+            selected: () => store.getState().settings.dictionary === language
+        }))
+    ];
 }
