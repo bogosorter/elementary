@@ -10,7 +10,7 @@ import defaultSettings, { Settings } from '../settings';
 import createWindow from './createWindow';
 import { exportToPDF } from './utils/export';
 import { assetsPath } from './utils/utils';
-import { availableDictionaries, loadSpellchecker, spellcheck, suggest, } from './utils/spellchecker';
+import { availableDictionaries, loadSpellchecker, spellcheck, addToUserDictionary, suggest } from './utils/spellchecker';
 import { Token } from 'monaco-editor';
 
 let window: BrowserWindow | null = null;
@@ -252,10 +252,11 @@ ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide'
 
 ipcMain.handle('availableDictionaries', () => availableDictionaries());
 ipcMain.handle('loadSpellchecker', (_, language: string) => loadSpellchecker(language));
-ipcMain.handle('spellcheck', (_, lines: string[], tokens: Token[][]) => spellcheck(lines, tokens))
+ipcMain.handle('spellcheck', (_, lines: string[], tokens: Token[][]) => spellcheck(lines, tokens));
 ipcMain.on('suggest', async (event, word: string) => {
     event.returnValue = suggest(word);
 });
+ipcMain.handle('addToUserDictionary', async (_, word: string) => addToUserDictionary(word));
 
 ipcMain.handle('checkForUpdates', async () => {
     const prereleaseNotification = (await getSettings()).prereleaseNotification;

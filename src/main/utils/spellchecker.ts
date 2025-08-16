@@ -1,12 +1,13 @@
 import { Nodehun } from 'nodehun';
 import type * as Monaco from 'monaco-editor'
 import { join as joinPath } from 'path';
-import { readFile, access , readdir} from 'fs/promises';
+import { readFile, writeFile, access, readdir } from 'fs/promises';
 import { distance } from 'fastest-levenshtein';
 import { assetsPath } from './utils';
 
 let language: string | null = null;
 let spellchecker: Nodehun | null = null;
+let userDictionary: Set<string> | null = null;
 
 export async function loadSpellchecker(lang: string) {
     if (language === lang) return true;
@@ -16,6 +17,7 @@ export async function loadSpellchecker(lang: string) {
 
     language = lang;
     spellchecker = new Nodehun(dictionary.aff, dictionary.dic);
+    userDictionary = await getUserDictionary(lang);
     return true;
 }
 
@@ -75,7 +77,7 @@ export async function spellcheck(lines: string[], tokens: Monaco.Token[][]) {
                 const { 0: word, index: pos } = match;
                 if (word.length < 2) continue;
 
-                const isCorrect = await spellchecker?.spell(word) ?? false;
+                const isCorrect = userDictionary?.has(word) ||  (await spellchecker?.spell(word) ?? false);
 
                 if (!isCorrect) result.push({
                     code: word,
@@ -103,6 +105,14 @@ export function suggest(word: string) {
     return suggestions.splice(0, 5);
 }
 
+export async function addToUserDictionary(word: string) {
+    if (!userDictionary) return;
+
+    userDictionary.add(word);
+    const userDictPath = joinPath(assetsPath(), 'dictionaries', language + '.user.txt');
+    await writeFile(userDictPath, Array.from(userDictionary).join('\n'), 'utf-8');
+}
+
 export async function availableDictionaries() {
     const dictionariesPath = joinPath(assetsPath(), 'dictionaries');
     await access(dictionariesPath);
@@ -112,7 +122,7 @@ export async function availableDictionaries() {
         .map(file => file.replace('.dic', ''));
 }
 
-export async function getDictionary(language: string) {
+async function getDictionary(language: string) {
     const dictionariesPath = joinPath(assetsPath(), 'dictionaries');
     const dicPath = joinPath(dictionariesPath, language + '.dic');
     const affPath = joinPath(dictionariesPath, language + '.aff');
@@ -126,5 +136,16 @@ export async function getDictionary(language: string) {
         return { dic, aff };
     } catch {
         return null;
+    }
+}
+
+async function getUserDictionary(language: string) {
+    const userDictPath = joinPath(assetsPath(), 'dictionaries', language + '.user.txt');
+    try {
+        await access(userDictPath);
+        const content = (await readFile(userDictPath, 'utf-8')).split('\n');
+        return new Set(content.filter(word => word.length > 0));
+    } catch {
+        return new Set<string>();
     }
 }

@@ -61,12 +61,26 @@ export function getSpellchecker(
         );
         if (!marker || marker.owner !== owner) return;
 
+        // Add "Add to dictionary" action
+        spellingActions.push(editor.addAction({
+            id: 'spellchecker-add-to-dictionary',
+            label: 'Add to dictionary',
+            contextMenuGroupId: 'spellcheck',
+            contextMenuOrder: 0,
+            run: () => {
+                const wordToAdd = marker.message;
+                window.electron.ipcRenderer.invoke('addToUserDictionary', wordToAdd);
+                process();
+            }
+        }));
+
+        // Add spelling sugestions
         const suggestions: string[] = window.electron.ipcRenderer.sendSync('suggest', marker.message);
-        spellingActions = suggestions.map((suggestion, index) => editor.addAction({
+        suggestions.forEach((suggestion, index) => spellingActions.push(editor.addAction({
             id: `spellchecker-suggestion-${index}`,
             label: suggestion,
             contextMenuGroupId: 'spellcheck',
-            contextMenuOrder: index,
+            contextMenuOrder: index + 1,
             run: () => {
                 const range = new monaco.Range(
                     position.lineNumber,
@@ -86,7 +100,7 @@ export function getSpellchecker(
                 const newMarkers = markers.filter(marker => marker !== marker);
                 monaco.editor.setModelMarkers(model, owner, newMarkers);
             }
-        }));
+        })));
     });
 
     const dispose = () => {
