@@ -38,6 +38,7 @@ type Store = {
     editor?: Monaco.editor.IStandaloneCodeEditor;
     currentSelection: Monaco.Selection | null;
     currentScroll: number | null;
+    disposeSpelchecker: (() => void) | null;
     initializeEditor: (monaco: typeof Monaco, editor: Monaco.editor.IStandaloneCodeEditor) => void;
 
     // App state methods
@@ -145,6 +146,7 @@ const store = create<Store>((set, get) => ({
     editor: undefined,
     currentSelection: null,
     currentScroll: null,
+    disposeSpelchecker: null,
 
     initializeEditor: async (monaco, editor) => {
         set({ monaco, editor });
@@ -291,6 +293,7 @@ const store = create<Store>((set, get) => ({
             });
         } else set({ currentScroll: document.getElementById('preview')!.scrollTop });
 
+        get().disposeSpelchecker?.();
         set({ preview: !get().preview });
         get().closeCommandPalette();
     },
@@ -850,6 +853,8 @@ const store = create<Store>((set, get) => ({
         const debounced = debounce(spellchecker.process, 500);
         get().editor!.onDidChangeModelContent(() => debounced());
         spellchecker.process();
+
+        set({ disposeSpelchecker: spellchecker.dispose });
     }
 }));
 
