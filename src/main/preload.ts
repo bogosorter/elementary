@@ -2,7 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent, webFrame } from 'electron';
 
-export type Channels = 'save' | 'saveAs' | 'open' | 'window' | 'getSettings' | 'setSettings' | 'resetSettings' | 'loadFile' | 'getRecent' | 'getLastFile' | 'toggleFullscreen' | 'newWindow' | 'showSaveDialog' | 'getVersionInfo' | 'checkForUpdates' | 'close' | 'getLocalFile' | 'getLocalFileBase64' | 'exportToPDF' | 'showInFolder' | 'getFileContent' | 'exportWindowLoad' | 'getText' | 'availableDictionaries' | 'loadSpellchecker' | 'spellcheck';
+export type Channels = 'save' | 'saveAs' | 'open' | 'window' | 'getSettings' | 'setSettings' | 'resetSettings' | 'loadFile' | 'getRecent' | 'getLastFile' | 'toggleFullscreen' | 'newWindow' | 'showSaveDialog' | 'getVersionInfo' | 'checkForUpdates' | 'close' | 'getLocalFile' | 'getLocalFileBase64' | 'exportToPDF' | 'showInFolder' | 'getFileContent' | 'exportWindowLoad' | 'getText' | 'availableDictionaries' | 'loadSpellchecker' | 'spellcheck' | 'suggest';
 
 const electronHandler = {
   windowType: process.argv.includes('export') ? 'export' : 'main',
@@ -25,6 +25,9 @@ const electronHandler = {
     },
     send(channel: Channels, ...args: unknown[]) {
         ipcRenderer.send(channel, ...args);
+    },
+    sendSync(channel: Channels, ...args: unknown[]) {
+        return ipcRenderer.sendSync(channel, ...args);
     },
     invoke(channel: Channels, ...args: unknown[]) {
         return ipcRenderer.invoke(channel, ...args);

@@ -83,6 +83,7 @@
     "electron-log": "^4.4.8",
     "electron-settings": "^4.0.4",
     "electron-updater": "^6.1.4",
+    "fastest-levenshtein": "^1.0.16",
     "github-version-checker": "^2.3.0",
     "highlight.js": "^11.11.1",
     "lodash": "^4.17.21",

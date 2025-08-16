@@ -845,14 +845,7 @@ const store = create<Store>((set, get) => ({
 
         if (get().preview || !get().monaco || !get().editor) return;
 
-        const spellchecker = getSpellchecker(get().monaco!, get().editor!, {
-            // These are just dummy functions, since the spellchecker doesn't use them internally.
-            // TODO: Clean spellchecker code and remove these options
-            check: () => false,
-            suggest: (word) => [],
-            ignore: () => {},
-            addWord: () => {},
-        });
+        const spellchecker = getSpellchecker(get().monaco!, get().editor!);
 
         const debounced = debounce(spellchecker.process, 500);
         get().editor!.onDidChangeModelContent(() => debounced());

@@ -2,6 +2,7 @@ import { Nodehun } from 'nodehun';
 import type * as Monaco from 'monaco-editor'
 import { join as joinPath } from 'path';
 import { readFile, access , readdir} from 'fs/promises';
+import { distance } from 'fastest-levenshtein';
 import { assetsPath } from './utils';
 
 let language: string | null = null;
@@ -82,7 +83,7 @@ export async function spellcheck(lines: string[], tokens: Monaco.Token[][]) {
                     startColumn: pos + startColumn,
                     endLineNumber: lineIndex + 1,
                     endColumn: pos + startColumn + word.length,
-                    message: 'error',
+                    message: word,
                     // The enum type can't be used here since only the types are
                     // imported from monaco
                     severity: 8
@@ -92,6 +93,14 @@ export async function spellcheck(lines: string[], tokens: Monaco.Token[][]) {
     }
 
     return result;
+}
+
+export function suggest(word: string) {
+    if (!spellchecker) return [];
+
+    let suggestions = spellchecker.suggestSync(word) ?? [];
+    suggestions = suggestions.sort((a, b) => distance(word, a) - distance(word, b));
+    return suggestions.splice(0, 5);
 }
 
 export async function availableDictionaries() {
