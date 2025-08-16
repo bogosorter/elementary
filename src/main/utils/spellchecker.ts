@@ -7,7 +7,12 @@ import { assetsPath } from './utils';
 
 let language: string | null = null;
 let spellchecker: Nodehun | null = null;
-let userDictionary: Set<string> | null = null;
+
+type UserDictionary = {
+    included: Set<string>;
+    excluded: Set<string>;
+}
+let userDictionary: UserDictionary | null = null;
 
 export async function loadSpellchecker(lang: string) {
     if (language === lang) return true;
@@ -77,9 +82,12 @@ export async function spellcheck(lines: string[], tokens: Monaco.Token[][]) {
                 const { 0: word, index: pos } = match;
                 if (word.length < 2) continue;
 
-                const isCorrect = userDictionary?.has(word) ||  (await spellchecker?.spell(word) ?? false);
+                const dictionaryIncludes = await spellchecker?.spell(word) ?? false;
+                const userDictionaryIncludes = userDictionary?.included.has(word) ?? false;
+                const userDictionaryExcludes = userDictionary?.excluded.has(word) ?? false;
+                const correct = (dictionaryIncludes || userDictionaryIncludes) && !userDictionaryExcludes;
 
-                if (!isCorrect) result.push({
+                if (!correct) result.push({
                     code: word,
                     startLineNumber: lineIndex + 1,
                     startColumn: pos + startColumn,
@@ -108,9 +116,17 @@ export function suggest(word: string) {
 export async function addToUserDictionary(word: string) {
     if (!userDictionary) return;
 
-    userDictionary.add(word);
-    const userDictPath = joinPath(assetsPath(), 'dictionaries', language + '.user.txt');
-    await writeFile(userDictPath, Array.from(userDictionary).join('\n'), 'utf-8');
+    userDictionary.included.add(word);
+    userDictionary.excluded.delete(word);
+    await updateUserDictionary(language!);
+}
+
+export async function removeFromUserDictionary(word: string) {
+    if (!userDictionary) return;
+
+    userDictionary.included.delete(word);
+    userDictionary.excluded.add(word);
+    await updateUserDictionary(language!);
 }
 
 export async function availableDictionaries() {
@@ -139,13 +155,30 @@ async function getDictionary(language: string) {
     }
 }
 
-async function getUserDictionary(language: string) {
+async function getUserDictionary(language: string): Promise<UserDictionary> {
     const userDictPath = joinPath(assetsPath(), 'dictionaries', language + '.user.txt');
     try {
         await access(userDictPath);
         const content = (await readFile(userDictPath, 'utf-8')).split('\n');
-        return new Set(content.filter(word => word.length > 0));
+
+        const included = new Set(content.filter(word => !word.startsWith('-')));
+        const excluded = new Set(content.filter(word => word.startsWith('-')).map(word => word.slice(1)));
+        return { included, excluded };
     } catch {
-        return new Set<string>();
+        return {
+            included: new Set<string>(),
+            excluded: new Set<string>()
+        };
     }
+}
+
+async function updateUserDictionary(language: string) {
+    if (!userDictionary) return;
+
+    const userDictPath = joinPath(assetsPath(), 'dictionaries', language + '.user.txt');
+    const content = Array.from(userDictionary.included)
+        .concat(Array.from(userDictionary.excluded).map(word => '-' + word))
+        .join('\n');
+
+    await writeFile(userDictPath, content, 'utf-8');
 }

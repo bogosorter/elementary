@@ -848,6 +848,7 @@ const store = create<Store>((set, get) => ({
 
         if (get().preview || !get().monaco || !get().editor) return;
 
+        get().disposeSpelchecker?.();
         const spellchecker = getSpellchecker(get().monaco!, get().editor!);
 
         const debounced = debounce(spellchecker.process, 500);

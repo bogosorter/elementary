@@ -38,7 +38,7 @@ export function getSpellchecker(
     }
 
     // Provide actions when clicking on misspelled words
-    editor.onContextMenu((e) => {
+    const contextMenuListener = editor.onContextMenu((e) => {
         // Remove all the actions that may have been added before
         spellingActions.forEach(action => action.dispose());
         spellingActions.length = 0;
@@ -59,7 +59,22 @@ export function getSpellchecker(
             position.column >= marker.startColumn &&
             position.column <= marker.endColumn
         );
-        if (!marker || marker.owner !== owner) return;
+        if (!marker || marker.owner !== owner) {
+            // This is not a misspelled word, so add option to remove from
+            // dictionary
+            spellingActions.push(editor.addAction({
+                id: 'spellchecker-remove-from-dictionary',
+                label: 'Remove from dictionary',
+                contextMenuGroupId: 'spellcheck',
+                contextMenuOrder: 0,
+                run: () => {
+                    const wordToRemove = word.word;
+                    window.electron.ipcRenderer.invoke('removeFromUserDictionary', wordToRemove);
+                    process();
+                }
+            }));
+            return;
+        }
 
         // Add "Add to dictionary" action
         spellingActions.push(editor.addAction({
@@ -68,14 +83,14 @@ export function getSpellchecker(
             contextMenuGroupId: 'spellcheck',
             contextMenuOrder: 0,
             run: () => {
-                const wordToAdd = marker.message;
+                const wordToAdd = word.word;
                 window.electron.ipcRenderer.invoke('addToUserDictionary', wordToAdd);
                 process();
             }
         }));
 
         // Add spelling sugestions
-        const suggestions: string[] = window.electron.ipcRenderer.sendSync('suggest', marker.message);
+        const suggestions: string[] = window.electron.ipcRenderer.sendSync('suggest', word.word);
         suggestions.forEach((suggestion, index) => spellingActions.push(editor.addAction({
             id: `spellchecker-suggestion-${index}`,
             label: suggestion,
@@ -107,6 +122,7 @@ export function getSpellchecker(
         monaco.editor.removeAllMarkers(owner)
         spellingActions.forEach(action => action.dispose());
         spellingActions.length = 0;
+        contextMenuListener.dispose();
         disposed = true
     }
 
