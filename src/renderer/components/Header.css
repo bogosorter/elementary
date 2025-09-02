@@ -14,6 +14,11 @@
     align-items: center;
     justify-content: center;
     width: 100%;
+
+    > div {
+        display: flex;
+        align-items: center;
+    }
 }
 
 #unsaved {
@@ -21,6 +26,7 @@
     width: 5px;
     border-radius: 2.5px;
     margin-left: 5px;
+    display: inline-block;
 }
 
 .path-segment {
