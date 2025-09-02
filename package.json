@@ -1,6 +1,6 @@
 {
   "description": "A simple markdown editor",
-  "version": "1.4.0-alpha.0",
+  "version": "1.4.0",
   "keywords": [
     "markdown",
     "editor"
@@ -226,7 +226,6 @@
     "linux": {
       "target": [
         "deb",
-        "snap",
         "appImage"
       ],
       "category": "Development"
