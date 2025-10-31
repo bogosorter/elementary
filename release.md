@@ -1,4 +1,4 @@
-# Release Checlist
+# Release Checklist
 
 - Update version number in both `package.json` and and `release/app/package.json`
 - Update `info.md` and `update.md`
