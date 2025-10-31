@@ -13,6 +13,7 @@ type UserDictionary = {
     excluded: Set<string>;
 }
 let userDictionary: UserDictionary | null = null;
+let ignored: Set<string> = new Set();
 
 export async function loadSpellchecker(lang: string) {
     if (language === lang) return true;
@@ -23,6 +24,7 @@ export async function loadSpellchecker(lang: string) {
     language = lang;
     spellchecker = new Nodehun(dictionary.aff, dictionary.dic);
     userDictionary = await getUserDictionary(lang);
+    ignored = new Set();
     return true;
 }
 
@@ -85,7 +87,8 @@ export async function spellcheck(lines: string[], tokens: Monaco.Token[][]) {
                 const dictionaryIncludes = await spellchecker?.spell(word) ?? false;
                 const userDictionaryIncludes = userDictionary?.included.has(word) ?? false;
                 const userDictionaryExcludes = userDictionary?.excluded.has(word) ?? false;
-                const correct = (dictionaryIncludes || userDictionaryIncludes) && !userDictionaryExcludes;
+                const ignoredIncludes = ignored.has(word);
+                const correct = (dictionaryIncludes || userDictionaryIncludes || ignoredIncludes) && !userDictionaryExcludes;
 
                 if (!correct) result.push({
                     code: word,
@@ -127,6 +130,10 @@ export async function removeFromUserDictionary(word: string) {
     userDictionary.included.delete(word);
     userDictionary.excluded.add(word);
     await updateUserDictionary(language!);
+}
+
+export async function ignore(word: string) {
+    ignored.add(word);
 }
 
 export async function availableDictionaries() {

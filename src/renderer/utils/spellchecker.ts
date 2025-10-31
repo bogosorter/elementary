@@ -76,12 +76,25 @@ export function getSpellchecker(
             return;
         }
 
+        // Add "Ignore" action
+        spellingActions.push(editor.addAction({
+            id: 'spellchecker-ignore',
+            label: 'Ignore',
+            contextMenuGroupId: 'spellcheck',
+            contextMenuOrder: 0,
+            run: () => {
+                const wordToIgnore = word.word;
+                window.electron.ipcRenderer.invoke('ignore', wordToIgnore);
+                process();
+            }
+        }));
+
         // Add "Add to dictionary" action
         spellingActions.push(editor.addAction({
             id: 'spellchecker-add-to-dictionary',
             label: 'Add to dictionary',
             contextMenuGroupId: 'spellcheck',
-            contextMenuOrder: 0,
+            contextMenuOrder: 1,
             run: () => {
                 const wordToAdd = word.word;
                 window.electron.ipcRenderer.invoke('addToUserDictionary', wordToAdd);
@@ -95,7 +108,7 @@ export function getSpellchecker(
             id: `spellchecker-suggestion-${index}`,
             label: suggestion,
             contextMenuGroupId: 'spellcheck',
-            contextMenuOrder: index + 1,
+            contextMenuOrder: index + 2,
             run: () => {
                 const range = new monaco.Range(
                     position.lineNumber,
