@@ -216,12 +216,11 @@ const store = create<Store>((set, get) => ({
         }
         monaco.editor.setTheme(get().settings.theme.name);
         editor.focus();
-        get().onChange();
 
-        // We need to enforce save = true here because the previous line sets
-        // save = false and we don't want that to happen when the editor is
-        // initialized
-        set({ saved: true });
+        // The next line will set save = false, independently of the current state
+        const savedState = get().saved;
+        get().onChange();
+        set({ saved: savedState });
 
         get().setupSpellchecker();
     },
