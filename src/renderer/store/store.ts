@@ -152,9 +152,8 @@ const store = create<Store>((set, get) => ({
     initializeEditor: async (monaco, editor) => {
         set({ monaco, editor });
 
-        monaco.editor.defineTheme('light', createStyles(lightTheme));
-        monaco.editor.defineTheme('dark', createStyles(darkTheme, true));
-        monaco.editor.defineTheme('comma', createStyles(commaTheme));
+        const theme = get().settings.theme;
+        get().monaco!.editor.defineTheme(theme.name, createStyles(theme, theme.name === 'dark'));
 
         // Disable monaco keybindings
         monaco.editor.addKeybindingRules([
@@ -336,6 +335,11 @@ const store = create<Store>((set, get) => ({
         document.getElementById('quote-border-container')!.style.setProperty('--accent', settings.theme.accent);
         cancelAutoSave();
         if (settings.autoSave) autoSave(settings.autoSave, get().save, () => !get().saved && get().path !== '');
+
+        if (get().monaco) {
+            const theme = get().settings.theme;
+            get().monaco!.editor.defineTheme(theme.name, createStyles(theme, theme.name === 'dark'));
+        }
         get().setupSpellchecker();
     },
 
