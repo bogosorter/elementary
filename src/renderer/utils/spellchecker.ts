@@ -2,6 +2,7 @@
 // https://github.com/purocean/monaco-spellchecker/tree/main
 
 import * as Monaco from 'monaco-editor'
+import store from '../store/store';
 
 interface Spellchecker {
     process: () => void
@@ -52,6 +53,27 @@ export function getSpellchecker(
         const word = model.getWordAtPosition(position);
         if (!word) return;
 
+        // Add "Spellchecking Guide" action
+        spellingActions.push(editor.addAction({
+            id: 'spellchecker-guide',
+            label: 'Spellchecking Guide',
+            contextMenuGroupId: 'spellcheck',
+            contextMenuOrder: 0,
+            run: () => store.getState().openSpellcheckingGuide()
+        }));
+
+        // Add "Change Language" action
+        spellingActions.push(editor.addAction({
+            id: 'spellchecker-language',
+            label: 'Change Language',
+            contextMenuGroupId: 'spellcheck',
+            contextMenuOrder: 1,
+            run: () => {
+                store.getState().changeSetting('dictionary');
+                console.log('changing language');
+            }
+        }));
+
         const markers = monaco.editor.getModelMarkers({ resource: model.uri });
         const marker = markers.find(marker =>
             position.lineNumber >= marker.startLineNumber &&
@@ -64,9 +86,9 @@ export function getSpellchecker(
             // dictionary
             spellingActions.push(editor.addAction({
                 id: 'spellchecker-remove-from-dictionary',
-                label: 'Remove from dictionary',
+                label: 'Remove from Dictionary',
                 contextMenuGroupId: 'spellcheck',
-                contextMenuOrder: 0,
+                contextMenuOrder: 2,
                 run: () => {
                     const wordToRemove = word.word;
                     window.electron.ipcRenderer.invoke('removeFromUserDictionary', wordToRemove);
@@ -76,28 +98,28 @@ export function getSpellchecker(
             return;
         }
 
+        // Add "Add to dictionary" action
+        spellingActions.push(editor.addAction({
+            id: 'spellchecker-add-to-dictionary',
+            label: 'Add to Dictionary',
+            contextMenuGroupId: 'spellcheck',
+            contextMenuOrder: 2,
+            run: () => {
+                const wordToAdd = word.word;
+                window.electron.ipcRenderer.invoke('addToUserDictionary', wordToAdd);
+                process();
+            }
+        }));
+
         // Add "Ignore" action
         spellingActions.push(editor.addAction({
             id: 'spellchecker-ignore',
             label: 'Ignore',
             contextMenuGroupId: 'spellcheck',
-            contextMenuOrder: 0,
+            contextMenuOrder: 3,
             run: () => {
                 const wordToIgnore = word.word;
                 window.electron.ipcRenderer.invoke('ignore', wordToIgnore);
-                process();
-            }
-        }));
-
-        // Add "Add to dictionary" action
-        spellingActions.push(editor.addAction({
-            id: 'spellchecker-add-to-dictionary',
-            label: 'Add to dictionary',
-            contextMenuGroupId: 'spellcheck',
-            contextMenuOrder: 1,
-            run: () => {
-                const wordToAdd = word.word;
-                window.electron.ipcRenderer.invoke('addToUserDictionary', wordToAdd);
                 process();
             }
         }));
@@ -108,7 +130,7 @@ export function getSpellchecker(
             id: `spellchecker-suggestion-${index}`,
             label: suggestion,
             contextMenuGroupId: 'spellcheck',
-            contextMenuOrder: index + 2,
+            contextMenuOrder: index + 4,
             run: () => {
                 const range = new monaco.Range(
                     position.lineNumber,
