@@ -9,6 +9,7 @@ The default dictionary is `en_US`. To add more, see the instructions on the spel
 For the next releases my plan is to polish the app. There's still a lot to do...
 
 Happy writing!
+
 bogosorter
 
 ## Get in touch
