@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import * as Monaco from 'monaco-editor';
 import { getSpellchecker } from '../utils/spellchecker';
 import { toast } from 'react-toastify';
-import { lightTheme, darkTheme, commaTheme, createStyles } from '../../themes';
+import { createStyles } from '../../themes';
 import defaultSettings, { Settings } from '../../settings';
 import { configuration, tokenProvider } from '../utils/tokenProvider';
 import { autoSave, cancelAutoSave } from '../utils/autosave';
