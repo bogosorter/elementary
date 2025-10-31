@@ -198,6 +198,9 @@ function buildActions(page: 'general' | 'recentlyOpened' | keyof Settings, recen
         }, {
             label: 'Elementary: Markdown Math Guide',
             action: () => store.getState().openMath()
+        }, {
+            label: 'Elementary: Spellchecking Guide',
+            action: () => store.getState().openSpellcheckingGuide()
         }
     ];
 

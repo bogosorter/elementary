@@ -95,6 +95,7 @@ type Store = {
     openShortcutReference: () => Promise<void>;
     openMath: () => Promise<void>;
     openPDFExportGuide: () => Promise<void>;
+    openSpellcheckingGuide: () => Promise<void>;
 
     // Misc methods
     onChange: () => void;
@@ -725,6 +726,15 @@ const store = create<Store>((set, get) => ({
         if (!await get().canCloseFile()) return;
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'pdfExportGuide');
+
+        get().editor?.setValue(content);
+        set({ path: '', content, saved: true });
+    },
+    openSpellcheckingGuide: async() => {
+        get().closeCommandPalette();
+        if (!await get().canCloseFile()) return;
+
+        const content = await window.electron.ipcRenderer.invoke('getText', 'spellchecking');
 
         get().editor?.setValue(content);
         set({ path: '', content, saved: true });

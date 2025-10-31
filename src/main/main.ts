@@ -64,7 +64,9 @@ ipcMain.handle('open', async () => {
 ipcMain.handle('save', async (_, path: string, content: string, knownModified: number) => {
     try {
         const modifiedOnDisk = (await stat(path)).mtimeMs;
-        if (modifiedOnDisk > knownModified) {
+
+        // There's sometimes a small difference in the timestamps
+        if (modifiedOnDisk > knownModified + 100) {
             const result = await dialog.showMessageBox({
                 type: 'warning',
                 buttons: ['Overwrite', 'Cancel'],
@@ -244,7 +246,7 @@ ipcMain.on('showInFolder', async (_, path: string) => {
     } catch {}
 });
 
-ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide' | 'shortcuts' | 'update' | 'math') => {
+ipcMain.handle('getText', async (_, text: 'info' | 'markdown' | 'pdfExportGuide' | 'shortcuts' | 'update' | 'math' | 'spellchecker') => {
     const path = joinPath(assetsPath(), 'texts', text + '.md');
     const file = await readFile(path);
     return file.toString();
