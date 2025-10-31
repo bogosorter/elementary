@@ -3,6 +3,7 @@ import { languages } from 'monaco-editor';
 // This code is mostly from https://github.com/microsoft/monaco-editor/blob/main/src/basic-languages/markdown/markdown.ts
 
 export const configuration: languages.LanguageConfiguration = {
+    wordPattern: /(?<=[\p{P}\s]|^)[\p{L}']+(?=[\p{P}\s]|$)/u,
 	comments: {
 		blockComment: ['<!--', '-->']
 	},
