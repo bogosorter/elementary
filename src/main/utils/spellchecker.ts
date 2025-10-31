@@ -76,8 +76,10 @@ export async function spellcheck(lines: string[], tokens: Monaco.Token[][]) {
 
             const text = lines[lineIndex].substring(startColumn - 1, endColumn - 1);
 
-            // Regex adapted to match alphabetic non-ASCII characters as well
-            const wordReg = /(?<!\p{L})[\p{L}']+(?!\p{L})/gu;
+            // Regex adapted to match alphabetic non-ASCII characters as well A
+            // word is considered to be any sequence of letters and "'" preceded
+            // and followed only by spaces or punctuation.
+            const wordReg = /(?<=[\p{P}\s]|^)[\p{L}']+(?=[\p{P}\s]|$)/gu;
             let match: RegExpExecArray | null;
 
             while ((match = wordReg.exec(text)) !== null) {
