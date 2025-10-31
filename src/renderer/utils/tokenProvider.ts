@@ -11,7 +11,6 @@ export const configuration: languages.LanguageConfiguration = {
 		{ open: '{', close: '}' },
 		{ open: '[', close: ']' },
 		{ open: '(', close: ')' },
-		{ open: '<', close: '>', notIn: ['string', 'code'] },
         { open: '"', close: '"' },
         { open: "'", close: "'" }
 	],
