@@ -392,6 +392,10 @@ function buildActions(page: 'general' | 'recentlyOpened' | keyof Settings, recen
             label: language,
             action: () => store.getState().changeSetting('dictionary', language),
             selected: () => store.getState().settings.dictionary === language
-        }))
+        })), {
+            label: 'Spellchecking Guide',
+            action: () => store.getState().openSpellcheckingGuide(),
+            selected: () => false
+        },
     ];
 }
