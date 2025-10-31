@@ -1,3 +1,5 @@
+import { app } from 'electron';
+import { mkdir, cp } from 'fs/promises';
 import { Nodehun } from 'nodehun';
 import type * as Monaco from 'monaco-editor'
 import { join as joinPath } from 'path';
@@ -138,8 +140,24 @@ export async function ignore(word: string) {
     ignored.add(word);
 }
 
+// Ensures that there is a dictionaries directory in the user data directory
+async function ensureDictionariesExist() {
+    const dictionariesPath = joinPath(app.getPath('userData'), 'dictionaries');
+
+    try {
+        await access(dictionariesPath);
+    } catch {
+        const srcPath = joinPath(assetsPath(), 'dictionaries');
+        await mkdir(dictionariesPath);
+        await cp(joinPath(srcPath, 'en_US.aff'), joinPath(dictionariesPath, 'en_US.aff'));
+        await cp(joinPath(srcPath, 'en_US.dic'), joinPath(dictionariesPath, 'en_US.dic'));
+    }
+}
+
 export async function availableDictionaries() {
-    const dictionariesPath = joinPath(assetsPath(), 'dictionaries');
+    await ensureDictionariesExist();
+
+    const dictionariesPath = joinPath(app.getPath('userData'), 'dictionaries');
     await access(dictionariesPath);
     const files = await readdir(dictionariesPath);
     return files
@@ -148,7 +166,9 @@ export async function availableDictionaries() {
 }
 
 async function getDictionary(language: string) {
-    const dictionariesPath = joinPath(assetsPath(), 'dictionaries');
+    await ensureDictionariesExist();
+
+    const dictionariesPath = joinPath(app.getPath('userData'), 'dictionaries');
     const dicPath = joinPath(dictionariesPath, language + '.dic');
     const affPath = joinPath(dictionariesPath, language + '.aff');
 
@@ -165,7 +185,9 @@ async function getDictionary(language: string) {
 }
 
 async function getUserDictionary(language: string): Promise<UserDictionary> {
-    const userDictPath = joinPath(assetsPath(), 'dictionaries', language + '.user.txt');
+    await ensureDictionariesExist();
+
+    const userDictPath = joinPath(app.getPath('userData'), 'dictionaries', language + '.user.txt');
     try {
         await access(userDictPath);
         const content = (await readFile(userDictPath, 'utf-8')).split('\n');
@@ -184,7 +206,9 @@ async function getUserDictionary(language: string): Promise<UserDictionary> {
 async function updateUserDictionary(language: string) {
     if (!userDictionary) return;
 
-    const userDictPath = joinPath(assetsPath(), 'dictionaries', language + '.user.txt');
+    await ensureDictionariesExist();
+
+    const userDictPath = joinPath(app.getPath('userData'), 'dictionaries', language + '.user.txt');
     const content = Array.from(userDictionary.included)
         .concat(Array.from(userDictionary.excluded).map(word => '-' + word))
         .join('\n');
