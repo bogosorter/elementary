@@ -1,25 +1,15 @@
-# Elementary v1.3.0-alpha.0
+# Elementary v1.5.0-alpha.0
 
-Hi again!
+Hi there!
 
-Yet another release of Elementary is out. This one focuses on polishing the app, addressing several problems pointed out by users and myself. This only emphasizes the importance of user feedback, so please, [keep it coming](#get-in-touch)! Here's what's new in this version:
+Shortly after releasing Elementary, I defined three goals for its future: a preview mode, PDF export support and spellchecking. This release, which I've been long waiting for, is all about spellchecking, and finally completes that list.
 
-- Settings for cursor style and movement.
-- Warning when saving a document edited externally.
-- Toolbar doesn't change position in preview mode, which means that you can now toggle between preview and edit mode without moving the mouse 🎉
-- Word and character counting now ignore markdown syntax and white-space.
-- Shortcuts displayed when hovering items in the toolbar.
-- The text "Hello, world!", displayed on new documents, now reads "hello, world". [Here](https://bogosorter.github.io/blog/#hello-world)'s why.
-- Improved themes both in edit and preview modes.
-- Several other bugs fixes and little improvements.
+The default dictionary is `en_US`. To add more, see the instructions on the spellchecking guide (use the command palette or right-click on any word to get there). This release is somewhat experimental. I’d love to hear how it’s working for you - especially if something goes wrong :)
 
-The plan for the next release is to add support for LaTeX math syntax. After that, a bold new goal: a spellchecker. It’s a complex feature and will definitely take some time. Until then, happy writing!
+For the next releases my plan is to polish the app. There's still a lot to do...
 
+Happy writing!
 bogosorter
-
-## Acknowledgements
-
-This release owes a lot to [Dead4ever07](https://github.com/Dead4ever07) and [LuisGoncalves05](https://github.com/LuisGoncalves05). They provided important feedback and allowed me to see Elementary from a user's perspective.
 
 ## Get in touch
 
