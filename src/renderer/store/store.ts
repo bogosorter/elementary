@@ -829,6 +829,7 @@ const store = create<Store>((set, get) => ({
     setupSpellchecker: async () => {
         if (!get().settings.dictionary) {
             if (!get().preview && get().editor && get().monaco) {
+                get().disposeSpelchecker?.();
                 // Remove suggestions from previous spellcheckers
                 get().monaco!.editor.setModelMarkers(get().editor!.getModel()!, 'spellchecker', []);
             }
