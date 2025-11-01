@@ -22,3 +22,10 @@ jobs:
       - run: npm ci
       - run: npx electron-rebuild
       - run: npm run build:windows
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: release/build/
+          retention-days: 7
