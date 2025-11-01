@@ -3,8 +3,8 @@ name: Build for Windows
 on:
   workflow_dispatch:
     inputs:
-      commit:
-        description: 'Commit SHA to build'
+      ref:
+        description: 'Branch, tag, or commit to build'
         required: true
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.commit }}
+          ref: ${{ github.event.inputs.ref }}
 
       - uses: actions/setup-node@v4
         with:
