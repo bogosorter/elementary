@@ -3,7 +3,11 @@ import { languages } from 'monaco-editor';
 // This code is mostly from https://github.com/microsoft/monaco-editor/blob/main/src/basic-languages/markdown/markdown.ts
 
 export const configuration: languages.LanguageConfiguration = {
-    wordPattern: /(?<=[\p{P}\s]|^)[\p{L}']+(?=[\p{P}\s]|$)/u,
+    // Regex adapted to match alphabetic non-ASCII characters as well A
+    // word is considered to be any sequence of letters preceded and
+    // followed only by spaces or punctuation. There might be,
+    // optionally, a ' in the middle of the word
+    wordPattern: /(?<=[\p{P}\s]|^)((\p{L}+'\p{L}+)|(\p{L}+))(?=[\p{P}\s]|$)/u,
 	comments: {
 		blockComment: ['<!--', '-->']
 	},
