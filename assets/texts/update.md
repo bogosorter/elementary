@@ -1,4 +1,4 @@
-# Elementary v1.5.0-alpha.0
+# Elementary v1.5.0
 
 Hi there!
 
