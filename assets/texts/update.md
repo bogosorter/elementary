@@ -1,15 +1,17 @@
-# Elementary v1.5.0
+# Elementary v1.5.1-alpha.0
 
-Hi there!
+Hi again!
 
-Shortly after releasing Elementary, I defined three goals for its future: a preview mode, PDF export support and spellchecking. This release, which I've been long waiting for, is all about spellchecking, and finally completes that list.
+Sorry for being away for so long. I've created Elementary for the fun of it, and currently I'm having more fun building compilers. For what it's worth, I have big plans to return to Elementary in the future, simplifying the interface and speeding things up, but that'll have to wait a while.
 
-The default dictionary is `en_US`. To add more, see the instructions on the spellchecking guide (use the command palette or right-click on any word to get there). This release is somewhat experimental. I’d love to hear how it’s working for you - especially if something goes wrong :)
+For now, I have two long-overdue fixes:
 
-For the next releases my plan is to polish the app. There's still a lot to do...
+- `ctrl+z` now works after switching to preview mode and back to edit mode.
+- The scrollbar won't disappear when you move the mouse away from the text.
 
-Happy writing!
+This is a pre-release and will become stable in a few weeks. If you find any bugs, please report them to me (see below).
 
+Happy writing!  
 bogosorter
 
 ## Get in touch
