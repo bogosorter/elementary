@@ -36,6 +36,7 @@ type Store = {
     // Monaco editor references
     monaco?: typeof Monaco;
     editor?: Monaco.editor.IStandaloneCodeEditor;
+    model?: Monaco.editor.ITextModel;
     currentSelection: Monaco.Selection | null;
     currentScroll: number | null;
     disposeSpelchecker: (() => void) | null;
@@ -145,6 +146,7 @@ const store = create<Store>((set, get) => ({
 
     monaco: undefined,
     editor: undefined,
+    model: undefined,
     currentSelection: null,
     currentScroll: null,
     disposeSpelchecker: null,
@@ -205,7 +207,14 @@ const store = create<Store>((set, get) => ({
             requestAnimationFrame(() => tagQuotes());
         });
 
-        editor.setValue(get().content);
+        if (get().model) {
+            let previous = editor.getModel();
+            editor.setModel(get().model!);
+            previous!.dispose();
+        } else {
+            editor.setValue(get().content);
+            set({ model: editor.getModel()! });
+        }
         if (get().currentSelection) {
             editor.setSelection(get().currentSelection!);
             // This has to be delayed, probably because the editor isn't able to
@@ -282,6 +291,7 @@ const store = create<Store>((set, get) => ({
         if (!get().preview) {
             // Save the current selection to restore it later
             set({ currentSelection: get().editor!.getSelection() });
+            get().editor?.setModel(null);
             // Remove quotes
             requestAnimationFrame(() => {
                 tagQuotes();
@@ -386,11 +396,10 @@ const store = create<Store>((set, get) => ({
             });
         });
         else {
-            get().editor!.setValue(file.content);
             get().editor!.setScrollTop(0);
         }
 
-
+        get().model?.setValue(file.content);
         set({ path: file.path, content: file.content, saved: true, knownModified: Date.now() });
     },
     openRecent: async (path) => {
@@ -423,18 +432,18 @@ const store = create<Store>((set, get) => ({
             });
         });
         else {
-            get().editor!.setValue(content);
             get().editor!.setScrollTop(0);
         }
 
+        get().model?.setValue(content);
         set({ path: path, content: content, saved: true, knownModified: Date.now() });
     },
     newFile: async () => {
         if (!await get().canCloseFile()) return;
 
         set({ path: '', content: 'hello, world', saved: true });
+        get().model?.setValue('hello, world');
         if (get().preview) get().togglePreview();
-        else get().editor!.setValue('hello, world');
 
         get().closeCommandPalette();
     },
@@ -686,7 +695,7 @@ const store = create<Store>((set, get) => ({
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'info');
 
-        get().editor?.setValue(content);
+        get().model?.setValue(content);
         set({ path: '', content, saved: true });
     },
     openUpdateNotice: async () => {
@@ -695,7 +704,7 @@ const store = create<Store>((set, get) => ({
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'update');
 
-        get().editor?.setValue(content);
+        get().model?.setValue(content);
         set({ path: '', content, saved: true });
     },
     openMarkdownReference: async () => {
@@ -704,7 +713,7 @@ const store = create<Store>((set, get) => ({
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'markdown');
 
-        get().editor?.setValue(content);
+        get().model?.setValue(content);
         set({ path: '', content, saved: true });
     },
     openShortcutReference: async () => {
@@ -713,7 +722,7 @@ const store = create<Store>((set, get) => ({
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'shortcuts');
 
-        get().editor?.setValue(content);
+        get().model?.setValue(content);
         set({ path: '', content, saved: true });
     },
     openMath: async () => {
@@ -722,7 +731,7 @@ const store = create<Store>((set, get) => ({
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'math');
 
-        get().editor?.setValue(content);
+        get().model?.setValue(content);
         set({ path: '', content, saved: true });
     },
     openPDFExportGuide: async() => {
@@ -731,7 +740,7 @@ const store = create<Store>((set, get) => ({
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'pdfExportGuide');
 
-        get().editor?.setValue(content);
+        get().model?.setValue(content);
         set({ path: '', content, saved: true });
     },
     openSpellcheckingGuide: async() => {
@@ -740,7 +749,7 @@ const store = create<Store>((set, get) => ({
 
         const content = await window.electron.ipcRenderer.invoke('getText', 'spellchecking');
 
-        get().editor?.setValue(content);
+        get().model?.setValue(content);
         set({ path: '', content, saved: true });
     },
 
