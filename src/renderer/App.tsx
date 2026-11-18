@@ -33,6 +33,10 @@ function App() {
             style={createAppVariables(settings.theme, settings.editorWidth)}
             onKeyDown={(e) => handleShortcut(e, shortcuts)}
             tabIndex={-1}
+            onWheel={(e) => {
+                const editor = store.getState().editor;
+                if (editor) editor.setScrollTop(editor.getScrollTop() + e.deltaY);
+            }}
         >
             <CommandPalette />
             <Header />
@@ -114,6 +118,9 @@ function createEditorOptions(settings: Settings): monaco.editor.IStandaloneEdito
         lightbulb: {
             // @ts-ignore
             enabled: 'off'
+        },
+        scrollbar: {
+            vertical: 'visible'
         }
     };
 }
